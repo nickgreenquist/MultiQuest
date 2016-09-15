@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://npmcdn.com/babel-core@5.8.38/browser.min.js"></script>
+    <script type="text/babel" >
+        "use strict";
+
+        var socket;
+
+        let canvas;
+        let ctx;
+        let sendBufferCanvas;
+        let sendBufferCtx;
+
+        const user = `user${(Math.floor((Math.random()*1000)) + 1)}`;
+
+        const init = () => {
+            socket = io.connect();
+            
+            canvas = document.querySelector("#canvas");
+            ctx = canvas.getContext("2d");
+            
+            socket.on('connect', () => {
+                console.log('connecting');
+                
+                socket.emit('join', {});     
+            });
+            
+            socket.on('getImage', (data) => {
+               handleMessage(data); 
+            });
+            
+            setup();
+        };
+
+        const setup = () => {
+            sendBufferCanvas = document.createElement("canvas");
+            sendBufferCanvas.height = 200;
+            sendBufferCanvas.width = 200;
+            sendBufferCtx = sendBufferCanvas.getContext("2d");
+            
+            //ctx.fillRect(100,100,200,200); //draw to screen
+          
+            var img = new Image();
+          
+            img.onload = () => {
+              ctx.drawImage(img, 0, 0, 200, 200);
+            };
+            img.src = document.location.pathname + '../watermelon-duck.png';
+          
+            //var xhr = new XMLHttpRequest();
+            //xhr.open('GET', document.location.pathname + '../watermelon-duck.png', true);
+            //xhr.send();
+          
+            //hidden canvas
+            var imgHidden = new Image();
+            imgHidden.onload = () => {
+              sendBufferCtx.drawImage(imgHidden, 0, 0, 200, 200); //draw to hidden buffer
+              
+              const data = {
+                x: 100,
+                y: 100,
+                height: 200,
+                width: 200,
+                imgData: sendBufferCanvas.toDataURL(), //get pixel data from canvas
+              };
+            
+              socket.emit('draw', data);
+            };
+            imgHidden.src = img.src;
+        };
+
+
+        const handleMessage = (data) => {
+            console.log("Handling message function");
+            console.log(data.x);
+            console.log(data.y);
+          
+            let image = new Image();
+            
+            image.onload = () => {
+                console.log('drawing image from socket');
+                ctx.save();
+                ctx.globalCompositeOperation = "source-over"; //this is default for canvas
+                ctx.drawImage(image, data.x, data.y, data.width, data.height);
+                ctx.restore();
+            };
+            
+            image.src = data.imgData;
+        };
+        
+
+        window.onload = init;
+    
+    </script>
+</head>
+<body>
+    <canvas id="canvas" height="500" width="500">Please use an HTML 5 browser</canvas>
+</body>
+</html>
