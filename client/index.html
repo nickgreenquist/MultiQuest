@@ -12,8 +12,32 @@
         let ctx;
         let sendBufferCanvas;
         let sendBufferCtx;
+        let isHost = false;
 
         const user = `user${(Math.floor((Math.random()*1000)) + 1)}`;
+
+        let players = {};
+        let enemies = {};
+        //player object definition
+        /*
+          players[user] = 
+          {
+            lastUpdate,
+            position = 
+            {
+              x,
+              y,
+              width,
+              height
+            },
+            maxHealth,
+            currentHealth,
+            dead,
+            speed,
+            attack
+          }
+        */
+        
 
         const init = () => {
             socket = io.connect();
@@ -21,73 +45,200 @@
             canvas = document.querySelector("#canvas");
             ctx = canvas.getContext("2d");
             
+            //connecting the socket
             socket.on('connect', () => {
                 console.log('connecting');
                 
-                socket.emit('join', {});     
+                socket.emit('join', user);     
+            });
+          
+            socket.on('setHost', (data) => {
+              isHost = data;
+              console.log("You are the host");
+              setupPlayer();
+              setupEnemy();
+              draw();
+            })
+            
+            socket.on('getPlayersHost', (data) => {
+               if(isHost) {
+                 updatePlayerHost(data);
+               }
+            });
+          
+            socket.on('getAllPlayers', (data) => {
+              updatePlayers(data);
+            });
+          
+            socket.on('getEnemyHost', (data) => {
+              updateEnemyHost(data);
+            });
+          
+            socket.on('getAllEnemies', (data) => {
+              updateEnemies(data);
+            });
+          
+            socket.on('requestWorldData', (data) => {
+              if(isHost) {
+                let worldData = {players:players, enemies:enemies};
+                socket.emit('updateWorldData', worldData);
+              }
+            });
+          
+            socket.on('getWorldData', (data) => {
+              console.log('getting initial world data');
+              players = data.players;
+              enemies = data.enemies;
+              setupPlayer();
+              draw();
             });
             
-            socket.on('getImage', (data) => {
-               handleMessage(data); 
-            });
-            
-            setup();
+            window.addEventListener("keydown", move, true);
         };
 
-        const setup = () => {
-            sendBufferCanvas = document.createElement("canvas");
-            sendBufferCanvas.height = 200;
-            sendBufferCanvas.width = 200;
-            sendBufferCtx = sendBufferCanvas.getContext("2d");
+        const move = (e) => {
+          console.log("Detected key press");
+          if ( e.keyCode == 68 ) {
+            const time = new Date().getTime();
             
-            //ctx.fillRect(100,100,200,200); //draw to screen
-          
-            var img = new Image();
-          
-            img.onload = () => {
-              ctx.drawImage(img, 0, 0, 200, 200);
-            };
-            img.src = document.location.pathname + '../watermelon-duck.png';
-          
-            //var xhr = new XMLHttpRequest();
-            //xhr.open('GET', document.location.pathname + '../watermelon-duck.png', true);
-            //xhr.send();
-          
-            //hidden canvas
-            var imgHidden = new Image();
-            imgHidden.onload = () => {
-              sendBufferCtx.drawImage(imgHidden, 0, 0, 200, 200); //draw to hidden buffer
-              
-              const data = {
-                x: 100,
-                y: 100,
-                height: 200,
-                width: 200,
-                imgData: sendBufferCanvas.toDataURL(), //get pixel data from canvas
-              };
+            //only move if enough time has occured, otherwise server is overloaded
+            if(time - players[user].lastUpdate > 100) {
+              players[user].lastUpdate = time;
             
-              socket.emit('draw', data);
-            };
-            imgHidden.src = img.src;
+              //check collision with enemy before emitting
+              let isColliding = false;
+              let keys = Object.keys(enemies);
+              for(let i = 0; i < keys.length; i++)
+              {
+                const collisionCall = enemies[keys[i]];
+                if(!players[user].dead && !enemies[keys[i]].dead && (players[user].position.x + players[user].position.width) > enemies[keys[i]].position.x ) {
+                  isColliding = true;
+                  
+                  //combat
+                  players[user].currentHealth -= enemies[keys[i]].attack;
+                  if(players[user].currentHealth <= 0) {
+                    players[user].dead = true;
+                  }
+                  socket.emit('updatePlayer', {name: user, playerInfo: players[user]});
+                  
+                  enemies[keys[i]].currentHealth -= players[user].attack;
+                  if(enemies[keys[i]].currentHealth <= 0) {
+                    enemies[keys[i]].dead = true;
+                  }
+                  socket.emit('updateEnemy', {name: keys[i], enemyInfo:enemies[keys[i]]});
+                  
+                  //should I draw here even though server hasn't received update?
+                  draw();
+                }
+              }
+            
+              if(!isColliding && !players[user].dead) {
+                players[user].position.x += players[user].speed;
+                socket.emit('updatePlayer', {name: user, playerInfo: players[user]});
+                
+                draw();
+              }
+            }
+          }
+        };
+
+        const setupPlayer = () => {            
+            const time = new Date().getTime();
+            let x = 0;
+            let y = 300;
+            let position = {x:x, y:y,width:100,height:100};
+            players[user] = {lastUpdate: time, position:position, maxHealth:10, currentHealth:10,dead:false,speed:10,attack:2};
+        };
+
+        const setupEnemy = () => {            
+            const time = new Date().getTime();         
+            let x = 400;
+            let y = 300;
+            let position = {x:x, y:y, width:100, height:100};
+            enemies["enemy1"] = {lastUpdate: time, position:position, maxHealth:10, currentHealth:10,dead:false,attack:1};
         };
 
 
-        const handleMessage = (data) => {
-            console.log("Handling message function");
-            console.log(data.x);
-            console.log(data.y);
+        const draw = () => {
+          ctx.clearRect(0,0,canvas.width, canvas.height);
+            
+          let keys = Object.keys(players);
+            
+          console.log(`Drawing ${keys.length} players`);
+          for(let i = 0; i < keys.length; i++)
+          {
+            const drawCall = players[keys[i]];
+            if(drawCall.dead) {
+              ctx.globalAlpha = 0.5;
+            }
+            ctx.fillStyle = "black";
+            ctx.fillRect(drawCall.position.x, drawCall.position.y, drawCall.position.width, drawCall.position.height);
+            ctx.font = "36px serif";
+            ctx.strokeText(keys[i], drawCall.position.x, drawCall.position.y - 50);
+            
+            //draw health bar
+            ctx.globalAlpha = 1;
+            ctx.fillStyle="white";
+            ctx.fillRect(drawCall.position.x,drawCall.position.y - 40, drawCall.position.width, 30);
+            ctx.fillStyle="black";
+            ctx.fillRect(drawCall.position.x + 3,drawCall.position.y -37 , drawCall.position.width - 6, 24);
+            ctx.fillStyle="green";
+            ctx.fillRect(drawCall.position.x + 3,drawCall.position.y - 37,(drawCall.currentHealth / drawCall.maxHealth) * (drawCall.position.width - 6) ,24);
+          }
+        
+          keys = Object.keys(enemies);
+          console.log(`Drawing ${keys.length} enmies`);
+          for(let i = 0; i < keys.length; i++)
+          {
+            const drawCall = enemies[keys[i]];
+            if(drawCall.dead) {
+              ctx.globalAlpha = 0.5;
+            }
+            ctx.fillStyle = "red";
+            ctx.fillRect(drawCall.position.x, drawCall.position.y, drawCall.position.width, drawCall.position.height);
+            
+            //draw health bar
+            ctx.globalAlpha = 1;
+            ctx.fillStyle="white";
+            ctx.fillRect(drawCall.position.x,drawCall.position.y - 40, drawCall.position.width, 30);
+            ctx.fillStyle="black";
+            ctx.fillRect(drawCall.position.x + 3,drawCall.position.y -37 , drawCall.position.width - 6, 24);
+            ctx.fillStyle="green";
+            ctx.fillRect(drawCall.position.x + 3,drawCall.position.y - 37,(drawCall.currentHealth / drawCall.maxHealth) * (drawCall.position.width - 6) ,24);
+          }
+        };
+
+        const updatePlayerHost = (data) => {
+            //check if player should be redrawn
+            if(!players[data.name])
+            {
+                players[data.name] = data.playerInfo;
+            }
+            else
+            {
+                 players[data.name] = data.playerInfo;
+            }
           
-            let image = new Image();
+            //host has updated player coords, emit back to server to be emitted to all users
+            socket.emit('updateAllPlayers', players);
+        };
+
+        const updatePlayers = (data) => {
+            players = data;
             
-            image.onload = () => {
-                console.log('drawing image from socket');
-                ctx.save();
-                ctx.globalCompositeOperation = "source-over"; //this is default for canvas
-                ctx.drawImage(image, data.x, data.y, data.width, data.height);
-                ctx.restore();
-            };
+            draw(); //redraw after we update
+        };
+
+        const updateEnemyHost = (data) => {
+          enemies[data.name] = data.enemyInfo;
+          
+          socket.emit('updateAllEnemies', enemies);
+        };
             
-            image.src = data.imgData;
+        const updateEnemies = (data) => {
+          enemies = data;
+          
+          draw();
         };
         
 
@@ -96,6 +247,6 @@
     </script>
 </head>
 <body>
-    <canvas id="canvas" height="500" width="500">Please use an HTML 5 browser</canvas>
+    <canvas id="canvas" height="768" width="1366" style="background-image:url('background1.png');">Please use an HTML 5 browser</canvas>
 </body>
 </html>
