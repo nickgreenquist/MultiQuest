@@ -84,3 +84,6 @@ console.log('Websocket server started');
 // all socket.on goes to the host, and emit from the host
 // every 3 or 5 seconds, send out a massive world update
 
+//to confirm that move, don't send back to the person who moved, only the others
+//ask Slack Socket.io about movement
+
