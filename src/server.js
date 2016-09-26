@@ -51,6 +51,14 @@ io.sockets.on('connection', (socket) => {
     }
   });
 
+  socket.on('leave', (data) => {
+    console.log('User has left the game');
+    if (data) {
+      host = 'null';
+    }
+    socket.disconnect();
+  });
+
   socket.on('updateWorldData', (data) => {
     console.log('Updating world data for new user');
     socket.broadcast.emit('getWorldData', data);

@@ -247,6 +247,10 @@
         
 
         window.onload = init;
+
+        window.onbeforeunload = function(){
+            socket.emit('leave', isHost);
+        }
     
     </script>
 </head>
