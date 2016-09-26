@@ -1,5 +1,3 @@
-"use strict";
-
 const http = require('http');
 const fs = require('fs');
 const socketio = require('socket.io');
@@ -34,47 +32,46 @@ console.log(`Listening on 127.0.0.1: ${port}`);
 
 const io = socketio(app);
 
-//variable to store the username of the lobby host
-let host = "null";
+// variable to store the username of the lobby host
+let host = 'null';
 
 io.sockets.on('connection', (socket) => {
   console.log('started');
 
   socket.join('room1');
-  
+
   socket.on('join', (data) => {
-    if(host === "null") {
+    if (host === 'null') {
       host = data;
       console.log(`Host set to ${data}`);
       socket.emit('setHost', true);
-    }
-    else {
-      console.log("Host unchanged");
-      io.sockets.in('room1').emit('requestWorldData', {} );
+    } else {
+      console.log('Host unchanged');
+      io.sockets.in('room1').emit('requestWorldData', {});
     }
   });
-  
+
   socket.on('updateWorldData', (data) => {
     console.log('Updating world data for new user');
     socket.broadcast.emit('getWorldData', data);
   });
 
-  //player updates
+  // player updates
   socket.on('updatePlayer', (data) => {
     io.sockets.in('room1').emit('getPlayersHost', data);
   });
-  
+
   socket.on('updateAllPlayers', (data) => {
     io.sockets.in('room1').emit('getAllPlayers', data);
   });
-  
+
   socket.on('updateEnemy', (data) => {
     io.sockets.in('room1').emit('getEnemyHost', data);
   });
-  
+
   socket.on('updateAllEnemies', (data) => {
     io.sockets.in('room1').emit('getAllEnemies', data);
-  })
+  });
 });
 
 console.log('Websocket server started');
@@ -84,6 +81,6 @@ console.log('Websocket server started');
 // all socket.on goes to the host, and emit from the host
 // every 3 or 5 seconds, send out a massive world update
 
-//to confirm that move, don't send back to the person who moved, only the others
-//ask Slack Socket.io about movement
+// to confirm that move, don't send back to the person who moved, only the others
+// ask Slack Socket.io about movement
 

@@ -96,6 +96,7 @@
             window.addEventListener("keydown", move, true);
         };
 
+      
         const move = (e) => {
           console.log("Detected key press");
           if ( e.keyCode == 68 ) {
@@ -152,10 +153,13 @@
 
         const setupEnemy = () => {            
             const time = new Date().getTime();         
-            let x = 400;
+            let x = 200;
             let y = 300;
-            let position = {x:x, y:y, width:100, height:100};
-            enemies["enemy1"] = {lastUpdate: time, position:position, maxHealth:10, currentHealth:10,dead:false,attack:1};
+          
+            for(let i = 1; i <= 5; i++) {
+                let position = {x:x + (i*200), y:y, width:100, height:100};
+                enemies[`enemy${i}`] = {lastUpdate: time, position:position, maxHealth:10, currentHealth:10,dead:false,attack:1};
+            }
         };
 
 
