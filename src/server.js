@@ -1,3 +1,5 @@
+'use strict';
+
 const http = require('http');
 const fs = require('fs');
 const socketio = require('socket.io');
@@ -42,12 +44,12 @@ io.sockets.on('connection', (socket) => {
 
   socket.on('join', (data) => {
     if (host === 'null') {
-      host = data;
-      console.log(`Host set to ${data}`);
+      host = data.name;
+      console.log(`Host set to ${data.name}`);
       socket.emit('setHost', true);
     } else {
       console.log('Host unchanged');
-      io.sockets.in('room1').emit('requestWorldData', {});
+      io.sockets.in('room1').emit('requestWorldData', data);
     }
   });
 
@@ -64,7 +66,7 @@ io.sockets.on('connection', (socket) => {
     socket.broadcast.emit('getWorldData', data);
   });
 
-  // player updates
+  // these methods update entire player array
   socket.on('updatePlayer', (data) => {
     io.sockets.in('room1').emit('getPlayersHost', data);
   });
@@ -73,12 +75,39 @@ io.sockets.on('connection', (socket) => {
     io.sockets.in('room1').emit('getAllPlayers', data);
   });
 
+  // these methods update only position of a single player
+  socket.on('updatePlayerMovement', (data) => {
+    io.sockets.in('room1').emit('getPlayersMovementHost', data);
+  });
+
+  socket.on('updateAllPlayersMovement', (data) => {
+    io.sockets.in('room1').emit('getAllPlayersMovement', data);
+  });
+
+  // these methods update only health of a single player
+  socket.on('updatePlayerHealth', (data) => {
+    io.sockets.in('room1').emit('getPlayersHealthHost', data);
+  });
+
+  socket.on('updateAllPlayersHealth', (data) => {
+    io.sockets.in('room1').emit('getAllPlayersHealth', data);
+  });
+
+  // These methods update enemies
   socket.on('updateEnemy', (data) => {
     io.sockets.in('room1').emit('getEnemyHost', data);
   });
 
   socket.on('updateAllEnemies', (data) => {
     io.sockets.in('room1').emit('getAllEnemies', data);
+  });
+
+  socket.on('moveToNextStage', (data) => {
+    io.sockets.in('room1').emit('setNextStageHost', data);
+  });
+
+  socket.on('moveToNextStageAll', (data) => {
+    io.sockets.in('room1').emit('setNextStageAll', data);
   });
 });
 

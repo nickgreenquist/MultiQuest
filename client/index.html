@@ -16,6 +16,11 @@
 
         const user = `user${(Math.floor((Math.random()*1000)) + 1)}`;
 
+        //Game data
+        let worldWidth = 1366;
+        let worldHeight = 768;
+        let stage = 1;
+
         let players = {};
         let enemies = {};
         //player object definition
@@ -34,7 +39,10 @@
             currentHealth,
             dead,
             speed,
-            attack
+            attack,
+            level,
+            exp,
+            maxDistance
           }
         */
         
@@ -49,7 +57,8 @@
             socket.on('connect', () => {
                 console.log('connecting');
                 
-                socket.emit('join', user);     
+                setupPlayer();
+                socket.emit('join', {name: user, player:players[user]});     
             });
           
             socket.on('setHost', (data) => {
@@ -60,6 +69,7 @@
               draw();
             })
             
+            //player updates for host
             socket.on('getPlayersHost', (data) => {
                if(isHost) {
                  updatePlayerHost(data);
@@ -70,16 +80,69 @@
               updatePlayers(data);
             });
           
+            //movement updates for host
+            socket.on('getPlayersMovementHost', (data) => {
+               if(isHost) {
+                 updatePlayerMovementHost(data);
+               }
+            });
+          
+            socket.on('getAllPlayersMovement', (data) => {
+              updatePlayersMovement(data);
+            });
+          
+            //health updates for host
+            socket.on('getPlayersHealthHost', (data) => {
+               if(isHost) {
+                 updatePlayerHealthHost(data);
+               }
+            });
+          
+            socket.on('getAllPlayersHealth', (data) => {
+              updatePlayersHealth(data);
+            });
+          
+            //enemy updates for host
             socket.on('getEnemyHost', (data) => {
-              updateEnemyHost(data);
+              if(isHost) {
+                updateEnemyHost(data);
+              }
             });
           
             socket.on('getAllEnemies', (data) => {
               updateEnemies(data);
             });
           
+            //stage update
+            socket.on('setNextStageHost', (data) => {
+              if(isHost) {
+                //set new stage number to all players
+                socket.emit('moveToNextStageAll', data);
+                
+                //set all players positions to 1
+                let keys = Object.keys(players);
+                for(let i = 0; i < keys.length; i++) {
+                  players[keys[i]].position.x = 0;
+                }
+                //reset all enemies
+                setupEnemy();
+                //send out new player positions and enemy info
+                let worldData = {players:players, enemies:enemies};
+                socket.emit('updateWorldData', worldData);
+              }
+            });
+          
+            socket.on('setNextStageAll', (data) => {
+              stage = data;
+            })
+          
             socket.on('requestWorldData', (data) => {
               if(isHost) {
+                //new player is requesting world data. We need to update
+                //our players object with this new player and also 
+                //send them world data
+                players[data.name] = data.player;
+                
                 let worldData = {players:players, enemies:enemies};
                 socket.emit('updateWorldData', worldData);
               }
@@ -89,7 +152,6 @@
               console.log('getting initial world data');
               players = data.players;
               enemies = data.enemies;
-              setupPlayer();
               draw();
             });
             
@@ -103,7 +165,7 @@
             const time = new Date().getTime();
             
             //only move if enough time has occured, otherwise server is overloaded
-            if(time - players[user].lastUpdate > 100) {
+            if(time - players[user].lastUpdate > 10) {
               players[user].lastUpdate = time;
             
               //check collision with enemy before emitting
@@ -120,13 +182,29 @@
                   if(players[user].currentHealth <= 0) {
                     players[user].dead = true;
                   }
-                  socket.emit('updatePlayer', {name: user, playerInfo: players[user]});
+                  socket.emit('updatePlayerHealth', {name: user, health: players[user].currentHealth});
                   
-                  enemies[keys[i]].currentHealth -= players[user].attack;
-                  if(enemies[keys[i]].currentHealth <= 0) {
-                    enemies[keys[i]].dead = true;
+                  //don't update enemy stats if player has died...creates weird bugs if the world is reset same time as enemy is updated with damage
+                  if(!players[user].dead) {
+                    enemies[keys[i]].currentHealth -= players[user].attack;
+                    if(enemies[keys[i]].currentHealth <= 0) {
+                      enemies[keys[i]].currentHealth = 0;
+                      enemies[keys[i]].dead = true;
+                    
+                      //gain experience
+                      players[user].exp += 1;
+                      if(players[user].exp >= players[user].level) {
+                        players[user].level += 1;
+                        players[user].exp = 0;
+                        players[user].attack += 1;
+                        players[user].speed += 1;
+                        players[user].maxHealth += 5;
+                      }
+                    }
+                  
+                    socket.emit('updateEnemy', {name: keys[i], health:enemies[keys[i]].currentHealth, dead:enemies[keys[i]].dead});
                   }
-                  socket.emit('updateEnemy', {name: keys[i], enemyInfo:enemies[keys[i]]});
+                  
                   
                   //should I draw here even though server hasn't received update?
                   draw();
@@ -135,7 +213,26 @@
             
               if(!isColliding && !players[user].dead) {
                 players[user].position.x += players[user].speed;
-                socket.emit('updatePlayer', {name: user, playerInfo: players[user]});
+                
+                //update max distance
+                let distance = ((stage-1) * 100) + Math.round((players[user].position.x / worldWidth) * 100);
+                if(distance > players[user].maxDistance) {
+                  players[user].maxDistance = distance;
+                }
+                
+                
+                //check for reaching end of level
+                if(players[user].position.x > worldWidth) {
+                  players[user].position.x = 0;
+                  stage += 1;
+                  socket.emit('moveToNextStage', stage);
+                }
+                
+                //using movement method for speed up
+                socket.emit('updatePlayerMovement', {name: user, position: players[user].position});
+                
+                //using old method to overwrite entire players array
+                //socket.emit('updatePlayer', {name: user, playerInfo: players[user]});
                 
                 draw();
               }
@@ -148,7 +245,19 @@
             let x = 0;
             let y = 300;
             let position = {x:x, y:y,width:100,height:100};
-            players[user] = {lastUpdate: time, position:position, maxHealth:10, currentHealth:10,dead:false,speed:10,attack:2};
+            players[user] = {lastUpdate: time, position:position, maxHealth:10, currentHealth:10,dead:false,speed:25,attack:2,level:1,exp:0,maxDistance:0};
+          
+            //host calls setupplayer twice so don't set another interval
+            if(!isHost) {
+              window.setInterval(function(){
+                if(players[user].currentHealth < players[user].maxHealth && !players[user].dead) {
+                  players[user].currentHealth += 1;
+                  socket.emit('updatePlayerHealth', {name: user, health: players[user].currentHealth});
+                
+                  draw();
+                }
+              }, 1000);
+            }
         };
 
         const setupEnemy = () => {            
@@ -158,16 +267,33 @@
           
             for(let i = 1; i <= 5; i++) {
                 let position = {x:x + (i*200), y:y, width:100, height:100};
-                enemies[`enemy${i}`] = {lastUpdate: time, position:position, maxHealth:10, currentHealth:10,dead:false,attack:1};
+                enemies[`enemy${i}`] = {lastUpdate: time, position:position, maxHealth:10*stage, currentHealth:10*stage,dead:false,attack:stage};
             }
         };
 
 
         const draw = () => {
           ctx.clearRect(0,0,canvas.width, canvas.height);
-            
-          let keys = Object.keys(players);
-            
+          
+          //draw data
+          
+          //stage and distance
+          ctx.fillStyle = "black";
+          ctx.font = "36px serif";
+          ctx.fillText(`Stage: ${stage}`, 0, 50);
+          let distance = Math.round((players[user].position.x / worldWidth) * 100);
+          ctx.fillText(`Distance: ${(((stage-1)*100) + distance)}`, 0, 100);
+          ctx.fillText(`Max Distance: ${players[user].maxDistance}`, 0, 150);
+          
+          //player stats
+          ctx.fillText(`Level: ${players[user].level}`, 0, (worldHeight / 2) + 100);
+          ctx.fillText(`Exp: ${players[user].exp} / ${players[user].level}`, 0, (worldHeight / 2) + 150);
+          ctx.fillText(`Health: ${players[user].currentHealth} / ${players[user].maxHealth}`, 0, (worldHeight / 2) + 200);
+          ctx.fillText(`Attack: ${players[user].attack}`, 0, (worldHeight / 2) + 250);
+          ctx.fillText(`Speed: ${players[user].speed}`, 0, (worldHeight / 2) + 300);
+          
+          //draw the actual players
+          let keys = Object.keys(players);            
           console.log(`Drawing ${keys.length} players`);
           for(let i = 0; i < keys.length; i++)
           {
@@ -190,6 +316,7 @@
             ctx.fillRect(drawCall.position.x + 3,drawCall.position.y - 37,(drawCall.currentHealth / drawCall.maxHealth) * (drawCall.position.width - 6) ,24);
           }
         
+          //draw the enemies
           keys = Object.keys(enemies);
           console.log(`Drawing ${keys.length} enmies`);
           for(let i = 0; i < keys.length; i++)
@@ -213,15 +340,7 @@
         };
 
         const updatePlayerHost = (data) => {
-            //check if player should be redrawn
-            if(!players[data.name])
-            {
-                players[data.name] = data.playerInfo;
-            }
-            else
-            {
-                 players[data.name] = data.playerInfo;
-            }
+            players[data.name] = data.playerInfo;
           
             //host has updated player coords, emit back to server to be emitted to all users
             socket.emit('updateAllPlayers', players);
@@ -233,14 +352,79 @@
             draw(); //redraw after we update
         };
 
-        const updateEnemyHost = (data) => {
-          enemies[data.name] = data.enemyInfo;
+        //MOVEMENT
+        const updatePlayerMovementHost = (data) => {
+            players[data.name].position = data.position;
           
-          socket.emit('updateAllEnemies', enemies);
+            //host has updated player coords, emit back to server to be emitted to all users
+            socket.emit('updateAllPlayersMovement', {name: data.name, position: players[data.name].position});
+        };
+
+        const updatePlayersMovement = (data) => {
+          if(data.name != user) {
+            players[data.name].position = data.position;
+            
+            draw(); //redraw after we update
+          }
+        };
+
+        //HEALTH
+        const updatePlayerHealthHost = (data) => {
+            players[data.name].currentHealth = data.health;
+            if(players[data.name].currentHealth <= 0) {
+              players[data.name].dead = true;
+            }
+          
+            //host has updated player health, emit back to server to be emitted to all users
+            socket.emit('updateAllPlayersHealth', {name: data.name, health: players[data.name].currentHealth, dead: players[data.name].dead});
+          
+            //check if all players are dead
+            let keys = Object.keys(players);
+            let oneIsAlive = false;
+            for(let i = 0; i < keys.length; i++) {
+                if(!players[keys[i]].dead) {
+                  oneIsAlive = true;
+                  break;
+                }
+            }
+            if(!oneIsAlive) {
+              //reset to stage 1 and reset all data and propogate this reset to all users
+              let keys = Object.keys(players);
+              for(let i = 0; i < keys.length; i++) {
+                players[keys[i]].position.x = 0;
+                players[keys[i]].currentHealth = players[keys[i]].maxHealth;
+                players[keys[i]].dead = false;
+              }
+              stage = 1;
+              setupEnemy();
+              let worldData = {players:players, enemies:enemies};
+              socket.emit('updateWorldData', worldData);
+              socket.emit('moveToNextStageAll', stage);
+            }
+        };
+
+        const updatePlayersHealth = (data) => {
+          if(data.name != user) {
+            players[data.name].currentHealth = data.health;
+            players[data.name].dead = data.dead;
+            
+            draw(); //redraw after we update
+          }
+        };
+
+        const updateEnemyHost = (data) => {
+          enemies[data.name].currentHealth = data.health;
+          if(enemies[data.name].currentHealth <= 0) {
+              enemies[data.name].currentHealth = 0;
+              enemies[data.name].dead = true;
+            }
+          
+          socket.emit('updateAllEnemies', {name: data.name, health: enemies[data.name].currentHealth, dead:enemies[data.name].dead});
         };
             
         const updateEnemies = (data) => {
-          enemies = data;
+          enemies[data.name].currentHealth = data.health;
+          enemies[data.name].dead = data.dead;
           
           draw();
         };
