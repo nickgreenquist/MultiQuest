@@ -1,5 +1,3 @@
-'use strict';
-
 const http = require('http');
 const fs = require('fs');
 const socketio = require('socket.io');
@@ -11,11 +9,23 @@ const port = process.env.PORT || process.env.NODE_PORT || 3000;
 // __dirname in node is the current directory
 const index = fs.readFileSync(`${__dirname}/../client/index.html`);
 const img = fs.readFileSync(`${__dirname}/../client/background1.png`);
+const imgPlayer = fs.readFileSync(`${__dirname}/../client/warrior.png`);
+const imgEnemy = fs.readFileSync(`${__dirname}/../client/enemy.png`);
 const onRequest = (request, response) => {
   const req = url.parse(request.url, true);
   const action = req.pathname;
 
-  if (action === '/background1.png') {
+  if (action === '/warrior.png') {
+    console.log('sending image from request');
+    response.writeHead(200, { 'Content-Type': 'image/png' });
+    response.write(imgPlayer);
+    response.end();
+  } else if (action === '/enemy.png') {
+    console.log('sending image from request');
+    response.writeHead(200, { 'Content-Type': 'image/png' });
+    response.write(imgEnemy);
+    response.end();
+  } else if (action === '/background1.png') {
     console.log('sending image from request');
     response.writeHead(200, { 'Content-Type': 'image/png' });
     response.write(img);
