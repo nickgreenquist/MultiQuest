@@ -49,7 +49,9 @@
               y,
               width,
               height
-            }
+            },
+            spellCooldown,
+            spellPower
           }
         */
 
@@ -176,6 +178,31 @@
               enemies = data.enemies;
               draw();
             });
+          
+            //SPELLS
+            socket.on('healSpellHost', (data) => {
+              if(isHost) {
+                //check if spell power matches what we have
+                if(data.power == players[data.name].spellPower) {
+                  let keys = Object.keys(players);  
+                  for(var i = 0; i < keys.length; i++) {
+                    players[keys[i]].currentHealth += data.power;
+                    if(players[keys[i]].currentHealth > players[keys[i]].maxHealth) {
+                      players[keys[i]].currentHealth = players[keys[i]].maxHealth;
+                    }
+                  }
+                  
+                  socket.emit('healSpellAll', players);
+                }
+              }
+            });
+          
+            socket.on('healAll', (data) => {
+              for(var i = 0; i < players.length; i++) {
+                players[i].currentHealth = data.players[i].currentHealth;
+              }
+              draw();
+            });
             
             window.addEventListener("keydown", move, true);
         };
@@ -282,6 +309,20 @@
               }
             }
           }
+          
+          //SPELL
+          if ( e.keyCode == 32 ) {
+            console.log('Trying to use heal spell');
+            const time = new Date().getTime();
+            
+            //only move if enough time has occured, otherwise server is overloaded
+            if(time - players[user].lastUpdate > players[user].spellCooldown) {
+              players[user].lastUpdate = time;
+              
+              socket.emit('healSpell', {name: user, power: players[user].spellPower});
+              
+            }
+          }
         };
 
         const setupPlayer = () => {            
@@ -290,7 +331,7 @@
             let y = 300;
             let position = {x:x, y:y,width:100,height:100};
             let spritePos = {x:96, y:96, width: 96, height: 96};
-            players[user] = {lastUpdate: time, position:position, maxHealth:10, currentHealth:10,dead:false,speed:25,attack:2,level:1,exp:0,maxDistance:0, spritePos:spritePos};
+            players[user] = {lastUpdate: time, position:position, maxHealth:10, currentHealth:10,dead:false,speed:25,attack:2,level:1,exp:0,maxDistance:0, spritePos:spritePos, spellPower:5, spellCooldown:1};
           
             //host calls setupplayer twice so don't set another interval
             if(!isHost) {

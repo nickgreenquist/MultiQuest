@@ -119,6 +119,14 @@ io.sockets.on('connection', (socket) => {
   socket.on('moveToNextStageAll', (data) => {
     io.sockets.in('room1').emit('setNextStageAll', data);
   });
+
+  socket.on('healSpell', (data) => {
+    io.sockets.in('room1').emit('healSpellHost', data);
+  });
+
+  socket.on('healSpellAll', (data) => {
+    io.sockets.in('room1').emit('healAll', data);
+  });
 });
 
 console.log('Websocket server started');
