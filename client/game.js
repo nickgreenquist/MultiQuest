@@ -1,5 +1,14 @@
 console.log('game starting');
 
+if(!window.location.hash) {
+        window.location = window.location + '#loaded';
+        window.location.reload();
+}
+
+const models = require('../models');
+
+const Account = models.Account;
+
 var socket;
 
 let canvas;
@@ -9,7 +18,8 @@ let sendBufferCtx;
 let isHost = false;
 
 //const user = `user${(Math.floor((Math.random()*1000)) + 1)}`;
-const user = info.username;
+let user = username;
+console.log(`username: ${user}`);
 
 //Game data
 let worldWidth = 1366;
@@ -79,6 +89,10 @@ const init = () => {
         console.log('connecting');
 
         setupPlayer();
+      
+        //save new player
+        sendAjax("/game", JSON.stringify(players[user]));
+      
         socket.emit('join', {name: user, player:players[user]});     
     });
 
@@ -550,5 +564,7 @@ const updateEnemies = (data) => {
 window.onload = init;
 
 window.onbeforeunload = function(){
-    socket.emit('leave', isHost);
+  //sendAjax('POST', $players[user].serialize());
+  
+  socket.emit('leave', isHost);
 }

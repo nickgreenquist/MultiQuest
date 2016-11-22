@@ -14,18 +14,22 @@
     <div class="navlink"><a href="/game">Enter Game</a></div>
   </nav>
   <nav><a href="/login"><img id="logo" src="/assets/img/warriorIcon.png" alt="face logo"/></a>
-    <div class="navlink"><a href="/leader">Leaderboard</a></div>
+    <div class="navlink"><a href="/maker">Character Screen</a></div>
   </nav>
   <section id="domos">
     <div class="domo">
-      <img src="/assets/img/warriorIcon.png" style="width:128px;height:128px;" alt="domo face" class="domoFace"/>
-      <h3 class="domoName">Name: {{info.username}}</h3>
-      <h3 class="domoName">Max Distance: {{info.maxDistance}}</h3>
-      <h3 class="domoName">Level: {{info.level}}</h3>
-      <h3 class="domoAge">Exp: {{info.exp}}</h3>
-      <h3 class="domoName">Attack: {{info.attack}}</h3>
-      <h3 class="domoAge">Speed: {{info.speed}}</h3>
-      <h3 class="domoName">Spell Power: {{info.spellPower}}</h3>
+      {{#if board}}
+        {{#each board}}
+          <div class="domo">
+            <img src="/assets/img/warriorIcon.png" style="width:128px;height:128px;" alt="domo face" class="domoFace"/>
+            <h3 class="domoName">Name: {{this.username}}</h3>
+            <h3 class="domoAge">Level: {{this.level}}</h3>
+            <h3 class="domoAge">Distance: {{this.maxDistance}}</h3>
+          </div>
+        {{/each}}
+      {{else}}
+        <h3 class="emptyDomo">No Domos yet</h3>
+      {{/if}}
     </div>
   </section>
   <div id="domoMessage"><img id="speech" src="/assets/img/speech.png" alt="speech box"/>

@@ -36,7 +36,7 @@ const login = (request, response) => {
     
     console.dir(req);
 
-    return res.json({ redirect: '/game' });
+    return res.json({ redirect: '/maker' });
   });
 };
 
@@ -62,7 +62,7 @@ const signup = (request, response) => {
       attack: 2,
       speed: 15,
       exp: 0,
-      maxDistance: 0,
+      maxDistance: 10,
       spellPower: 5,
     };
 
@@ -75,7 +75,7 @@ const signup = (request, response) => {
       }
       req.session.account = Account.AccountModel.toAPI(newAccount);
 
-      return res.json({ redirect: '/game' });
+      return res.json({ redirect: '/maker' });
     });
   });
 };
