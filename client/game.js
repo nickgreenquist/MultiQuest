@@ -86,9 +86,6 @@ const init = () => {
 
         setupPlayer();
       
-        //save new player
-        sendAjax("/game", JSON.stringify(players[user]));
-      
         socket.emit('join', {name: user, player:players[user]});     
     });
 
