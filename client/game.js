@@ -5,10 +5,6 @@ if(!window.location.hash) {
         window.location.reload();
 }
 
-const models = require('../models');
-
-const Account = models.Account;
-
 var socket;
 
 let canvas;
