@@ -79,7 +79,6 @@ app.use((err, req, res, next) => {
 router(app);
 
 
-
 const server = app.listen(port, (err) => {
   if (err) {
     throw err;
@@ -88,7 +87,7 @@ const server = app.listen(port, (err) => {
 });
 
 
-//pass app aka server created by app.listen to socket
+// pass app aka server created by app.listen to socket
 const io = socketio(server);
 
 // variable to store the username of the lobby host

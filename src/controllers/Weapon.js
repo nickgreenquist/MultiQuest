@@ -1,7 +1,5 @@
 const models = require('../models');
 
-const Domo = models.Domo;
-const Account =  models.Account;
 const Weapon = models.Weapon;
 
 const makeWeapon = (req, res) => {
