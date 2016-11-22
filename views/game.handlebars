@@ -1,6 +1,15 @@
 <html lang="en">
 <head>
-    <script> const username = `{{info.username}}` </script>
+    <script> 
+      const username = `{{info.username}}`;
+      const level = {{info.level}};
+      const attack = {{info.attack}};
+      const speed = {{info.speed}};
+      const exp = {{info.exp}};
+      const maxDistance = {{info.maxDistance}};
+      const spellPower = {{info.spellPower}};
+      const maxHealth = {{info.maxHealth}};
+    </script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://npmcdn.com/babel-core@5.8.38/browser.min.js"></script>
     <script type="text/babel" src="/assets/game.js"></script>

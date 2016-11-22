@@ -17,7 +17,6 @@ let isHost = false;
 
 //const user = `user${(Math.floor((Math.random()*1000)) + 1)}`;
 const user = username;
-//console.log(`username: ${user}`);
 
 //Game data
 let worldWidth = 1366;
@@ -337,7 +336,7 @@ const setupPlayer = () => {
     let y = 300;
     let position = {x:x, y:y,width:100,height:100};
     let spritePos = {x:96, y:96, width: 96, height: 96};
-    players[user] = {lastUpdate: time, position:position, maxHealth:10, currentHealth:10,dead:false,speed:25,attack:2,level:1,exp:0,maxDistance:0, spritePos:spritePos, spellPower:5, spellCooldown:1};
+    players[user] = {lastUpdate: time, position:position, maxHealth:maxHealth, currentHealth:maxHealth,dead:false,speed:speed,attack:attack,level:level,exp:exp,maxDistance:maxDistance, spritePos:spritePos, spellPower:spellPower, spellCooldown:1};
 
     //host calls setupplayer twice so don't set another interval
     if(!isHost) {
@@ -562,5 +561,5 @@ $(document).ready(init);
 window.onbeforeunload = function(){
   //sendAjax('POST', $players[user].serialize());
   
-  socket.emit('leave', isHost);
+  socket.emit('leave', {name: user, player: players[user], isHost: isHost});
 }

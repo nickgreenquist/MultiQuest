@@ -9,9 +9,10 @@ const enterGame = (req, res) => {
     attack: req.session.account.attack,
     speed: req.session.account.speed,
     spellPower: req.session.account.spellPower,
+    maxHealth: req.session.account.maxHealth,
   };
 
-  //res.render('game', { info: accountInfo, csrfToken: req.csrfToken() });
+  // res.render('game', { info: accountInfo, csrfToken: req.csrfToken() });
   res.render('game', { info: accountInfo });
 };
 
@@ -26,6 +27,7 @@ const save = (req, res) => {
     attack: req.session.account.attack,
     speed: req.session.account.speed,
     spellPower: req.session.account.spellPower,
+    maxHealth: req.session.account.maxHealth,
   };
 
   // res.render('game', { info: accountInfo, csrfToken: req.csrfToken() });

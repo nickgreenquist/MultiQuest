@@ -11,6 +11,9 @@ const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
 const url = require('url');
 const csrf = require('csurf');
+const models = require('./models');
+
+const Account = models.Account;
 
 const dbURL = process.env.MONGODB_URI || 'mongodb://127.0.0.1/DomoMaker';
 console.log(dbURL);
@@ -111,10 +114,22 @@ io.sockets.on('connection', (socket) => {
 
   socket.on('leave', (data) => {
     console.log('User has left the game');
-    if (data) {
+    if (data.isHost) {
       host = 'null';
     }
     socket.disconnect();
+    
+    
+    //save character data
+    var query = {username:data.name};
+    Account.AccountModel.findOneAndUpdate(query, 
+      {level: data.player.level, maxDistance: data.player.maxDistance, exp: data.player.exp, attack: data.player.attack, speed: data.player.speed, spellPower: data.player.spellPower, maxHealth: data.player.maxHealth}
+      , {upsert:true}, function(err, doc){
+      if (err) {
+        console.log("error");
+      }
+      console.log("succesfully saved");
+    });
   });
 
   socket.on('updateWorldData', (data) => {
