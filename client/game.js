@@ -1,9 +1,11 @@
 console.log('game starting');
 
+
 if(!window.location.hash) {
         window.location = window.location + '#loaded';
         window.location.reload();
 }
+
 
 var socket;
 
@@ -14,8 +16,8 @@ let sendBufferCtx;
 let isHost = false;
 
 //const user = `user${(Math.floor((Math.random()*1000)) + 1)}`;
-let user = username;
-console.log(`username: ${user}`);
+const user = username;
+//console.log(`username: ${user}`);
 
 //Game data
 let worldWidth = 1366;
@@ -554,7 +556,8 @@ const updateEnemies = (data) => {
 };
 
 
-window.onload = init;
+//window.onload = init;
+$(document).ready(init);
 
 window.onbeforeunload = function(){
   //sendAjax('POST', $players[user].serialize());

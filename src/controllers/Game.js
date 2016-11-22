@@ -11,7 +11,7 @@ const enterGame = (req, res) => {
     spellPower: req.session.account.spellPower,
   };
 
-  // res.render('game', { info: accountInfo, csrfToken: req.csrfToken() });
+  //res.render('game', { info: accountInfo, csrfToken: req.csrfToken() });
   res.render('game', { info: accountInfo });
 };
 
