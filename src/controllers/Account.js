@@ -33,8 +33,6 @@ const login = (request, response) => {
     }
 
     req.session.account = Account.AccountModel.toAPI(account);
-    
-    console.dir(req);
 
     return res.json({ redirect: '/maker' });
   });
@@ -62,7 +60,7 @@ const signup = (request, response) => {
       attack: 2,
       speed: 15,
       exp: 0,
-      maxDistance: Math.floor((Math.random()*100)) + 1),
+      maxDistance: Math.floor((Math.random()*100)) + 1,
       spellPower: 5,
     };
 

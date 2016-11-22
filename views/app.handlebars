@@ -16,6 +16,16 @@
   <nav><a href="/login"><img id="logo" src="/assets/img/warriorIcon.png" alt="face logo"/></a>
     <div class="navlink"><a href="/leader">Leaderboard</a></div>
   </nav>
+  <section id="makeDomo">
+    <form id="domoForm" name="domoForm" action="/maker" method="POST" class="domoForm">
+      <label for="name">Name: </label>
+      <input id="domoName" type="text" name="name" placeholder="Weapon Name"/>
+      <label for="attack">Attack: </label>
+      <input id="domoAge" type="text" name="attack" placeholder="Weapon Attack"/>
+      <input id="csrf" type="hidden" name="_csrf" value={{csrfToken}} />
+      <a id="makeDomoSubmit" href="#" class="makeDomoSubmit">Make Weapon</a>
+    </form>
+  </section>
   <section id="domos">
     <div class="domo">
       <img src="/assets/img/warriorIcon.png" style="width:128px;height:128px;" alt="domo face" class="domoFace"/>
@@ -26,6 +36,25 @@
       <h3 class="domoName">Attack: {{info.attack}}</h3>
       <h3 class="domoAge">Speed: {{info.speed}}</h3>
       <h3 class="domoName">Spell Power: {{info.spellPower}}</h3>
+    </div>
+  </section>
+  <section id="domos">
+    <div class="domo">
+      {{#if weapons}}
+        {{#each weapons}}
+          <div class="domo">
+            <form id="{{this.name}}" name="deleteForm" action="/remove" method="POST" class="deleteForm">
+              <button type="submit" name="{{this.name}}" href="#" class="deleteDomoSubmit">Remove Weapon</button>
+              <input type="hidden" name="_csrf"/>
+            </form>
+            <img src="/assets/img/weapon.png" style="width:128px;height:128px;" alt="domo face" class="domoFace"/>
+            <h3 class="domoName">Name: {{this.name}}</h3>
+            <h3 class="domoAge">Attack: {{this.attack}}</h3>
+          </div>
+        {{/each}}
+      {{else}}
+        <h3 class="emptyDomo">No Weapons yet</h3>
+      {{/if}}
     </div>
   </section>
   <div id="domoMessage"><img id="speech" src="/assets/img/speech.png" alt="speech box"/>
