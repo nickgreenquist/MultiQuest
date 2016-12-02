@@ -60,6 +60,7 @@ const signup = (request, response) => {
       attack: 2,
       speed: 15,
       exp: 0,
+      points: 0,
       maxDistance: Math.floor((Math.random() * 100)) + 1,
       spellPower: 5,
     };

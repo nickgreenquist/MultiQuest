@@ -11,8 +11,10 @@ const router = (app) => {
   app.get('/logout', mid.requiresLogin, controllers.Account.logout);
   app.get('/maker', mid.requiresLogin, controllers.Domo.makerPage);
   app.get('/leader', mid.requiresLogin, controllers.Domo.leaderPage);
+  app.get('/lobby', mid.requiresLogin, controllers.Lobby.lobby);
+  app.post('/enterGame', mid.requiresLogin, controllers.Lobby.enter);
   app.post('/maker', mid.requiresLogin, controllers.Weapon.make);
-  app.post('/remove', controllers.Weapon.delete);
+  app.post('/remove', mid.requiresLogin, controllers.Weapon.delete);
   app.get('/', mid.requiresSecure, mid.requiresLogout, controllers.Account.loginPage);
 };
 

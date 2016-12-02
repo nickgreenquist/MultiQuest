@@ -44,6 +44,7 @@ let enemies = {};
     attack,
     level,
     exp,
+    points,
     maxDistance,
     spritePos = 
     {
@@ -65,6 +66,8 @@ let enemies = {};
   Attack3: 378,130,105,62
   Attack4:392,190,96,93
 */
+
+//ENEMY IMAGE
 let enemySpritePos = {};
 enemySpritePos[1] = {x:2, y:15, width: 60, height: 85};
 enemySpritePos[2] = {x:110, y:100, width: 57, height: 95};
@@ -72,7 +75,14 @@ enemySpritePos[3] = {x:165, y:95, width: 108, height: 98};
 enemySpritePos[4] = {x:378, y:130, width: 105, height: 62};
 enemySpritePos[5] = {x:392, y:190, width: 96, height: 93};
 
+let enemyImage = new Image();                      
+enemyImage.src = document.location.pathname + '/../assets/img/enemy.png';
 
+//PLAYER IMAGE
+let playerImage = new Image();                    
+playerImage.src = document.location.pathname + '/../assets/img/warrior.png';
+
+//GAME LOGIC CODE
 const init = () => {
     console.log('init');
   
@@ -87,7 +97,7 @@ const init = () => {
 
         setupPlayer();
       
-        socket.emit('join', {name: user, player:players[user]});     
+        socket.emit('join', {name: user, player:players[user], room: room});     
     });
 
     socket.on('setHost', (data) => {
@@ -146,7 +156,7 @@ const init = () => {
     socket.on('setNextStageHost', (data) => {
       if(isHost) {
         //set new stage number to all players
-        socket.emit('moveToNextStageAll', data);
+        socket.emit('moveToNextStageAll', {room: players[user].room, stage: data});
 
         //set all players positions to 1
         let keys = Object.keys(players);
@@ -197,7 +207,7 @@ const init = () => {
             }
           }
 
-          socket.emit('healSpellAll', players);
+          socket.emit('healSpellAll', {room: players[user].room, players: players});
         }
       }
     });
@@ -210,6 +220,37 @@ const init = () => {
     });
 
     window.addEventListener("keydown", move, true);
+  
+    //SKILL POINT BUTTONS
+    document.getElementById("health").addEventListener("click", function(){
+      if(players[user].points > 0) {
+        players[user].points--;
+        players[user].maxHealth += 5;
+        players[user].currentHealth += 5;
+        draw();
+      }
+    });
+  document.getElementById("attack").addEventListener("click", function(){
+      if(players[user].points > 0) {
+        players[user].points--;
+        players[user].attack++;
+        draw();
+      }
+    });
+  document.getElementById("speed").addEventListener("click", function(){
+      if(players[user].points > 0) {
+        players[user].points--;
+        players[user].speed++;
+        draw();
+      }
+    });
+  document.getElementById("spell").addEventListener("click", function(){
+      if(players[user].points > 0) {
+        players[user].points--;
+        players[user].spellPower++;
+        draw();
+      }
+    });
 };
 
 
@@ -246,7 +287,7 @@ const move = (e) => {
             players[user].spritePos.x = 0;
             players[user].spritePos.y = 0;
           }
-          socket.emit('updatePlayerHealth', {name: user, health: players[user].currentHealth, spritePos: players[user].spritePos});
+          socket.emit('updatePlayerHealth', {room: players[user].room, name: user, health: players[user].currentHealth, spritePos: players[user].spritePos});
 
           //don't update enemy stats if player has died...creates weird bugs if the world is reset same time as enemy is updated with damage
           if(!players[user].dead) {
@@ -256,13 +297,11 @@ const move = (e) => {
               enemies[keys[i]].dead = true;
 
               //gain experience
-              players[user].exp += 1;
+              players[user].exp += stage;
               if(players[user].exp >= players[user].level) {
-                players[user].level += 1;
+                players[user].points += 5;
                 players[user].exp = 0;
-                players[user].attack += 1;
-                players[user].speed += 1;
-                players[user].maxHealth += 5;
+                players[user].level++;
               }
             }
 
@@ -272,7 +311,7 @@ const move = (e) => {
               enemies[keys[i]].spritePos = 1;
             }
 
-            socket.emit('updateEnemy', {name: keys[i], health:enemies[keys[i]].currentHealth, dead:enemies[keys[i]].dead, spritePos:enemies[keys[i]].spritePos});
+            socket.emit('updateEnemy', {room: players[user].room, name: keys[i], health:enemies[keys[i]].currentHealth, dead:enemies[keys[i]].dead, spritePos:enemies[keys[i]].spritePos});
           }
 
           //should I draw here even though server hasn't received update?
@@ -294,7 +333,7 @@ const move = (e) => {
         if(players[user].position.x > worldWidth) {
           players[user].position.x = 0;
           stage += 1;
-          socket.emit('moveToNextStage', stage);
+          socket.emit('moveToNextStage', {stage: stage, room: players[user].room});
         }
 
         //updte sprite
@@ -305,7 +344,7 @@ const move = (e) => {
           players[user].spritePos.x = 96;
         }
         //using movement method for speed up
-        socket.emit('updatePlayerMovement', {name: user, position: players[user].position, spritePos: players[user].spritePos});
+        socket.emit('updatePlayerMovement', {room: players[user].room, name: user, position: players[user].position, spritePos: players[user].spritePos});
 
         //using old method to overwrite entire players array
         //socket.emit('updatePlayer', {name: user, playerInfo: players[user]});
@@ -324,7 +363,7 @@ const move = (e) => {
     if(time - players[user].lastUpdate > players[user].spellCooldown) {
       players[user].lastUpdate = time;
 
-      socket.emit('healSpell', {name: user, power: players[user].spellPower});
+      socket.emit('healSpell', {room: players[user].room, name: user, power: players[user].spellPower});
 
     }
   }
@@ -336,7 +375,7 @@ const setupPlayer = () => {
     let y = 300;
     let position = {x:x, y:y,width:100,height:100};
     let spritePos = {x:96, y:96, width: 96, height: 96};
-    players[user] = {lastUpdate: time, position:position, maxHealth:maxHealth, currentHealth:maxHealth,dead:false,speed:speed,attack:attack,level:level,exp:exp,maxDistance:maxDistance, spritePos:spritePos, spellPower:spellPower, spellCooldown:1};
+    players[user] = {room: room, lastUpdate: time, position:position, maxHealth:maxHealth, currentHealth:maxHealth,dead:false,speed:speed,attack:attack,level:level,exp:exp,points:points,maxDistance:maxDistance, spritePos:spritePos, spellPower:spellPower, spellCooldown:1};
 
     //host calls setupplayer twice so don't set another interval
     if(!isHost) {
@@ -377,11 +416,14 @@ const draw = () => {
   ctx.fillText(`Max Distance: ${players[user].maxDistance}`, 0, 150);
 
   //player stats
-  ctx.fillText(`Level: ${players[user].level}`, 0, (worldHeight / 2) + 100);
-  ctx.fillText(`Exp: ${players[user].exp} / ${players[user].level}`, 0, (worldHeight / 2) + 150);
-  ctx.fillText(`Health: ${players[user].currentHealth} / ${players[user].maxHealth}`, 0, (worldHeight / 2) + 200);
-  ctx.fillText(`Attack: ${players[user].attack}`, 0, (worldHeight / 2) + 250);
-  ctx.fillText(`Speed: ${players[user].speed}`, 0, (worldHeight / 2) + 300);
+  ctx.font = "30px serif";
+  ctx.fillText(`Level: ${players[user].level}`, 30, (worldHeight / 2) + 40);
+  ctx.fillText(`Exp: ${players[user].exp} / ${players[user].level}`, 30, (worldHeight / 2) + 80);
+  ctx.fillText(`Skill Points: ${players[user].points}`, 30, (worldHeight / 2) + 120);
+  ctx.fillText(`Health: ${players[user].currentHealth} / ${players[user].maxHealth}`, 30, (worldHeight / 2) + 160);
+  ctx.fillText(`Attack: ${players[user].attack}`, 30, (worldHeight / 2) + 200);
+  ctx.fillText(`Speed: ${players[user].speed}`, 30, (worldHeight / 2) + 240);
+  ctx.fillText(`Spell Power: ${players[user].spellPower}`, 30, (worldHeight / 2) + 280);
 
   //draw the actual players
   let keys = Object.keys(players);            
@@ -395,19 +437,8 @@ const draw = () => {
       drawCall.spritePos.y = 0;
     }
 
-    //RECT DRAW
-    ctx.fillStyle = "black";
-    //ctx.fillRect(drawCall.position.x, drawCall.position.y, drawCall.position.width, drawCall.position.height);
-
     //IMAGE DRAW
-    let image = new Image();           
-    image.onload = () => {
-        //ctx.save();
-        //ctx.globalCompositeOperation = "source-over"; //this is default for canvas
-        ctx.drawImage(image, drawCall.spritePos.x, drawCall.spritePos.y, drawCall.spritePos.width, drawCall.spritePos.height, drawCall.position.x, drawCall.position.y, drawCall.position.width, drawCall.position.height);
-        //ctx.restorse();
-    };           
-    image.src = document.location.pathname + '/../assets/img/warrior.png';
+    ctx.drawImage(playerImage, drawCall.spritePos.x, drawCall.spritePos.y, drawCall.spritePos.width, drawCall.spritePos.height, drawCall.position.x, drawCall.position.y, drawCall.position.width, drawCall.position.height);
 
     //NAME
     ctx.font = "36px serif";
@@ -432,16 +463,7 @@ const draw = () => {
     if(drawCall.dead) {
       ctx.globalAlpha = 0.5;
     }
-    ctx.fillStyle = "red";
-    //ctx.fillRect(drawCall.position.x, drawCall.position.y, drawCall.position.width, drawCall.position.height);
-    let image = new Image();           
-    image.onload = () => {
-        //ctx.save();
-        //ctx.globalCompositeOperation = "source-over"; //this is default for canvas
-        ctx.drawImage(image, enemySpritePos[drawCall.spritePos].x, enemySpritePos[drawCall.spritePos].y, enemySpritePos[drawCall.spritePos].width, enemySpritePos[drawCall.spritePos].height, drawCall.position.x, drawCall.position.y, drawCall.position.width, drawCall.position.height);
-        //ctx.restorse();
-    };           
-    image.src = document.location.pathname + '/../assets/img/enemy.png';
+    ctx.drawImage(enemyImage, enemySpritePos[drawCall.spritePos].x, enemySpritePos[drawCall.spritePos].y, enemySpritePos[drawCall.spritePos].width, enemySpritePos[drawCall.spritePos].height, drawCall.position.x, drawCall.position.y, drawCall.position.width, drawCall.position.height);
 
     //draw health bar
     ctx.globalAlpha = 1;
@@ -449,7 +471,7 @@ const draw = () => {
     ctx.fillRect(drawCall.position.x,drawCall.position.y - 40, drawCall.position.width, 30);
     ctx.fillStyle="black";
     ctx.fillRect(drawCall.position.x + 3,drawCall.position.y -37 , drawCall.position.width - 6, 24);
-    ctx.fillStyle="green";
+    ctx.fillStyle="red";
     ctx.fillRect(drawCall.position.x + 3,drawCall.position.y - 37,(drawCall.currentHealth / drawCall.maxHealth) * (drawCall.position.width - 6) ,24);
   }
 };
@@ -458,7 +480,7 @@ const updatePlayerHost = (data) => {
     players[data.name] = data.playerInfo;
 
     //host has updated player coords, emit back to server to be emitted to all users
-    socket.emit('updateAllPlayers', players);
+    socket.emit('updateAllPlayers', {players: players, room: players[user].room});
 };
 
 const updatePlayers = (data) => {
@@ -473,7 +495,7 @@ const updatePlayerMovementHost = (data) => {
     players[data.name].spritePos = data.spritePos;
 
     //host has updated player coords, emit back to server to be emitted to all users
-    socket.emit('updateAllPlayersMovement', {name: data.name, position: players[data.name].position, spritePos: players[data.name].spritePos});
+    socket.emit('updateAllPlayersMovement', {room: players[user].room, name: data.name, position: players[data.name].position, spritePos: players[data.name].spritePos});
 };
 
 const updatePlayersMovement = (data) => {
@@ -496,7 +518,7 @@ const updatePlayerHealthHost = (data) => {
     players[data.name].spritePos = data.spritePos;
 
     //host has updated player health, emit back to server to be emitted to all users
-    socket.emit('updateAllPlayersHealth', {name: data.name, health: players[data.name].currentHealth, dead: players[data.name].dead, spritePos: players[data.name].spritePos});
+    socket.emit('updateAllPlayersHealth', {room: players[user].room, name: data.name, health: players[data.name].currentHealth, dead: players[data.name].dead, spritePos: players[data.name].spritePos});
 
     //check if all players are dead
     let keys = Object.keys(players);
@@ -543,7 +565,7 @@ const updateEnemyHost = (data) => {
   }
   enemies[data.name].spritePos = data.spritePos;
 
-  socket.emit('updateAllEnemies', {name: data.name, health: enemies[data.name].currentHealth, dead:enemies[data.name].dead,spritePos:enemies[data.name].spritePos});
+  socket.emit('updateAllEnemies', {room: players[user].room, name: data.name, health: enemies[data.name].currentHealth, dead:enemies[data.name].dead,spritePos:enemies[data.name].spritePos});
 };
 
 const updateEnemies = (data) => {

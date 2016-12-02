@@ -46,6 +46,10 @@ const AccountSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  points: {
+    type: Number,
+    required: true,
+  },
   maxDistance: {
     type: Number,
     required: true,
@@ -65,6 +69,7 @@ AccountSchema.statics.toAPI = doc => ({
   speed: doc.speed,
   maxHealth: doc.maxHealth,
   exp: doc.exp,
+  points: doc.points,
   maxDistance: doc.maxDistance,
   spellPower: doc.spellPower,
 });

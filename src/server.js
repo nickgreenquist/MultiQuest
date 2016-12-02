@@ -93,42 +93,49 @@ const server = app.listen(port, (err) => {
 // pass app aka server created by app.listen to socket
 const io = socketio(server);
 
-// variable to store the username of the lobby host
-let host = 'null';
+const rooms = {};
+
+// console.dir(io.sockets.adapter.rooms);
 
 io.sockets.on('connection', (socket) => {
   console.log('started');
 
-  socket.join('room1');
-
   socket.on('join', (data) => {
-    if (host === 'null') {
-      host = data.name;
+    socket.join(data.room);
+
+    if (!(data.room in rooms)) {
+      rooms[data.room] = { name: data.room, players: 1, distance: 0 };
+
       console.log(`Host set to ${data.name}`);
       socket.emit('setHost', true);
     } else {
+      rooms[data.room].players += 1;
       console.log('Host unchanged');
-      io.sockets.in('room1').emit('requestWorldData', data);
+      io.sockets.in(data.room).emit('requestWorldData', data);
     }
   });
 
   socket.on('leave', (data) => {
     console.log('User has left the game');
     if (data.isHost) {
-      host = 'null';
+      console.log('user is host, removgin room');
+      console.log(data.name);
+      // host = 'null';
+      delete rooms[data.name];
     }
     socket.disconnect();
-    
-    
-    //save character data
-    var query = {username:data.name};
-    Account.AccountModel.findOneAndUpdate(query, 
-      {level: data.player.level, maxDistance: data.player.maxDistance, exp: data.player.exp, attack: data.player.attack, speed: data.player.speed, spellPower: data.player.spellPower, maxHealth: data.player.maxHealth}
-      , {upsert:true}, function(err, doc){
+
+
+    // save character data
+    const query = { username: data.name };
+    const update = { level: data.player.level, maxDistance: data.player.maxDistance, exp: data.player.exp, points: data.player.points, attack: data.player.attack, speed: data.player.speed, spellPower: data.player.spellPower, maxHealth: data.player.maxHealth };
+    Account.AccountModel.findOneAndUpdate(query, update, { upsert: true }, (err) => {
       if (err) {
-        console.log("error");
+        console.log('error');
       }
-      console.log("succesfully saved");
+      console.log('succesfully saved');
+
+      // call the socket session code or modify the variables
     });
   });
 
@@ -137,56 +144,53 @@ io.sockets.on('connection', (socket) => {
     socket.broadcast.emit('getWorldData', data);
   });
 
-  // these methods update entire player array
-  socket.on('updatePlayer', (data) => {
-    io.sockets.in('room1').emit('getPlayersHost', data);
-  });
-
   socket.on('updateAllPlayers', (data) => {
-    io.sockets.in('room1').emit('getAllPlayers', data);
+    io.sockets.in(data.room).emit('getAllPlayers', data.players);
   });
 
   // these methods update only position of a single player
   socket.on('updatePlayerMovement', (data) => {
-    io.sockets.in('room1').emit('getPlayersMovementHost', data);
+    io.sockets.in(data.room).emit('getPlayersMovementHost', data);
   });
 
   socket.on('updateAllPlayersMovement', (data) => {
-    io.sockets.in('room1').emit('getAllPlayersMovement', data);
+    io.sockets.in(data.room).emit('getAllPlayersMovement', data);
   });
 
   // these methods update only health of a single player
   socket.on('updatePlayerHealth', (data) => {
-    io.sockets.in('room1').emit('getPlayersHealthHost', data);
+    io.sockets.in(data.room).emit('getPlayersHealthHost', data);
   });
 
   socket.on('updateAllPlayersHealth', (data) => {
-    io.sockets.in('room1').emit('getAllPlayersHealth', data);
+    io.sockets.in(data.room).emit('getAllPlayersHealth', data);
   });
 
   // These methods update enemies
   socket.on('updateEnemy', (data) => {
-    io.sockets.in('room1').emit('getEnemyHost', data);
+    io.sockets.in(data.room).emit('getEnemyHost', data);
   });
 
   socket.on('updateAllEnemies', (data) => {
-    io.sockets.in('room1').emit('getAllEnemies', data);
+    io.sockets.in(data.room).emit('getAllEnemies', data);
   });
 
   socket.on('moveToNextStage', (data) => {
-    io.sockets.in('room1').emit('setNextStageHost', data);
+    io.sockets.in(data.room).emit('setNextStageHost', data.stage);
+
+    rooms[data.room].distance = (data.stage * 100) - 100;
   });
 
   socket.on('moveToNextStageAll', (data) => {
-    io.sockets.in('room1').emit('setNextStageAll', data);
+    io.sockets.in(data.room).emit('setNextStageAll', data.stage);
   });
 
   socket.on('healSpell', (data) => {
-    io.sockets.in('room1').emit('healSpellHost', data);
+    io.sockets.in(data.room).emit('healSpellHost', data);
   });
 
   socket.on('healSpellAll', (data) => {
-    io.sockets.in('room1').emit('healAll', data);
+    io.sockets.in(data.room).emit('healAll', data.players);
   });
 });
 
@@ -199,4 +203,6 @@ console.log('Websocket server started');
 
 // to confirm that move, don't send back to the person who moved, only the others
 // ask Slack Socket.io about movement
+
+module.exports.rooms = rooms;
 

@@ -59,5 +59,29 @@ $(document).ready(function() {
         
         return false;
     });
+  
+  $(".enterGameSubmit").on("click", (e) => {
+        console.log("enter game button hit");
+    
+        e.preventDefault();
+    
+        console.dir(e.target.id);
+    
+        var name = e.target.name;
+        console.log(name);
+    
+        var data = e.target.parentElement;
+        console.log(data.id);
+        data.querySelector('[name="_csrf"]').value = $("#csrf")[0].value;
+        data = $(data).serialize();
+        console.log(data);
+    
+        var temp = 'name=' + name + '&_csrf=' + $("#csrf")[0].value + '&dis=' + e.target.id;
+        console.log(temp);
+
+        sendAjax("/enterGame", temp);
+        
+        return false;
+    });
     
 });

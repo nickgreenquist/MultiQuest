@@ -6,15 +6,21 @@
       const attack = {{info.attack}};
       const speed = {{info.speed}};
       const exp = {{info.exp}};
+      const points = {{info.points}};
       const maxDistance = {{info.maxDistance}};
       const spellPower = {{info.spellPower}};
       const maxHealth = {{info.maxHealth}};
+      const room = `{{info.room}}`;
     </script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://npmcdn.com/babel-core@5.8.38/browser.min.js"></script>
     <script type="text/babel" src="/assets/game.js"></script>
 </head>
 <body>
-    <canvas id="canvas" height="768" width="1366" style="background-image:url('/assets/img/background1.png');">Please use an HTML 5 browser</canvas>
+    <canvas id="canvas" height="768" width="1366" style="background-image:url('/assets/img/background1.png'); z-index:-1">Please use an HTML 5 browser</canvas>
+    <input id="health" type="button" style="z-index:2; position:absolute; top:525; left:0" value="+"/>
+    <input id="attack"type="button" style="z-index:2; position:absolute; top:565; left:0" value="+"/>
+    <input id="speed"type="button" style="z-index:2; position:absolute; top:605; left:0" value="+"/>
+    <input id="spell"type="button" style="z-index:2; position:absolute; top:645; left:0" value="+"/>
 </body>
 </html>

@@ -1,0 +1,60 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Character</title>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <link rel="shortcut icon" href="/assets/img/favicon.png"/>
+  <link rel="stylesheet" type="text/css" href="/assets/style.css"/>
+</head>
+<body>
+  <nav><a href="/login"><img id="logo" src="/assets/img/warriorIcon.png" alt="face logo"/></a>
+    <div class="navlink"><a href="/logout">Log out</a></div>
+  </nav>
+  <nav><a href="/login"><img id="logo" src="/assets/img/warriorIcon.png" alt="face logo"/></a>
+    <div class="navlink"><a href="/maker">Character Screen</a></div>
+  </nav>
+  <nav><a href="/login"><img id="logo" src="/assets/img/warriorIcon.png" alt="face logo"/></a>
+    <div class="navlink"><a href="/leader">Leaderboard</a></div>
+  </nav>
+  <input id="csrf" type="hidden" name="_csrf" value={{csrfToken}} />
+  <section id="domos">
+    <form id="{{info.username}}" name="deleteForm" action="/enter" method="POST" class="deleteForm">
+        <button type="submit" name="{{info.username}}" href="#" class="enterGameSubmit">New Room</button>
+        <input type="hidden" name="_csrf"/>
+  </form>
+    <div class="domo">
+      {{#if rooms}}
+        {{#each rooms}}
+          <div class="domo">
+            <form id="{{this.name}}" name="deleteForm" action="/enter" method="POST" class="deleteForm">
+              <button id="{{this.distance}}" type="submit" name="{{this.name}}" href="#" class="enterGameSubmit">Enter</button>
+              <input type="hidden" name="_csrf"/>
+            </form>
+            <h3 class="domoName">Room: {{this.name}}</h3>
+            <h3 class="domoName">Players: {{this.players}}</h3>
+            <h3 class="domoName">Distance: {{this.distance}}</h3>
+          </div>
+        {{/each}}
+      {{else}}
+        <h3 class="emptyDomo">No Active Rooms</h3>
+      {{/if}}
+    </div>
+  </section>
+  <div id="domoMessage"><img id="speech" src="/assets/img/speech.png" alt="speech box"/>
+    <h3><span id="errorMessage"></span></h3><img id="domo" src="assets/img/domo.png" alt="domo"/>
+  </div>
+  <script> 
+      const username = `{{info.username}}`;
+      const level = {{info.level}};
+      const attack = {{info.attack}};
+      const speed = {{info.speed}};
+      const exp = {{info.exp}};
+      const points = {{info.points}};
+      const maxDistance = {{info.maxDistance}};
+      const spellPower = {{info.spellPower}};
+      const maxHealth = {{info.maxHealth}};
+    </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
+  <script src="/assets/maker.js" type="text/babel"></script>
+</body>
+</html>

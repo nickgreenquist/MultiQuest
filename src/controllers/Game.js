@@ -1,15 +1,18 @@
 const enterGame = (req, res) => {
   console.log('enter into game');
+  // console.log(req.session.account);
 
   const accountInfo = {
     username: req.session.account.username,
     level: req.session.account.level,
     exp: req.session.account.exp,
+    points: req.session.account.points,
     maxDistance: req.session.account.maxDistance,
     attack: req.session.account.attack,
     speed: req.session.account.speed,
     spellPower: req.session.account.spellPower,
     maxHealth: req.session.account.maxHealth,
+    room: req.session.account.room,
   };
 
   // res.render('game', { info: accountInfo, csrfToken: req.csrfToken() });
@@ -23,6 +26,7 @@ const save = (req, res) => {
     username: req.session.account.username,
     level: req.session.account.level,
     exp: req.session.account.exp,
+    points: req.session.account.points,
     maxDistance: req.session.account.maxDistance,
     attack: req.session.account.attack,
     speed: req.session.account.speed,

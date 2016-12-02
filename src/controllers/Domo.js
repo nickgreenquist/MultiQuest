@@ -13,10 +13,12 @@ const makerPage = (req, res) => {
       username: req.session.account.username,
       level: req.session.account.level,
       exp: req.session.account.exp,
+      points: req.session.account.points,
       maxDistance: req.session.account.maxDistance,
       attack: req.session.account.attack,
       speed: req.session.account.speed,
       spellPower: req.session.account.spellPower,
+      maxHealth: req.session.account.maxHealth,
     };
 
     return res.render('app', { csrfToken: req.csrfToken(), weapons: docs, info: accountInfo });
@@ -28,10 +30,12 @@ const leaderPage = (req, res) => {
     username: req.session.account.username,
     level: req.session.account.level,
     exp: req.session.account.exp,
+    points: req.session.account.points,
     maxDistance: req.session.account.maxDistance,
     attack: req.session.account.attack,
     speed: req.session.account.speed,
     spellPower: req.session.account.spellPower,
+    maxHealth: req.session.account.maxHealth,
   };
 
   Account.AccountModel.find().sort({ maxDistance: -1 }).exec((err, docs) => {
