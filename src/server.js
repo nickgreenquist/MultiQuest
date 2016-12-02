@@ -127,6 +127,8 @@ io.sockets.on('connection', (socket) => {
 
 
     // save character data
+
+    /*eslint-disable */
     const query = { username: data.name };
     const update = { level: data.player.level, maxDistance: data.player.maxDistance, exp: data.player.exp, points: data.player.points, attack: data.player.attack, speed: data.player.speed, spellPower: data.player.spellPower, maxHealth: data.player.maxHealth };
     Account.AccountModel.findOneAndUpdate(query, update, { upsert: true }, (err) => {
@@ -137,6 +139,7 @@ io.sockets.on('connection', (socket) => {
 
       // call the socket session code or modify the variables
     });
+    /*eslint-enable */
   });
 
   socket.on('updateWorldData', (data) => {

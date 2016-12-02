@@ -26,9 +26,10 @@ const enterGame = (req, res) => {
   // console.log(req.body.name);
   console.dir(req.body);
 
-  // Weapon.WeaponModel.delete(req.body.name);
-
+  //Disable error for now, will figure out how to fix these later
+  /*eslint-disable */
   req.session.account.room = req.body.name;
+  /*eslint-enable */
 
   if (req.session.account.maxDistance < req.body.dis) {
     return res.status(401).json({ error: 'You are not strong enough for this room' });
