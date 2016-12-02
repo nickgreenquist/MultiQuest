@@ -26,7 +26,7 @@ const enterGame = (req, res) => {
   // console.log(req.body.name);
   console.dir(req.body);
 
-  //Disable error for now, will figure out how to fix these later
+  // Disable error for now, will figure out how to fix these later
   /*eslint-disable */
   req.session.account.room = req.body.name;
   /*eslint-enable */
