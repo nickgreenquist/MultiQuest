@@ -61,7 +61,7 @@ const signup = (request, response) => {
       speed: 15,
       exp: 0,
       points: 0,
-      maxDistance: Math.floor((Math.random() * 100)) + 1,
+      maxDistance: 0,
       spellPower: 5,
     };
 
