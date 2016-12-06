@@ -15,6 +15,7 @@ const router = (app) => {
   app.post('/enterGame', mid.requiresLogin, controllers.Lobby.enter);
   app.post('/maker', mid.requiresLogin, controllers.Weapon.make);
   app.post('/remove', mid.requiresLogin, controllers.Weapon.delete);
+  app.post('/activate', mid.requiresLogin, controllers.Weapon.activate);
   app.get('/', mid.requiresSecure, mid.requiresLogout, controllers.Account.loginPage);
 };
 

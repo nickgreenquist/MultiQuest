@@ -9,6 +9,7 @@ let WeaponModel = {};
 // converts string ID to real mongo ID
 const convertId = mongoose.Types.ObjectId;
 const setName = name => _.escape(name).trim();
+const setColor = color => _.escape(color).trim();
 
 const WeaponSchema = new mongoose.Schema({
   name: {
@@ -18,10 +19,11 @@ const WeaponSchema = new mongoose.Schema({
     set: setName,
   },
 
-  attack: {
-    type: Number,
-    min: 0,
+  color: {
+    type: String,
     required: true,
+    trim: true,
+    set: setColor,
   },
 
   owner: {
@@ -38,7 +40,7 @@ const WeaponSchema = new mongoose.Schema({
 
 WeaponSchema.statics.toAPI = doc => ({
   name: doc.name,
-  attack: doc.age,
+  color: doc.color,
 });
 
 WeaponSchema.statics.findByOwner = (ownerId, callback) => {
@@ -46,7 +48,7 @@ WeaponSchema.statics.findByOwner = (ownerId, callback) => {
     owner: convertId(ownerId),
   };
 
-  return WeaponModel.find(search).select('name attack').exec(callback);
+  return WeaponModel.find(search).select('name color').exec(callback);
 };
 
 WeaponSchema.statics.delete = (data) => {

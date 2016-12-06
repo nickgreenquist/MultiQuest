@@ -18,6 +18,8 @@ let isHost = false;
 //const user = `user${(Math.floor((Math.random()*1000)) + 1)}`;
 const user = username;
 
+console.log(`Color of the sword is ${color}`);
+
 //Game data
 let worldWidth = 1366;
 let worldHeight = 768;
@@ -54,7 +56,8 @@ let enemies = {};
       height
     },
     spellCooldown,
-    spellPower
+    spellPower,
+    color,
   }
 */
 
@@ -81,6 +84,8 @@ enemyImage.src = document.location.pathname + '/../assets/img/enemy.png';
 //PLAYER IMAGE
 let playerImage = new Image();                    
 playerImage.src = document.location.pathname + '/../assets/img/warrior.png';
+let swordImage = new Image();
+swordImage.src = document.location.pathname + '/../assets/img/weapon.png';
 
 //GAME LOGIC CODE
 const init = () => {
@@ -436,8 +441,40 @@ const draw = () => {
       drawCall.spritePos.x = 0;
       drawCall.spritePos.y = 0;
     }
+    
+    //WEAPON DRAW
+    let swordWidth = 80;
+    let swordHeight = 80;
+    if(color != 'none') {
+      // create offscreen buffer, 
+        let buffer = document.createElement('canvas');
+        buffer.width = swordWidth;
+        buffer.height = swordHeight;
+        let bx = buffer.getContext('2d');
+
+        // fill offscreen buffer with the tint color
+        bx.fillStyle = color;
+        bx.fillRect(0,0,buffer.width,buffer.height);
+
+        // destination atop makes a result with an alpha channel identical to fg, but with all pixels retaining their original color *as far as I can tell*
+        bx.globalCompositeOperation = "destination-atop";
+        bx.drawImage(swordImage, 0,0,swordWidth, swordHeight);
+
+
+        // to tint the image, draw it first
+        ctx.drawImage(swordImage, drawCall.position.x + 45, drawCall.position.y, swordWidth, swordHeight);
+
+        //then set the global alpha to the amound that you want to tint it, and draw the buffer directly on top of it.
+        ctx.globalAlpha = 0.5;
+        ctx.drawImage(buffer,drawCall.position.x + 45, drawCall.position.y, swordWidth, swordHeight);
+    }
+    else {
+      ctx.drawImage(swordImage, drawCall.position.x + 45, drawCall.position.y, swordWidth, swordHeight);
+    }
+    //END WEAPON DRAW
 
     //IMAGE DRAW
+    ctx.globalAlpha = 1.0;
     ctx.drawImage(playerImage, drawCall.spritePos.x, drawCall.spritePos.y, drawCall.spritePos.width, drawCall.spritePos.height, drawCall.position.x, drawCall.position.y, drawCall.position.width, drawCall.position.height);
 
     //NAME

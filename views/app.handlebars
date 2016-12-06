@@ -20,8 +20,14 @@
     <form id="domoForm" name="domoForm" action="/maker" method="POST" class="domoForm">
       <label for="name">Name: </label>
       <input id="domoName" type="text" name="name" placeholder="Weapon Name"/>
-      <label for="attack">Attack: </label>
-      <input id="domoAge" type="text" name="attack" placeholder="Weapon Attack"/>
+      <label for="color">Color: </label>
+      <!-- <input id="domoAge" type="text" name="color2" placeholder="Weapon Color"/> -->
+      <select id="weaponColor" name="color">
+        <option value="red">Red</option>
+        <option value="blue">Blue</option>
+        <option value="green">Green</option>
+        <option value="yellow">Yellow</option>
+      </select>
       <input id="csrf" type="hidden" name="_csrf" value={{csrfToken}} />
       <a id="makeDomoSubmit" href="#" class="makeDomoSubmit">Make Weapon</a>
     </form>
@@ -38,6 +44,7 @@
       <h3 class="domoName">Spell Power: {{info.spellPower}}</h3>
       <h3 class="domoAge">Speed: {{info.speed}}</h3>
       <h3 class="domoName">Health: {{info.maxHealth}}</h3>
+      <h3 class="domoAge">Weapon Color: {{info.color}}</h3>
     </div>
   </section>
   <section id="domos">
@@ -49,9 +56,13 @@
               <button type="submit" name="{{this.name}}" href="#" class="deleteDomoSubmit">Remove Weapon</button>
               <input type="hidden" name="_csrf"/>
             </form>
+            <form id="{{this.color}}" name="activateForm" action="/activate" method="POST" class="activateForm">
+              <button type="submit" name="{{this.color}}" href="#" class="activateDomoSubmit">Activate Weapon</button>
+              <input type="hidden" name="_csrf"/>
+            </form>
             <img src="/assets/img/weapon.png" style="width:128px;height:128px;" alt="domo face" class="domoFace"/>
             <h3 class="domoName">Name: {{this.name}}</h3>
-            <h3 class="domoAge">Attack: {{this.attack}}</h3>
+            <h3 class="domoAge">Color: {{this.color}}</h3>
           </div>
         {{/each}}
       {{else}}

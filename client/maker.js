@@ -30,7 +30,9 @@ $(document).ready(function() {
     
         $("#domoMessage").animate({width:'hide'},350);
     
-        if($("#domoName").val() == '' || $("#domoAge").val() == '') {
+        console.log($("#weaponColor").val());
+      
+        if($("#domoName").val() == '' || $("#weaponColor").val() == '') {
             handleError("RAWR! All fields are required");
             return false;
         }
@@ -56,6 +58,24 @@ $(document).ready(function() {
         console.log(temp);
 
         sendAjax("/remove", temp);
+        
+        return false;
+    });
+  
+  $(".activateDomoSubmit").on("click", (e) => {
+        e.preventDefault();
+    
+        var data = e.target.parentElement;
+        console.log(data.id);
+        var color = data.id;
+        data.querySelector('[name="_csrf"]').value = $("#csrf")[0].value;
+        data = $(data).serialize();
+        console.log(data);
+    
+        var temp = 'color=' + color + '&_csrf=' + $("#csrf")[0].value;
+        console.log(temp);
+
+        sendAjax("/activate", temp);
         
         return false;
     });
