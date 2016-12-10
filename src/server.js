@@ -195,12 +195,22 @@ io.sockets.on('connection', (socket) => {
   });
 
   socket.on('healSpell', (data) => {
+    console.log("heal spell used");
     io.sockets.in(data.room).emit('healSpellHost', data);
   });
 
   socket.on('healSpellAll', (data) => {
+    console.log("healing everyone in the room");
     io.sockets.in(data.room).emit('healAll', data.players);
   });
+  
+  socket.on('updateText', (data) => {
+    io.sockets.in(data.room).emit('updateTextHost', data);
+  });
+  
+  socket.on('updateTextAll', (data) => {
+    io.sockets.in(data.room).emit('updateTextForAll', data);
+  })
 });
 
 console.log('Websocket server started');

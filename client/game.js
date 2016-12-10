@@ -58,6 +58,14 @@ let enemies = {};
     spellCooldown,
     spellPower,
     color,
+    isAttacking,
+    texts = 
+    {
+      text,
+      x,
+      y,
+      alpha,
+    }
   }
 */
 
@@ -86,6 +94,15 @@ let playerImage = new Image();
 playerImage.src = document.location.pathname + '/../assets/img/warrior.png';
 let swordImage = new Image();
 swordImage.src = document.location.pathname + '/../assets/img/weapon.png';
+
+//PLAYER UPDATE TIME
+let moveTimer = 30;
+let movementDistance = 20;
+let isColliding = false;
+let rgbstep = 0;
+
+//PLAYER TEXT EFFECTS
+let numEffects = 0;
 
 //GAME LOGIC CODE
 const init = () => {
@@ -202,27 +219,42 @@ const init = () => {
     //SPELLS
     socket.on('healSpellHost', (data) => {
       if(isHost) {
-        //check if spell power matches what we have
-        if(data.power == players[data.name].spellPower) {
-          let keys = Object.keys(players);  
-          for(var i = 0; i < keys.length; i++) {
-            players[keys[i]].currentHealth += data.power;
-            if(players[keys[i]].currentHealth > players[keys[i]].maxHealth) {
-              players[keys[i]].currentHealth = players[keys[i]].maxHealth;
-            }
+        let keys = Object.keys(players);  
+        for(var i = 0; i < keys.length; i++) {
+          players[keys[i]].currentHealth += data.power;
+          if(players[keys[i]].currentHealth > players[keys[i]].maxHealth) {
+            players[keys[i]].currentHealth = players[keys[i]].maxHealth;
           }
-
-          socket.emit('healSpellAll', {room: players[user].room, players: players});
         }
+
+        socket.emit('healSpellAll', {room: players[user].room, players: players});
+        draw();
       }
     });
 
     socket.on('healAll', (data) => {
-      for(var i = 0; i < players.length; i++) {
-        players[i].currentHealth = data.players[i].currentHealth;
+      let keys = Object.keys(data); 
+      for(var i = 0; i < keys.length; i++) {
+        if( !(data.name === user && data.name === keys[i])) {
+          players[keys[i]].currentHealth = data[keys[i]].currentHealth;
+        }
       }
       draw();
     });
+  
+    socket.on('updateTextHost', (data) => {
+      if(isHost) {
+        socket.emit('updateTextAll', data);
+      }
+    });
+  
+    socket.on('updateTextForAll', (data) => {
+      if(data.name != user) {
+        players[user].texts[numEffects] = data.effect;
+        fadeOut(data.effect.text, data.effect.x, data.effect.y, data.effect.width, data.effect.height, data.effect.red, data.effect.green, data.effect.blue,  numEffects, 20, .05);
+        numEffects++;
+      }
+    })
 
     window.addEventListener("keydown", move, true);
   
@@ -260,16 +292,19 @@ const init = () => {
 
 
 const move = (e) => {
-  console.log("Detected key press");
+  let time = new Date().getTime();
+  
   if ( e.keyCode == 68 ) {
-    const time = new Date().getTime();
 
     //only move if enough time has occured, otherwise server is overloaded
-    if(time - players[user].lastUpdate > 10) {
+    if(time - players[user].lastUpdate > (moveTimer / speed) * moveTimer) {
       players[user].lastUpdate = time;
 
       //check collision with enemy before emitting
-      let isColliding = false;
+      if(isColliding) {
+        players[user].position.x -= (2*movementDistance);
+      }
+      isColliding = false;
       let keys = Object.keys(enemies);
       for(let i = 0; i < keys.length; i++)
       {
@@ -278,7 +313,16 @@ const move = (e) => {
           isColliding = true;
 
           //combat
-          players[user].currentHealth -= enemies[keys[i]].attack;
+          //only lose health if the enemy is on their final attack sprite animation
+          if(enemies[keys[i]].spritePos == 2) {
+            players[user].currentHealth -= enemies[keys[i]].attack;
+            
+            //draw damage
+            fadeOut(enemies[keys[i]].attack, players[user].position.x + 25, players[user].position.y - 85, 50, 100, 255, 0,0, numEffects, 20, .05);
+            
+            players[user].texts[numEffects] = {alpha: 1.0, red: 255, green: 0, blue: 0, text:enemies[keys[i]].attack, width: 50, height: 20, x: players[user].position.x + 25, y: players[user].position.y - 85};
+            numEffects++;
+          }
 
           if(players[user].spritePos.x == 288) {
              players[user].spritePos.x = 384;
@@ -296,6 +340,20 @@ const move = (e) => {
 
           //don't update enemy stats if player has died...creates weird bugs if the world is reset same time as enemy is updated with damage
           if(!players[user].dead) {
+            
+            players[user].isAttacking = true;
+            
+            //draw damage
+            fadeOut(players[user].attack, enemies[keys[i]].position.x + 25, enemies[keys[i]].position.y - 50, 50, 100, 0, 0,0, numEffects, 20, .05);
+            
+            players[user].texts[numEffects] = {alpha: 1.0, red: 0, green: 0, blue: 0, text: players[user].attack, width: 50, height: 20, x: enemies[keys[i]].position.x + 25, y: enemies[keys[i]].position.y - 50};
+            numEffects++;
+            
+            //to prevent insanely high key values
+            if(numEffects > 25) {
+              numEffects = 0;
+            }
+            
             enemies[keys[i]].currentHealth -= players[user].attack;
             if(enemies[keys[i]].currentHealth <= 0) {
               enemies[keys[i]].currentHealth = 0;
@@ -307,6 +365,11 @@ const move = (e) => {
                 players[user].points += 5;
                 players[user].exp = 0;
                 players[user].level++;
+                
+                fadeOut("LEVEL UP!", players[user].position.x, players[user].position.y - 85, 150, 20, 0, 255,0, numEffects, 60, .03);
+            
+                players[user].texts[numEffects] = {alpha: 1.0, red: 0, green: 255, blue: 0, text: "LEVEL UP!", width: 150, height: 20, x: players[user].position.x, y: players[user].position.y - 85};
+                numEffects++;
               }
             }
 
@@ -317,6 +380,9 @@ const move = (e) => {
             }
 
             socket.emit('updateEnemy', {room: players[user].room, name: keys[i], health:enemies[keys[i]].currentHealth, dead:enemies[keys[i]].dead, spritePos:enemies[keys[i]].spritePos});
+            
+            //update sword combat for others
+            socket.emit('updatePlayerMovement', {room: players[user].room, name: user, position: players[user].position, spritePos: players[user].spritePos, isAttacking: players[user].isAttacking});
           }
 
           //should I draw here even though server hasn't received update?
@@ -325,7 +391,9 @@ const move = (e) => {
       }
 
       if(!isColliding && !players[user].dead) {
-        players[user].position.x += players[user].speed;
+        players[user].isAttacking = false;
+        
+        players[user].position.x += movementDistance;
 
         //update max distance
         let distance = ((stage-1) * 100) + Math.round((players[user].position.x / worldWidth) * 100);
@@ -349,7 +417,7 @@ const move = (e) => {
           players[user].spritePos.x = 96;
         }
         //using movement method for speed up
-        socket.emit('updatePlayerMovement', {room: players[user].room, name: user, position: players[user].position, spritePos: players[user].spritePos});
+        socket.emit('updatePlayerMovement', {room: players[user].room, name: user, position: players[user].position, spritePos: players[user].spritePos, isAttacking: players[user].isAttacking});
 
         //using old method to overwrite entire players array
         //socket.emit('updatePlayer', {name: user, playerInfo: players[user]});
@@ -361,15 +429,27 @@ const move = (e) => {
 
   //SPELL
   if ( e.keyCode == 32 ) {
-    console.log('Trying to use heal spell');
-    const time = new Date().getTime();
 
     //only move if enough time has occured, otherwise server is overloaded
-    if(time - players[user].lastUpdate > players[user].spellCooldown) {
-      players[user].lastUpdate = time;
+    if(time - players[user].lastSpell > players[user].spellCooldown) {
+      players[user].lastSpell = time;
 
       socket.emit('healSpell', {room: players[user].room, name: user, power: players[user].spellPower});
-
+      
+      fadeOut(user + " used Heal!", worldWidth/2 - 150, worldHeight/2 - 200, 250, 20, 0, 255,0, numEffects, 40, .04);
+            
+      players[user].texts[numEffects] = {alpha: 1.0, red: 0, green: 255, blue: 0, text: user + " used Heal!", width: 250, height: 20, x: worldWidth/2 - 150, y: worldHeight/2 - 200};
+      
+      //emit the text effect
+      socket.emit('updateText', {room: players[user].room, effect: players[user].texts[numEffects], name: user});
+                                 
+      numEffects++;
+      
+      players[user].currentHealth += players[user].spellPower;
+      if(players[user].currentHealth > players[user].maxHealth) {
+        players[user].currentHealth = players[user].maxHealth;
+      }
+      draw();
     }
   }
 };
@@ -380,14 +460,14 @@ const setupPlayer = () => {
     let y = 300;
     let position = {x:x, y:y,width:100,height:100};
     let spritePos = {x:96, y:96, width: 96, height: 96};
-    players[user] = {room: room, lastUpdate: time, position:position, maxHealth:maxHealth, currentHealth:maxHealth,dead:false,speed:speed,attack:attack,level:level,exp:exp,points:points,maxDistance:maxDistance, spritePos:spritePos, spellPower:spellPower, spellCooldown:1};
+    players[user] = {room: room, lastSpell: time, lastUpdate: time, position:position, maxHealth:maxHealth, currentHealth:maxHealth,dead:false,speed:speed,attack:attack,level:level,exp:exp,points:points,maxDistance:maxDistance, spritePos:spritePos, spellPower:spellPower, spellCooldown:1000, isAttacking:false, color: color, texts: {}};
 
     //host calls setupplayer twice so don't set another interval
     if(!isHost) {
       window.setInterval(function(){
         if(players[user].currentHealth < players[user].maxHealth && !players[user].dead) {
           players[user].currentHealth += 1;
-          socket.emit('updatePlayerHealth', {name: user, health: players[user].currentHealth, spritePos:players[user].spritePos});
+          socket.emit('updatePlayerHealth', {room: players[user].room, name: user, health: players[user].currentHealth, spritePos: players[user].spritePos});
 
           draw();
         }
@@ -402,7 +482,7 @@ const setupEnemy = () => {
 
     for(let i = 1; i <= 5; i++) {
         let position = {x:x + (i*200), y:y, width:100, height:100};
-        enemies[`enemy${i}`] = {lastUpdate: time, position:position, maxHealth:10*stage, currentHealth:10*stage,dead:false,attack:stage,spritePos:1};
+        enemies[`enemy${i}`] = {lastUpdate: time, position:position, maxHealth:10*stage, currentHealth:10*stage,dead:false,attack:stage*5,spritePos:1};
     }
 };
 
@@ -410,29 +490,8 @@ const setupEnemy = () => {
 const draw = () => {
   ctx.clearRect(0,0,canvas.width, canvas.height);
 
-  //draw data
-
-  //stage and distance
-  ctx.fillStyle = "black";
-  ctx.font = "36px serif";
-  ctx.fillText(`Stage: ${stage}`, 0, 50);
-  let distance = Math.round((players[user].position.x / worldWidth) * 100);
-  ctx.fillText(`Distance: ${(((stage-1)*100) + distance)}`, 0, 100);
-  ctx.fillText(`Max Distance: ${players[user].maxDistance}`, 0, 150);
-
-  //player stats
-  ctx.font = "30px serif";
-  ctx.fillText(`Level: ${players[user].level}`, 30, (worldHeight / 2) + 40);
-  ctx.fillText(`Exp: ${players[user].exp} / ${players[user].level}`, 30, (worldHeight / 2) + 80);
-  ctx.fillText(`Skill Points: ${players[user].points}`, 30, (worldHeight / 2) + 120);
-  ctx.fillText(`Health: ${players[user].currentHealth} / ${players[user].maxHealth}`, 30, (worldHeight / 2) + 160);
-  ctx.fillText(`Attack: ${players[user].attack}`, 30, (worldHeight / 2) + 200);
-  ctx.fillText(`Speed: ${players[user].speed}`, 30, (worldHeight / 2) + 240);
-  ctx.fillText(`Spell Power: ${players[user].spellPower}`, 30, (worldHeight / 2) + 280);
-
   //draw the actual players
-  let keys = Object.keys(players);            
-  console.log(`Drawing ${keys.length} players`);
+  let keys = Object.keys(players);   
   for(let i = 0; i < keys.length; i++)
   {
     const drawCall = players[keys[i]];
@@ -445,7 +504,7 @@ const draw = () => {
     //WEAPON DRAW
     let swordWidth = 80;
     let swordHeight = 80;
-    if(color != 'none') {
+    if(drawCall.color != 'none') {
       // create offscreen buffer, 
         let buffer = document.createElement('canvas');
         buffer.width = swordWidth;
@@ -453,23 +512,78 @@ const draw = () => {
         let bx = buffer.getContext('2d');
 
         // fill offscreen buffer with the tint color
-        bx.fillStyle = color;
+        bx.fillStyle = drawCall.color;
         bx.fillRect(0,0,buffer.width,buffer.height);
 
         // destination atop makes a result with an alpha channel identical to fg, but with all pixels retaining their original color *as far as I can tell*
         bx.globalCompositeOperation = "destination-atop";
         bx.drawImage(swordImage, 0,0,swordWidth, swordHeight);
+      
+        if(drawCall.isAttacking) {
 
+          // save the unrotated context of the canvas so we can restore it later
+          // the alternative is to untranslate & unrotate after drawing
+          ctx.save();
+          
+          //ctx.clearRect(0,0,worldWidth,worldHeight);
 
-        // to tint the image, draw it first
-        ctx.drawImage(swordImage, drawCall.position.x + 45, drawCall.position.y, swordWidth, swordHeight);
+          // move to the center of the canvas
+          ctx.translate(drawCall.position.x + 45,drawCall.position.y + 20);
+          ctx.translate(40,40);
 
-        //then set the global alpha to the amound that you want to tint it, and draw the buffer directly on top of it.
-        ctx.globalAlpha = 0.5;
-        ctx.drawImage(buffer,drawCall.position.x + 45, drawCall.position.y, swordWidth, swordHeight);
+          // rotate the canvas to the specified degrees
+          ctx.rotate(Math.PI / 4);
+
+          // draw the image
+          // since the context is rotated, the image will be rotated also
+          //ctx.drawImage(image,-image.width/2,-image.width/2);
+          // to tint the image, draw it first
+          ctx.drawImage(swordImage, -swordWidth/2, -swordHeight/2, swordWidth, swordHeight);
+
+          //then set the global alpha to the amound that you want to tint it, and draw the buffer directly on top of it.
+          ctx.globalAlpha = 0.5;
+          ctx.drawImage(buffer, -swordWidth/2, -swordHeight/2, swordWidth, swordHeight);
+
+          // we’re done with the rotating so restore the unrotated context
+          ctx.restore();
+        }
+        else {
+          // to tint the image, draw it first
+          ctx.drawImage(swordImage, drawCall.position.x + 45, drawCall.position.y, swordWidth, swordHeight);
+
+          //then set the global alpha to the amound that you want to tint it, and draw the buffer directly on top of it.
+          ctx.globalAlpha = 0.5;
+          ctx.drawImage(buffer,drawCall.position.x + 45, drawCall.position.y, swordWidth, swordHeight);
+        }
     }
     else {
-      ctx.drawImage(swordImage, drawCall.position.x + 45, drawCall.position.y, swordWidth, swordHeight);
+      if(drawCall.isAttacking) {
+
+          // save the unrotated context of the canvas so we can restore it later
+          // the alternative is to untranslate & unrotate after drawing
+          ctx.save();
+        
+          //ctx.clearRect(0,0,worldWidth,worldHeight);
+
+          // move to the center of the canvas
+          ctx.translate(drawCall.position.x + 45,drawCall.position.y + 20);
+          ctx.translate(40,40);
+
+          // rotate the canvas to the specified degrees
+          ctx.rotate(Math.PI / 4);
+
+          // draw the image
+          // since the context is rotated, the image will be rotated also
+          //ctx.drawImage(image,-image.width/2,-image.width/2);
+          // to tint the image, draw it first
+          ctx.drawImage(swordImage, -swordWidth/2, -swordHeight/2, swordWidth, swordHeight);
+
+          // we’re done with the rotating so restore the unrotated context
+          ctx.restore();
+        }
+      else {
+        ctx.drawImage(swordImage, drawCall.position.x + 45, drawCall.position.y, swordWidth, swordHeight);
+      }
     }
     //END WEAPON DRAW
 
@@ -491,27 +605,96 @@ const draw = () => {
     ctx.fillRect(drawCall.position.x + 3,drawCall.position.y - 37,(drawCall.currentHealth / drawCall.maxHealth) * (drawCall.position.width - 6) ,24);
   }
 
+  
+  //draw data
+
+  //stage and distance
+  ctx.fillStyle = "black";
+  ctx.font = "36px serif";
+  ctx.fillText(`Stage: ${stage}`, 0, 50);
+  let distance = Math.round((players[user].position.x / worldWidth) * 100);
+  ctx.fillText(`Distance: ${(((stage-1)*100) + distance)}`, 0, 100);
+  ctx.fillText(`Max Distance: ${players[user].maxDistance}`, 0, 150);
+
+  //player stats
+  ctx.font = "30px serif";
+  ctx.fillText(`Level: ${players[user].level}`, 30, (worldHeight / 2) + 40);
+  ctx.fillText(`Exp: ${players[user].exp} / ${players[user].level}`, 30, (worldHeight / 2) + 80);
+  ctx.fillText(`Skill Points: ${players[user].points}`, 30, (worldHeight / 2) + 120);
+  ctx.fillText(`Health: ${players[user].currentHealth} / ${players[user].maxHealth}`, 30, (worldHeight / 2) + 160);
+  ctx.fillText(`Attack: ${players[user].attack}`, 30, (worldHeight / 2) + 200);
+  ctx.fillText(`Speed: ${players[user].speed}`, 30, (worldHeight / 2) + 240);
+  ctx.fillText(`Spell Power: ${players[user].spellPower}`, 30, (worldHeight / 2) + 280);
+  
   //draw the enemies
   keys = Object.keys(enemies);
-  console.log(`Drawing ${keys.length} enmies`);
   for(let i = 0; i < keys.length; i++)
   {
     const drawCall = enemies[keys[i]];
     if(drawCall.dead) {
       ctx.globalAlpha = 0.5;
     }
-    ctx.drawImage(enemyImage, enemySpritePos[drawCall.spritePos].x, enemySpritePos[drawCall.spritePos].y, enemySpritePos[drawCall.spritePos].width, enemySpritePos[drawCall.spritePos].height, drawCall.position.x, drawCall.position.y, drawCall.position.width, drawCall.position.height);
+    let extraWidth = 0;
+    let extraX = 0;
+    let extraHeight = 0;
+    if(drawCall.spritePos == 4) {
+      extraWidth = 50;
+      extraX = -50;
+    }
+    if(drawCall.spritePos == 5) {
+      extraWidth = 50;
+      extraX = -50;
+      extraHeight = 25
+    }
+    ctx.drawImage(enemyImage, enemySpritePos[drawCall.spritePos].x, enemySpritePos[drawCall.spritePos].y, enemySpritePos[drawCall.spritePos].width, enemySpritePos[drawCall.spritePos].height, drawCall.position.x + extraX, drawCall.position.y - extraHeight, drawCall.position.width + extraWidth, drawCall.position.height + extraHeight);
 
     //draw health bar
     ctx.globalAlpha = 1;
     ctx.fillStyle="white";
-    ctx.fillRect(drawCall.position.x,drawCall.position.y - 40, drawCall.position.width, 30);
+    ctx.fillRect(drawCall.position.x,drawCall.position.y + 97, drawCall.position.width, 30);
     ctx.fillStyle="black";
-    ctx.fillRect(drawCall.position.x + 3,drawCall.position.y -37 , drawCall.position.width - 6, 24);
+    ctx.fillRect(drawCall.position.x + 3,drawCall.position.y + 100, drawCall.position.width - 6, 24);
     ctx.fillStyle="red";
-    ctx.fillRect(drawCall.position.x + 3,drawCall.position.y - 37,(drawCall.currentHealth / drawCall.maxHealth) * (drawCall.position.width - 6) ,24);
+    ctx.fillRect(drawCall.position.x + 3,drawCall.position.y + 100,(drawCall.currentHealth / drawCall.maxHealth) * (drawCall.position.width - 6) ,24);
+  }
+  
+  
+  //DRAW TEXT EFFECTS IF ANY EXIST
+  keys = Object.keys(players[user].texts);
+  for(let i = 0; i < keys.length; i++) {
+    ctx.fillStyle = "rgba(" + players[user].texts[keys[i]].red + ", " + players[user].texts[keys[i]].green + ", " + players[user].texts[keys[i]].blue + ", " + players[user].texts[keys[i]].alpha + ")";
+    ctx.font = "italic 20pt Arial";
+    ctx.fillText(players[user].texts[keys[i]].text, players[user].texts[keys[i]].x, players[user].texts[keys[i]].y);
   }
 };
+
+function fadeOut(text, x, y, width, height, r, g, b, num, time, decrease) {
+    var alpha = 1.0,   // full opacity
+        
+    interval = setInterval(function () {
+      ctx.clearRect(x,y-height,width,height+10);
+      
+      //draw other texts
+      //DRAW TEXT EFFECTS IF ANY EXIST
+  let keys = Object.keys(players[user].texts);
+  for(let i = 0; i < keys.length; i++) {
+    ctx.fillStyle = "rgba(" + players[user].texts[keys[i]].red + ", " + players[user].texts[keys[i]].green + ", " + players[user].texts[keys[i]].blue + ", " + players[user].texts[keys[i]].alpha + ")";
+    ctx.font = "italic 20pt Arial";
+    ctx.fillText(players[user].texts[keys[i]].text, players[user].texts[keys[i]].x, players[user].texts[keys[i]].y);
+  }
+      
+      
+      alpha = alpha - decrease; // decrease opacity (fade out)
+      players[user].texts[num].alpha = alpha;
+      y = y - 1;
+      players[user].texts[num].y = y;
+      if (alpha < 0) {
+          ctx.clearRect(x,y-height,width,height+10);
+          clearInterval(interval);
+          delete players[user].texts[num]
+      }
+    }, time); 
+}
 
 const updatePlayerHost = (data) => {
     players[data.name] = data.playerInfo;
@@ -530,15 +713,17 @@ const updatePlayers = (data) => {
 const updatePlayerMovementHost = (data) => {
     players[data.name].position = data.position;
     players[data.name].spritePos = data.spritePos;
+    players[data.name].isAttacking = data.isAttacking;
 
     //host has updated player coords, emit back to server to be emitted to all users
-    socket.emit('updateAllPlayersMovement', {room: players[user].room, name: data.name, position: players[data.name].position, spritePos: players[data.name].spritePos});
+    socket.emit('updateAllPlayersMovement', {room: players[user].room, name: data.name, position: players[data.name].position, spritePos: players[data.name].spritePos, isAttacking: players[data.name].isAttacking});
 };
 
 const updatePlayersMovement = (data) => {
   if(data.name != user) {
     players[data.name].position = data.position;
     players[data.name].spritePos = data.spritePos;
+    players[data.name].isAttacking = data.isAttacking;
 
     draw(); //redraw after we update
   }
