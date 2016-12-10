@@ -143,8 +143,6 @@ io.sockets.on('connection', (socket) => {
         console.log('error');
       }
       console.log('succesfully saved');
-
-      // call the socket session code or modify the variables
     });
   });
 
@@ -195,22 +193,22 @@ io.sockets.on('connection', (socket) => {
   });
 
   socket.on('healSpell', (data) => {
-    console.log("heal spell used");
+    console.log('heal spell used');
     io.sockets.in(data.room).emit('healSpellHost', data);
   });
 
   socket.on('healSpellAll', (data) => {
-    console.log("healing everyone in the room");
+    console.log('healing everyone in the room');
     io.sockets.in(data.room).emit('healAll', data.players);
   });
-  
+
   socket.on('updateText', (data) => {
     io.sockets.in(data.room).emit('updateTextHost', data);
   });
-  
+
   socket.on('updateTextAll', (data) => {
     io.sockets.in(data.room).emit('updateTextForAll', data);
-  })
+  });
 });
 
 console.log('Websocket server started');

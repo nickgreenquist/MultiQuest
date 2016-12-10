@@ -95,6 +95,8 @@ playerImage.src = document.location.pathname + '/../assets/img/warrior.png';
 let swordImage = new Image();
 swordImage.src = document.location.pathname + '/../assets/img/weapon.png';
 
+console.log(document.location.pathname);
+
 //PLAYER UPDATE TIME
 let moveTimer = 30;
 let movementDistance = 20;

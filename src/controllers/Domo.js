@@ -9,13 +9,13 @@ const makerPage = (req, res) => {
       console.log(err);
       return res.status(400).json({ error: 'An error occurred' });
     }
-    
+
     let color = 'none';
-    if(typeof req.session.account.color != "undefined") {
-      console.log("color exists");
+    if (typeof req.session.account.color !== 'undefined') {
+      console.log('color exists');
       color = req.session.account.color;
     }
-    
+
     const accountInfo = {
       username: req.session.account.username,
       level: req.session.account.level,
@@ -26,7 +26,7 @@ const makerPage = (req, res) => {
       speed: req.session.account.speed,
       spellPower: req.session.account.spellPower,
       maxHealth: req.session.account.maxHealth,
-      color: color,
+      color,
     };
 
     return res.render('app', { csrfToken: req.csrfToken(), weapons: docs, info: accountInfo });

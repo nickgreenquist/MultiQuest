@@ -3,10 +3,10 @@ const enterGame = (req, res) => {
   // console.log(req.session.account);
 
   let color = 'none';
-    if(typeof req.session.account.color != "undefined") {
-      color = req.session.account.color;
-    }
-  
+  if (typeof req.session.account.color !== 'undefined') {
+    color = req.session.account.color;
+  }
+
   const accountInfo = {
     username: req.session.account.username,
     level: req.session.account.level,
@@ -18,7 +18,7 @@ const enterGame = (req, res) => {
     spellPower: req.session.account.spellPower,
     maxHealth: req.session.account.maxHealth,
     room: req.session.account.room,
-    color: color,
+    color,
   };
 
   // res.render('game', { info: accountInfo, csrfToken: req.csrfToken() });
