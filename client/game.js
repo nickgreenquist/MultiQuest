@@ -32,6 +32,7 @@ let enemies = {};
   players[user] = 
   {
     lastUpdate,
+    isMoving,
     position = 
     {
       x,
@@ -98,16 +99,23 @@ swordImage.src = document.location.pathname + '/../assets/img/weapon.png';
 console.log(document.location.pathname);
 
 //PLAYER UPDATE TIME
-let moveTimer = 30;
+let moveTimer = 150;
 let movementDistance = 20;
 let isColliding = false;
 let rgbstep = 0;
-let isMoving = false;
 
 //PLAYER TEXT EFFECTS
 let numEffects = 0;
 
 //GAME LOGIC CODE
+// The main game loop
+var main = function () {
+	move();
+
+	// Request to do this again ASAP
+	requestAnimationFrame(main);
+};
+
 const init = () => {
     console.log('init');
   
@@ -265,9 +273,6 @@ const init = () => {
 
     window.addEventListener("touchend", handleTouchEnd, true);
 
-    window.setInterval(function(){
-      move();
-    }, 1);
   
     //SKILL POINT BUTTONS
     document.getElementById("health").addEventListener("click", function(){
@@ -299,15 +304,18 @@ const init = () => {
         draw();
       }
     });
+
+    //Ready to play
+    main();
 };
 
 const handleTouchStart = (e) => {
   e.preventDefault();
-  isMoving = true;
+  players[user].isMoving = true;
 }
 
 const handleTouchEnd = (e) => {
-  isMoving = false;
+  players[user].isMoving = false;
 }
 
 
@@ -316,16 +324,28 @@ const move = (e) => {
 
 
   let keyCode = 0;
+  let isMoving = false;
   try {
     keyCode = e.keyCode;
   } catch (error) {
     //nothing
   }
+
+  try {
+    isMoving = players[user].isMoving;
+  } catch (error) {
+    //nothing
+  } 
   
   if ( isMoving || keyCode == 68) {
 
     //only move if enough time has occured, otherwise server is overloaded
-    if(time - players[user].lastUpdate > (moveTimer / speed) * moveTimer) {
+    moveTimer = 300;
+    let timePassed = time - players[user].lastUpdate;
+    let speed = moveTimer / Math.log(players[user].speed);
+    console.log("timePassed: " + timePassed);
+    console.log("speed: " + speed);
+    if(timePassed > speed) {
       players[user].lastUpdate = time;
 
       //check collision with enemy before emitting
@@ -453,6 +473,9 @@ const move = (e) => {
         draw();
       }
     }
+    else {
+      console.log("don't update");
+    }
   }
 
   //SPELL
@@ -488,7 +511,7 @@ const setupPlayer = () => {
     let y = 300;
     let position = {x:x, y:y,width:100,height:100};
     let spritePos = {x:96, y:96, width: 96, height: 96};
-    players[user] = {room: room, lastSpell: time, lastUpdate: time, position:position, maxHealth:maxHealth, currentHealth:maxHealth,dead:false,speed:speed,attack:attack,level:level,exp:exp,points:points,maxDistance:maxDistance, spritePos:spritePos, spellPower:spellPower, spellCooldown:1000, isAttacking:false, color: color, texts: {}};
+    players[user] = {room: room, lastSpell: time, lastUpdate: time, isMoving: false, position:position, maxHealth:maxHealth, currentHealth:maxHealth,dead:false,speed:speed,attack:attack,level:level,exp:exp,points:points,maxDistance:maxDistance, spritePos:spritePos, spellPower:spellPower, spellCooldown:1000, isAttacking:false, color: color, texts: {}};
 
     //host calls setupplayer twice so don't set another interval
     if(!isHost) {
