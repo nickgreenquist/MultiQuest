@@ -102,6 +102,7 @@ let moveTimer = 30;
 let movementDistance = 20;
 let isColliding = false;
 let rgbstep = 0;
+let isMoving = false;
 
 //PLAYER TEXT EFFECTS
 let numEffects = 0;
@@ -259,6 +260,14 @@ const init = () => {
     })
 
     window.addEventListener("keydown", move, true);
+
+    window.addEventListener("touchstart", handleTouchStart, true);
+
+    window.addEventListener("touchend", handleTouchEnd, true);
+
+    window.setInterval(function(){
+      move();
+    }, 1);
   
     //SKILL POINT BUTTONS
     document.getElementById("health").addEventListener("click", function(){
@@ -292,11 +301,28 @@ const init = () => {
     });
 };
 
+const handleTouchStart = (e) => {
+  e.preventDefault();
+  isMoving = true;
+}
+
+const handleTouchEnd = (e) => {
+  isMoving = false;
+}
+
 
 const move = (e) => {
   let time = new Date().getTime();
+
+
+  let keyCode = 0;
+  try {
+    keyCode = e.keyCode;
+  } catch (error) {
+    //nothing
+  }
   
-  if ( e.keyCode == 68 ) {
+  if ( isMoving || keyCode == 68) {
 
     //only move if enough time has occured, otherwise server is overloaded
     if(time - players[user].lastUpdate > (moveTimer / speed) * moveTimer) {
@@ -430,7 +456,7 @@ const move = (e) => {
   }
 
   //SPELL
-  if ( e.keyCode == 32 ) {
+  if ( keyCode == 32 ) {
 
     //only move if enough time has occured, otherwise server is overloaded
     if(time - players[user].lastSpell > players[user].spellCooldown) {
