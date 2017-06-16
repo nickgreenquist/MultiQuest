@@ -1,10 +1,12 @@
 console.log('game starting');
 
 
+/*
 if(!window.location.hash) {
         window.location = window.location + '#loaded';
         window.location.reload();
 }
+*/
 
 
 var socket;
@@ -110,7 +112,7 @@ let numEffects = 0;
 //GAME LOGIC CODE
 // The main game loop
 var main = function () {
-	move();
+	update();
 
 	// Request to do this again ASAP
 	requestAnimationFrame(main);
@@ -267,7 +269,7 @@ const init = () => {
       }
     })
 
-    window.addEventListener("keydown", move, true);
+    window.addEventListener("keydown", update, true);
 
     window.addEventListener("touchstart", handleTouchStart, true);
 
@@ -311,6 +313,8 @@ const init = () => {
 
 const handleTouchStart = (e) => {
   e.preventDefault();
+  var xPos = e.touches[0].pageX;
+  players[user].direction = (xPos > ($(window).height() / 2));
   players[user].isMoving = true;
 }
 
@@ -318,10 +322,8 @@ const handleTouchEnd = (e) => {
   players[user].isMoving = false;
 }
 
-
-const move = (e) => {
+const update = (e) => {
   let time = new Date().getTime();
-
 
   let keyCode = 0;
   let isMoving = false;
@@ -337,173 +339,219 @@ const move = (e) => {
     //nothing
   } 
   
-  if ( isMoving || keyCode == 68) {
-
+  // Based on input, update game accordingly
+  if ( isMoving || keyCode == 68 || keyCode == 65) {
     //only move if enough time has occured, otherwise server is overloaded
     moveTimer = 300;
     let timePassed = time - players[user].lastUpdate;
     let speed = moveTimer / Math.log(players[user].speed);
-    console.log("timePassed: " + timePassed);
-    console.log("speed: " + speed);
+
+    //if key down, check if valid movement and also direction
+    if(keyCode == 68 || keyCode == 65) {
+      players[user].direction = (keyCode == 68);
+    }
     if(timePassed > speed) {
       players[user].lastUpdate = time;
+      move();
+    }
+  }
+  if ( keyCode == 32 ) {
+    //only cast if enough time has occured, otherwise server is overloaded
+    if(time - players[user].lastSpell > players[user].spellCooldown) {
+      players[user].lastSpell = time;
+      spell();
+    }
+  }
 
-      //check collision with enemy before emitting
-      if(isColliding) {
-        players[user].position.x -= (2*movementDistance);
-      }
-      isColliding = false;
-      let keys = Object.keys(enemies);
-      for(let i = 0; i < keys.length; i++)
-      {
-        const collisionCall = enemies[keys[i]];
-        if(!players[user].dead && !enemies[keys[i]].dead && (players[user].position.x + players[user].position.width) > enemies[keys[i]].position.x ) {
-          isColliding = true;
 
-          //combat
-          //only lose health if the enemy is on their final attack sprite animation
-          if(enemies[keys[i]].spritePos == 2) {
-            players[user].currentHealth -= enemies[keys[i]].attack;
-            
-            //draw damage
-            fadeOut(enemies[keys[i]].attack, players[user].position.x + 25, players[user].position.y - 85, 50, 100, 255, 0,0, numEffects, 20, .05);
-            
-            players[user].texts[numEffects] = {alpha: 1.0, red: 255, green: 0, blue: 0, text:enemies[keys[i]].attack, width: 50, height: 20, x: players[user].position.x + 25, y: players[user].position.y - 85};
-            numEffects++;
-          }
+  //enemy attack
+  let keys = Object.keys(enemies);
+  for(let i = 0; i < keys.length; i++)
+  {
+    const enemy = enemies[keys[i]];
+    if(!players[user].dead && !enemy.dead && (players[user].position.x + players[user].position.width) > (enemy.position.x - enemy.lungeDistance)) {
+      let timePassed = time - enemy.lastUpdate;
+      if(timePassed > 200) {
+        if(enemy.position.x == enemy.origX && timePassed > 1000) {
+          enemy.lastUpdate = time;
+          enemy.position.x -= enemy.lungeDistance;
+          players[user].currentHealth -= enemies[keys[i]].attack;
 
-          if(players[user].spritePos.x == 288) {
-             players[user].spritePos.x = 384;
-          }
-          else {
-            players[user].spritePos.x = 288;
-          }
+          enemies[keys[i]].spritePos = 3;
+        
+          //draw damage
+          fadeOut(enemies[keys[i]].attack, players[user].position.x + 25, players[user].position.y - 85, 50, 100, 255, 0,0, numEffects, 20, .05);        
+          players[user].texts[numEffects] = {alpha: 1.0, red: 255, green: 0, blue: 0, text:enemies[keys[i]].attack, width: 50, height: 20, x: players[user].position.x + 25, y: players[user].position.y - 85};       
+          numEffects++;
 
+          socket.emit('updateEnemy', {room: players[user].room, name: keys[i], health:enemies[keys[i]].currentHealth, dead:enemies[keys[i]].dead, positionX:enemies[keys[i]].position.x, spritePos:enemies[keys[i]].spritePos});
+
+          //Check Death
           if(players[user].currentHealth <= 0) {
             players[user].dead = true;
             players[user].spritePos.x = 0;
             players[user].spritePos.y = 0;
+            players[user].currentHealth = 0;
           }
           socket.emit('updatePlayerHealth', {room: players[user].room, name: user, health: players[user].currentHealth, spritePos: players[user].spritePos});
 
-          //don't update enemy stats if player has died...creates weird bugs if the world is reset same time as enemy is updated with damage
-          if(!players[user].dead) {
-            
-            players[user].isAttacking = true;
-            
-            //draw damage
-            fadeOut(players[user].attack, enemies[keys[i]].position.x + 25, enemies[keys[i]].position.y - 50, 50, 100, 0, 0,0, numEffects, 20, .05);
-            
-            players[user].texts[numEffects] = {alpha: 1.0, red: 0, green: 0, blue: 0, text: players[user].attack, width: 50, height: 20, x: enemies[keys[i]].position.x + 25, y: enemies[keys[i]].position.y - 50};
-            numEffects++;
-            
-            //to prevent insanely high key values
-            if(numEffects > 25) {
-              numEffects = 0;
-            }
-            
-            enemies[keys[i]].currentHealth -= players[user].attack;
-            if(enemies[keys[i]].currentHealth <= 0) {
-              enemies[keys[i]].currentHealth = 0;
-              enemies[keys[i]].dead = true;
-
-              //gain experience
-              players[user].exp += stage;
-              if(players[user].exp >= players[user].level) {
-                players[user].points += 5;
-                players[user].exp = 0;
-                players[user].level++;
-                
-                fadeOut("LEVEL UP!", players[user].position.x, players[user].position.y - 85, 150, 20, 0, 255,0, numEffects, 60, .03);
-            
-                players[user].texts[numEffects] = {alpha: 1.0, red: 0, green: 255, blue: 0, text: "LEVEL UP!", width: 150, height: 20, x: players[user].position.x, y: players[user].position.y - 85};
-                numEffects++;
-              }
-            }
-
-            //update sprite
-            enemies[keys[i]].spritePos++;
-            if(enemies[keys[i]].spritePos > 5) {
-              enemies[keys[i]].spritePos = 1;
-            }
-
-            socket.emit('updateEnemy', {room: players[user].room, name: keys[i], health:enemies[keys[i]].currentHealth, dead:enemies[keys[i]].dead, spritePos:enemies[keys[i]].spritePos});
-            
-            //update sword combat for others
-            socket.emit('updatePlayerMovement', {room: players[user].room, name: user, position: players[user].position, spritePos: players[user].spritePos, isAttacking: players[user].isAttacking});
-          }
-
-          //should I draw here even though server hasn't received update?
+          draw();
+        } else if(enemy.position.x < enemy.origX) {
+          enemy.position.x = enemy.origX;
+          enemies[keys[i]].spritePos = 1;
+          socket.emit('updateEnemy', {room: players[user].room, name: keys[i], health:enemies[keys[i]].currentHealth, dead:enemies[keys[i]].dead, positionX:enemies[keys[i]].position.x, spritePos:enemies[keys[i]].spritePos});
           draw();
         }
       }
+    }
+  }
+}
 
-      if(!isColliding && !players[user].dead) {
-        players[user].isAttacking = false;
+const move = () => {
+  //check collision with enemy before emitting
+  if(isColliding) {
+    players[user].position.x -= (2*movementDistance);
+  }
+  isColliding = false;
+  players[user].isAttacking = false;
+  let keys = Object.keys(enemies);
+  for(let i = 0; i < keys.length; i++)
+  {
+    const collisionCall = enemies[keys[i]];
+
+    //Combat
+    if(!players[user].dead && !collisionCall.dead && (players[user].position.x + players[user].position.width) > (collisionCall.origX - 15)) {
+      isColliding = true;
+
+      //don't update enemy stats if player has died...creates weird bugs if the world is reset same time as enemy is updated with damage
+      if(!players[user].dead) {
+
+        moveTimer = 100;
+        let time = new Date().getTime();
+        let timePassed = time - players[user].lastAttack;
+        let speed = moveTimer / Math.log(players[user].speed);
+        if(timePassed > speed) {
+          players[user].lastAttack = time;
+          players[user].isAttacking = true;
+
+          if(players[user].spritePos.x == 288) {
+            players[user].spritePos.x = 384;
+          }
+          else {
+            players[user].spritePos.x = 288;
+          }
         
-        players[user].position.x += movementDistance;
+          //draw damage
+          fadeOut(players[user].attack, enemies[keys[i]].position.x + 25, enemies[keys[i]].position.y - 50, 50, 100, 0, 0,0, numEffects, 20, .05);
+          
+          players[user].texts[numEffects] = {alpha: 1.0, red: 0, green: 0, blue: 0, text: players[user].attack, width: 50, height: 20, x: enemies[keys[i]].position.x + 25, y: enemies[keys[i]].position.y - 50};
+          numEffects++;
+          
+          //to prevent insanely high key values
+          if(numEffects > 25) {
+            numEffects = 0;
+          }
+          
+          enemies[keys[i]].currentHealth -= players[user].attack;
+          if(enemies[keys[i]].currentHealth <= 0) {
+            enemies[keys[i]].currentHealth = 0;
+            enemies[keys[i]].dead = true;
 
-        //update max distance
-        let distance = ((stage-1) * 100) + Math.round((players[user].position.x / worldWidth) * 100);
-        if(distance > players[user].maxDistance) {
-          players[user].maxDistance = distance;
+            //gain experience
+            players[user].exp += stage;
+            if(players[user].exp >= players[user].level) {
+              players[user].points += 5;
+              players[user].exp = 0;
+              players[user].level++;
+              
+              fadeOut("LEVEL UP!", players[user].position.x, players[user].position.y - 85, 150, 20, 0, 255,0, numEffects, 60, .03);
+          
+              players[user].texts[numEffects] = {alpha: 1.0, red: 0, green: 255, blue: 0, text: "LEVEL UP!", width: 150, height: 20, x: players[user].position.x, y: players[user].position.y - 85};
+              numEffects++;
+            }
+          }
+
+          //update sprite
+          /*
+          enemies[keys[i]].spritePos++;
+          if(enemies[keys[i]].spritePos > 5) {
+            enemies[keys[i]].spritePos = 1;
+          }
+          */
+
+          socket.emit('updateEnemy', {room: players[user].room, name: keys[i], health:enemies[keys[i]].currentHealth, dead:enemies[keys[i]].dead, positionX:enemies[keys[i]].position.x, spritePos:enemies[keys[i]].spritePos});
+          
+          //update sword combat for others
+          socket.emit('updatePlayerMovement', {room: players[user].room, name: user, positionX: players[user].position.x, spritePos: players[user].spritePos, isAttacking: players[user].isAttacking});
         }
 
-
-        //check for reaching end of level
-        if(players[user].position.x > worldWidth) {
-          players[user].position.x = 0;
-          stage += 1;
-          socket.emit('moveToNextStage', {stage: stage, room: players[user].room});
-        }
-
-        //updte sprite
-        if(players[user].spritePos.x == 96) {
-          players[user].spritePos.x = 192;
-        }
-        else {
-          players[user].spritePos.x = 96;
-        }
-        //using movement method for speed up
-        socket.emit('updatePlayerMovement', {room: players[user].room, name: user, position: players[user].position, spritePos: players[user].spritePos, isAttacking: players[user].isAttacking});
-
-        //using old method to overwrite entire players array
-        //socket.emit('updatePlayer', {name: user, playerInfo: players[user]});
-
+        //should I draw here even though server hasn't received update?
         draw();
-      }
+        }
+    }
+  }
+
+  //Moving
+  if(!isColliding && !players[user].dead) {
+    console.log("moving");
+    players[user].isAttacking = false;
+    
+    if(players[user].direction) {
+      players[user].position.x += movementDistance;
     }
     else {
-      console.log("don't update");
+      players[user].position.x -= movementDistance;
     }
-  }
 
-  //SPELL
-  if ( keyCode == 32 ) {
-
-    //only move if enough time has occured, otherwise server is overloaded
-    if(time - players[user].lastSpell > players[user].spellCooldown) {
-      players[user].lastSpell = time;
-
-      socket.emit('healSpell', {room: players[user].room, name: user, power: players[user].spellPower});
-      
-      fadeOut(user + " used Heal!", worldWidth/2 - 150, worldHeight/2 - 200, 250, 20, 0, 255,0, numEffects, 40, .04);
-            
-      players[user].texts[numEffects] = {alpha: 1.0, red: 0, green: 255, blue: 0, text: user + " used Heal!", width: 250, height: 20, x: worldWidth/2 - 150, y: worldHeight/2 - 200};
-      
-      //emit the text effect
-      socket.emit('updateText', {room: players[user].room, effect: players[user].texts[numEffects], name: user});
-                                 
-      numEffects++;
-      
-      players[user].currentHealth += players[user].spellPower;
-      if(players[user].currentHealth > players[user].maxHealth) {
-        players[user].currentHealth = players[user].maxHealth;
-      }
-      draw();
+    //update max distance
+    let distance = ((stage-1) * 100) + Math.round((players[user].position.x / worldWidth) * 100);
+    if(distance > players[user].maxDistance) {
+      players[user].maxDistance = distance;
     }
+
+
+    //check for reaching end of level
+    if(players[user].position.x > worldWidth) {
+      players[user].position.x = 0;
+      stage += 1;
+      socket.emit('moveToNextStage', {stage: stage, room: players[user].room});
+    }
+
+    //updte sprite
+    if(players[user].spritePos.x == 96) {
+      players[user].spritePos.x = 192;
+    }
+    else {
+      players[user].spritePos.x = 96;
+    }
+    //using movement method for speed up
+    socket.emit('updatePlayerMovement', {room: players[user].room, name: user, positionX: players[user].position.x, spritePos: players[user].spritePos, isAttacking: players[user].isAttacking});
+
+    //using old method to overwrite entire players array
+    //socket.emit('updatePlayer', {name: user, playerInfo: players[user]});
+
+    draw();
   }
-};
+}
+
+const spell = (time) => {
+  socket.emit('healSpell', {room: players[user].room, name: user, power: players[user].spellPower});
+  
+  fadeOut(user + " used Heal!", worldWidth/2 - 150, worldHeight/2 - 200, 250, 20, 0, 255,0, numEffects, 40, .04);
+        
+  players[user].texts[numEffects] = {alpha: 1.0, red: 0, green: 255, blue: 0, text: user + " used Heal!", width: 250, height: 20, x: worldWidth/2 - 150, y: worldHeight/2 - 200};
+  
+  //emit the text effect
+  socket.emit('updateText', {room: players[user].room, effect: players[user].texts[numEffects], name: user});
+                              
+  numEffects++;
+  
+  players[user].currentHealth += players[user].spellPower;
+  if(players[user].currentHealth > players[user].maxHealth) {
+    players[user].currentHealth = players[user].maxHealth;
+  }
+  draw();
+}
 
 const setupPlayer = () => {            
     const time = new Date().getTime();
@@ -511,7 +559,31 @@ const setupPlayer = () => {
     let y = 300;
     let position = {x:x, y:y,width:100,height:100};
     let spritePos = {x:96, y:96, width: 96, height: 96};
-    players[user] = {room: room, lastSpell: time, lastUpdate: time, isMoving: false, position:position, maxHealth:maxHealth, currentHealth:maxHealth,dead:false,speed:speed,attack:attack,level:level,exp:exp,points:points,maxDistance:maxDistance, spritePos:spritePos, spellPower:spellPower, spellCooldown:1000, isAttacking:false, color: color, texts: {}};
+    players[user] = {
+      room: room, 
+      lastSpell: time, 
+      lastUpdate: time, 
+      lastAttack: time,
+      isMoving: false, 
+      position:position, 
+      maxHealth:maxHealth, 
+      currentHealth:maxHealth,
+      dead:false,
+      speed:speed,
+      //attack:attack,
+      attack:1,
+      level:level,
+      exp:exp,
+      points:points,
+      maxDistance:maxDistance, 
+      spritePos:spritePos, 
+      spellPower:spellPower, 
+      spellCooldown:1000, 
+      isAttacking:false, 
+      color: color, 
+      texts: {},
+      direction: true,
+    };
 
     //host calls setupplayer twice so don't set another interval
     if(!isHost) {
@@ -533,7 +605,17 @@ const setupEnemy = () => {
 
     for(let i = 1; i <= 5; i++) {
         let position = {x:x + (i*200), y:y, width:100, height:100};
-        enemies[`enemy${i}`] = {lastUpdate: time, position:position, maxHealth:10*stage, currentHealth:10*stage,dead:false,attack:stage*5,spritePos:1};
+        enemies[`enemy${i}`] = {
+          lastUpdate: time, 
+          position:position, 
+          maxHealth:10*stage, 
+          currentHealth:10*stage,
+          dead:false,
+          attack:stage*5,
+          spritePos:1,
+          lungeDistance:50,
+          origX:position.x,
+        };
     }
 };
 
@@ -772,7 +854,7 @@ const updatePlayerMovementHost = (data) => {
 
 const updatePlayersMovement = (data) => {
   if(data.name != user) {
-    players[data.name].position = data.position;
+    players[data.name].position.x = data.positionX;
     players[data.name].spritePos = data.spritePos;
     players[data.name].isAttacking = data.isAttacking;
 
@@ -844,6 +926,7 @@ const updateEnemyHost = (data) => {
 const updateEnemies = (data) => {
   enemies[data.name].currentHealth = data.health;
   enemies[data.name].dead = data.dead;
+  enemies[data.name].position.x = data.positionX;
   enemies[data.name].spritePos = data.spritePos;
 
   draw();

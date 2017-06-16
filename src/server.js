@@ -157,7 +157,8 @@ io.sockets.on('connection', (socket) => {
 
   // these methods update only position of a single player
   socket.on('updatePlayerMovement', (data) => {
-    io.sockets.in(data.room).emit('getPlayersMovementHost', data);
+    //io.sockets.in(data.room).emit('getPlayersMovementHost', data);
+    io.sockets.in(data.room).emit('getAllPlayersMovement', data);
   });
 
   socket.on('updateAllPlayersMovement', (data) => {
@@ -166,7 +167,8 @@ io.sockets.on('connection', (socket) => {
 
   // these methods update only health of a single player
   socket.on('updatePlayerHealth', (data) => {
-    io.sockets.in(data.room).emit('getPlayersHealthHost', data);
+    //io.sockets.in(data.room).emit('getPlayersHealthHost', data);
+    io.sockets.in(data.room).emit('getAllPlayersHealth', data);
   });
 
   socket.on('updateAllPlayersHealth', (data) => {
@@ -175,7 +177,8 @@ io.sockets.on('connection', (socket) => {
 
   // These methods update enemies
   socket.on('updateEnemy', (data) => {
-    io.sockets.in(data.room).emit('getEnemyHost', data);
+    //io.sockets.in(data.room).emit('getEnemyHost', data);
+    io.sockets.in(data.room).emit('getAllEnemies', data);
   });
 
   socket.on('updateAllEnemies', (data) => {
@@ -195,6 +198,7 @@ io.sockets.on('connection', (socket) => {
   socket.on('healSpell', (data) => {
     console.log('heal spell used');
     io.sockets.in(data.room).emit('healSpellHost', data);
+    //io.sockets.in(data.room).emit('healAll', data.players);
   });
 
   socket.on('healSpellAll', (data) => {
@@ -203,7 +207,8 @@ io.sockets.on('connection', (socket) => {
   });
 
   socket.on('updateText', (data) => {
-    io.sockets.in(data.room).emit('updateTextHost', data);
+    //io.sockets.in(data.room).emit('updateTextHost', data);
+    io.sockets.in(data.room).emit('updateTextForAll', data);
   });
 
   socket.on('updateTextAll', (data) => {
