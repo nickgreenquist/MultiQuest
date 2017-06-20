@@ -117,7 +117,9 @@ io.sockets.on('connection', (socket) => {
 
   socket.on('leave', (data) => {
     console.log('User has left the game');
-    rooms[data.room].players -= 1;
+    if ((data.room in rooms)) {
+      rooms[data.room].players -= 1;
+    }
     if (data.isHost) {
       console.log('user is host, removgin room');
       console.log(data.name);

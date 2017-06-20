@@ -1,5 +1,6 @@
 <html lang="en">
 <head>
+    <script src="https://use.fontawesome.com/b91c29a417.js"></script>
     <script> 
       const username = `{{info.username}}`;
       const level = {{info.level}};
@@ -18,11 +19,55 @@
     <script type="text/babel" src="/assets/game/game.js"></script>
 </head>
 <body>
-    <canvas id="canvas" height="768" width="1366" style="background-image:url('/assets/img/background1.png'); z-index:-1">Please use an HTML 5 browser</canvas>
-    <input id="health" type="button" style="z-index:2; position:absolute; top:525; left:0" value="+"/>
-    <input id="attack"type="button" style="z-index:2; position:absolute; top:565; left:0" value="+"/>
-    <input id="speed"type="button" style="z-index:2; position:absolute; top:605; left:0" value="+"/>
-    <input id="spell"type="button" style="z-index:2; position:absolute; top:645; left:0" value="+"/>
-    <input id="quit"type="button" style="z-index:2; position:absolute; top:685; left:0" value="SAVE AND QUIT"/>
+    <div id="game">
+        <canvas id="canvas">Please use an HTML 5 browser</canvas>
+    </div>
+    <div id="ui">
+        <div id="ui_left">
+            <p id="name" style="text-align: center"></p>
+            <p id="level">Level: </p>
+            <p id="exp">Exp: </p>
+            <p id="points">Skill Points: </p>
+        </div>
+        <div id="ui_right">
+            <div id="skill">
+                <div id="skill_left">
+                    <a id="healthButton" class="btn" href="#"> <i class="fa fa-plus-square fa-2x"></i></a>
+                    <p>MAX HEALTH:</p>
+                </div>
+                <div id="skill_right">
+                    <p id="health"></p>
+                </div>
+            </div>
+            <div id="skill">
+                <div id="skill_left">
+                    <a id="attackButton" class="btn" href="#"> <i class="fa fa-plus-square fa-2x"></i></a>
+                    <p>ATTACK:</p>
+                </div>
+                <div id="skill_right">
+                    <p id="attack"></p>
+                </div>
+            </div>
+            <div id="skill">
+                <div id="skill_left">
+                    <a id="speedButton" class="btn" href="#"> <i class="fa fa-plus-square fa-2x"></i></a>
+                    <p>SPEED:</p>
+                </div>
+                <div id="skill_right">
+                    <p id="speed"></p>
+                </div>
+            </div>
+            <div id="skill">
+                <div id="skill_left">
+                    <a id="spellButton" class="btn" href="#"> <i class="fa fa-plus-square fa-2x"></i></a>
+                    <p>SPELL POWER:</p>
+                </div>
+                <div id="skill_right">
+                    <p id="spell"></p>
+                </div>
+            </div>
+            <button id="quitButton">Save and Quit</button>
+        </div>
+    </div>
 </body>
 </html>

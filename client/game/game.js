@@ -18,8 +18,8 @@ let isHost = false;
 const user = username;
 
 //Game data
-let worldWidth = 1366;
-let worldHeight = 768;
+let worldWidth = window.innerWidth;
+let worldHeight = window.innerHeight / 3;
 let stage = 1;
 let then = Date.now();
 
@@ -89,6 +89,9 @@ const init = () => {
   canvas = document.querySelector("#canvas");
   ctx = canvas.getContext("2d");
 
+  ctx.canvas.width = worldWidth;
+  ctx.canvas.height = worldHeight;
+
   //connecting the socket
   socketInit(socket);
 
@@ -99,7 +102,7 @@ const init = () => {
   window.addEventListener("touchend", handleTouchEnd, true);
 
   //SKILL POINT BUTTONS
-  document.getElementById("health").addEventListener("click", function(){
+  document.getElementById("healthButton").addEventListener("click", function(){
     if(players[user].points > 0) {
       players[user].points--;
       players[user].maxHealth += 5;
@@ -107,28 +110,28 @@ const init = () => {
       draw();
     }
   });
-  document.getElementById("attack").addEventListener("click", function(){
+  document.getElementById("attackButton").addEventListener("click", function(){
     if(players[user].points > 0) {
       players[user].points--;
       players[user].attack++;
       draw();
     }
   });
-  document.getElementById("speed").addEventListener("click", function(){
+  document.getElementById("speedButton").addEventListener("click", function(){
     if(players[user].points > 0) {
       players[user].points--;
       players[user].speed++;
       draw();
     }
   });
-  document.getElementById("spell").addEventListener("click", function(){
+  document.getElementById("spellButton").addEventListener("click", function(){
     if(players[user].points > 0) {
       players[user].points--;
       players[user].spellPower++;
       draw();
     }
   });
-  document.getElementById("quit").addEventListener("click", function(){
+  document.getElementById("quitButton").addEventListener("click", function(){
     quit();
 
     //logout so progress is saved
@@ -140,14 +143,14 @@ const init = () => {
 };
 
 const handleTouchStart = (e) => {
-  e.preventDefault();
+  //e.preventDefault();
   var xPos = e.touches[0].pageX;
   players[user].direction = (xPos > ($(window).height() / 2));
   players[user].isMoving = true;
 }
 
 const handleTouchEnd = (e) => {
-  e.preventDefault();
+  //e.preventDefault();
   players[user].isMoving = false;
 }
 
@@ -253,11 +256,12 @@ const update = (modifier) => {
             players[user].spritePos.y = 0;
             players[user].currentHealth = 0;
           }
-          socket.emit('updatePlayerHealth', {room: players[user].room, name: user, health: players[user].currentHealth, spritePos: players[user].spritePos});
+          socket.emit('updatePlayerHealth', {room: players[user].room, name: user, health: players[user].currentHealth,dead: players[user].dead, spritePos: players[user].spritePos});
 
           //draw damage
-          fadeOut(enemies[keys[i]].attack, players[user].position.x + 25, players[user].position.y - 85, 50, 100, 255, 0,0, numEffects, 20, .05);        
-          players[user].texts[numEffects] = {alpha: 1.0, red: 255, green: 0, blue: 0, text:enemies[keys[i]].attack, width: 50, height: 20, x: players[user].position.x + 25, y: players[user].position.y - 85};       
+          const playerY = worldHeight - players[user].position.y;
+          fadeOut(enemies[keys[i]].attack, players[user].position.x + 25, playerY - 85, 50, 100, 255, 0,0, numEffects, 20, .05);        
+          players[user].texts[numEffects] = {alpha: 1.0, red: 255, green: 0, blue: 0, text:enemies[keys[i]].attack, width: 50, height: 20, x: players[user].position.x + 25, y: playerY - 85};       
           numEffects++;
 
           draw();
@@ -281,64 +285,68 @@ const move = () => {
   }
   isColliding = false;
   players[user].isAttacking = false;
-  let keys = Object.keys(enemies);
-  for(let i = 0; i < keys.length; i++)
-  {
-    const collisionCall = enemies[keys[i]];
+  
+  //GET FIRST ENEMY THAT ISN'T DEAD
+  let enemy, key;
+  for (key in enemies) {
+    enemy = enemies[key];
+    if(!enemy.dead) {
+      break;
+    }
+  }
 
-    //Combat
-    if(players[user].direction && !players[user].dead && !collisionCall.dead && (players[user].position.x + players[user].position.width) > (collisionCall.origX - 15)) {
-      isColliding = true;
+  //Combat
+  if(players[user].direction && !players[user].dead && !enemy.dead && (players[user].position.x + players[user].position.width) > (enemy.origX - 15)) {
+    isColliding = true;
 
-      //don't update enemy stats if player has died...creates weird bugs if the world is reset same time as enemy is updated with damage
-      if(!players[user].dead) {
+    //don't update enemy stats if player has died...creates weird bugs if the world is reset same time as enemy is updated with damage
+    if(!players[user].dead) {
 
-        let time = new Date().getTime();
-        let timePassed = time - players[user].lastAttack;
-        let speed = attackTimer / Math.log(players[user].speed);
-        if(timePassed > speed) {
-          players[user].lastAttack = time;
-          players[user].isAttacking = true;
+      let time = new Date().getTime();
+      let timePassed = time - players[user].lastAttack;
+      let speed = attackTimer / Math.log(players[user].speed);
+      if(timePassed > speed) {
+        players[user].lastAttack = time;
+        players[user].isAttacking = true;
+      
+        //draw damage
+        fadeOut(players[user].attack, enemy.position.x + 25, enemy.position.y - 50, 50, 100, 0, 0,0, numEffects, 20, .05);
         
-          //draw damage
-          fadeOut(players[user].attack, enemies[keys[i]].position.x + 25, enemies[keys[i]].position.y - 50, 50, 100, 0, 0,0, numEffects, 20, .05);
-          
-          players[user].texts[numEffects] = {alpha: 1.0, red: 0, green: 0, blue: 0, text: players[user].attack, width: 50, height: 20, x: enemies[keys[i]].position.x + 25, y: enemies[keys[i]].position.y - 50};
-          numEffects++;
-          
-          //to prevent insanely high key values
-          if(numEffects > 25) {
-            numEffects = 0;
-          }
-          
-          enemies[keys[i]].currentHealth -= players[user].attack;
-          if(enemies[keys[i]].currentHealth <= 0) {
-            enemies[keys[i]].currentHealth = 0;
-            enemies[keys[i]].dead = true;
+        players[user].texts[numEffects] = {alpha: 1.0, red: 0, green: 0, blue: 0, text: players[user].attack, width: 50, height: 20, x: enemy.position.x + 25, y: enemy.position.y - 50};
+        numEffects++;
+        
+        //to prevent insanely high key values
+        if(numEffects > 25) {
+          numEffects = 0;
+        }
+        
+        enemy.currentHealth -= players[user].attack;
+        if(enemy.currentHealth <= 0) {
+          enemy.currentHealth = 0;
+          enemy.dead = true;
 
-            //gain experience
-            players[user].exp += stage;
-            if(players[user].exp >= players[user].level) {
-              players[user].points += 5;
-              players[user].exp = 0;
-              players[user].level++;
-              
-              fadeOut("LEVEL UP!", players[user].position.x, players[user].position.y - 85, 150, 20, 0, 255,0, numEffects, 60, .03);
-          
-              players[user].texts[numEffects] = {alpha: 1.0, red: 0, green: 255, blue: 0, text: "LEVEL UP!", width: 150, height: 20, x: players[user].position.x, y: players[user].position.y - 85};
-              numEffects++;
-            }
+          //gain experience
+          players[user].exp += stage;
+          if(players[user].exp >= players[user].level) {
+            players[user].points += 5;
+            players[user].exp = 0;
+            players[user].level++;
+            
+            fadeOut("LEVEL UP!", players[user].position.x, players[user].position.y - 85, 150, 20, 0, 255,0, numEffects, 60, .03);
+        
+            players[user].texts[numEffects] = {alpha: 1.0, red: 0, green: 255, blue: 0, text: "LEVEL UP!", width: 150, height: 20, x: players[user].position.x, y: players[user].position.y - 85};
+            numEffects++;
           }
-
-          socket.emit('updateEnemy', {room: players[user].room, name: keys[i], health:enemies[keys[i]].currentHealth, dead:enemies[keys[i]].dead, positionX:enemies[keys[i]].position.x, spritePos:enemies[keys[i]].spritePos});
-          
-          //update sword combat for others
-          socket.emit('updatePlayerMovement', {room: players[user].room, name: user, positionX: players[user].position.x, spritePos: players[user].spritePos, isAttacking: players[user].isAttacking});
         }
 
-        //should I draw here even though server hasn't received update?
-        draw();
-        }
+        socket.emit('updateEnemy', {room: players[user].room, name: enemy.number, health:enemy.currentHealth, dead:enemy.dead, positionX:enemy.position.x, spritePos:enemy.spritePos});
+        
+        //update sword combat for others
+        socket.emit('updatePlayerMovement', {room: players[user].room, name: user, positionX: players[user].position.x, spritePos: players[user].spritePos, isAttacking: players[user].isAttacking});
+      }
+
+      //should I draw here even though server hasn't received update?
+      draw();
     }
   }
 
@@ -368,6 +376,11 @@ const move = () => {
       socket.emit('moveToNextStage', {stage: stage, room: players[user].room});
     }
 
+    //check for reacing beginning of level
+    if(players[user].position.x < 0) {
+      players[user].position.x += movementDistance;
+    }
+
     //updte sprite
     if(players[user].spritePos.x == 96) {
       players[user].spritePos.y += 5;
@@ -381,19 +394,18 @@ const move = () => {
     //using movement method for speed up
     socket.emit('updatePlayerMovement', {room: players[user].room, name: user, positionX: players[user].position.x, spritePos: players[user].spritePos, isAttacking: players[user].isAttacking});
 
-    //using old method to overwrite entire players array
-    //socket.emit('updatePlayer', {name: user, playerInfo: players[user]});
-
     draw();
   }
 }
 
 const spell = (time) => {
   socket.emit('healSpell', {room: players[user].room, name: user, power: players[user].spellPower});
+
+  const playerY = worldHeight - players[user].position.y;
   
-  fadeOut(user + " used Heal!", worldWidth/2 - 150, worldHeight/2 - 200, 250, 20, 0, 255,0, numEffects, 40, .04);
+  fadeOut(user + " used Heal!", worldWidth/2 - 150, playerY - players[user].position.height, 250, 20, 0, 255,0, numEffects, 40, .04);
         
-  players[user].texts[numEffects] = {alpha: 1.0, red: 0, green: 255, blue: 0, text: user + " used Heal!", width: 250, height: 20, x: worldWidth/2 - 150, y: worldHeight/2 - 200};
+  players[user].texts[numEffects] = {alpha: 1.0, red: 0, green: 255, blue: 0, text: user + " used Heal!", width: 250, height: 20, x: worldWidth/2 - 150, y: playerY - players[user].position.height};
   
   //emit the text effect
   socket.emit('updateText', {room: players[user].room, effect: players[user].texts[numEffects], name: user});
@@ -412,26 +424,30 @@ const draw = () => {
 
   //draw the actual players
   let keys = Object.keys(players);   
-  for(let i = 0; i < keys.length; i++)
-  {
+  for(let i = 0; i < keys.length; i++) {
     const drawCall = players[keys[i]];
+    const playerY = worldHeight - drawCall.position.y;
 
-    ctx.globalAlpha = 1.0;
     if(drawCall.dead) {
       ctx.globalAlpha = 0.5;
       drawCall.spritePos.x = 0;
       drawCall.spritePos.y = 0;
+    } else {
+      ctx.globalAlpha = 1.0;
     }
     
     //WEAPON DRAW
     let swordWidth = 80;
     let swordHeight = 80;
+    
+    //HANDLE TINTED SWORDS
+    let buffer;
+    let bx;
     if(drawCall.color != 'none') {
-      // create offscreen buffer, 
-      let buffer = document.createElement('canvas');
+      buffer = document.createElement('canvas');
       buffer.width = swordWidth;
       buffer.height = swordHeight;
-      let bx = buffer.getContext('2d');
+      bx = buffer.getContext('2d');
 
       // fill offscreen buffer with the tint color
       bx.fillStyle = drawCall.color;
@@ -440,109 +456,82 @@ const draw = () => {
       // destination atop makes a result with an alpha channel identical to fg, but with all pixels retaining their original color *as far as I can tell*
       bx.globalCompositeOperation = "destination-atop";
       bx.drawImage(swordImage, 0,0,swordWidth, swordHeight);
-    
-      if(drawCall.isAttacking) {
+    }
 
-        // save the unrotated context of the canvas so we can restore it later
-        // the alternative is to untranslate & unrotate after drawing
-        ctx.save();
-        
-        //ctx.clearRect(0,0,worldWidth,worldHeight);
+    //DRAW THE SWORD BASED ON ATTACK STATE
+    if (drawCall.isAttacking) {
+      ctx.save();
 
-        // move to the center of the canvas
-        ctx.translate(drawCall.position.x + 45,drawCall.position.y + 20);
-        ctx.translate(40,40);
+      // move to the center of the canvas
+      ctx.translate(drawCall.position.x + 45,playerY + 20);
+      ctx.translate(40,40);
+      ctx.rotate(Math.PI / 4);
 
-        // rotate the canvas to the specified degrees
-        ctx.rotate(Math.PI / 4);
-
-        // draw the image
-        // since the context is rotated, the image will be rotated also
-        //ctx.drawImage(image,-image.width/2,-image.width/2);
-        // to tint the image, draw it first
-        ctx.drawImage(swordImage, -swordWidth/2, -swordHeight/2, swordWidth, swordHeight);
-
+      ctx.drawImage(swordImage, -swordWidth/2, -swordHeight/2, swordWidth, swordHeight);
+      if (drawCall.color != 'none') {
         //then set the global alpha to the amound that you want to tint it, and draw the buffer directly on top of it.
         ctx.globalAlpha = 0.5;
         ctx.drawImage(buffer, -swordWidth/2, -swordHeight/2, swordWidth, swordHeight);
-
-        // we’re done with the rotating so restore the unrotated context
-        ctx.restore();
       }
-      else {
-        // to tint the image, draw it first
-        ctx.drawImage(swordImage, drawCall.position.x + 45, drawCall.position.y, swordWidth, swordHeight);
+    } 
+    else {
+      ctx.drawImage(swordImage, drawCall.position.x + 45, playerY, swordWidth, swordHeight);
 
+      if (drawCall.color != 'none') {
         //then set the global alpha to the amound that you want to tint it, and draw the buffer directly on top of it.
         ctx.globalAlpha = 0.5;
-        ctx.drawImage(buffer,drawCall.position.x + 45, drawCall.position.y, swordWidth, swordHeight);
+        ctx.drawImage(buffer,drawCall.position.x + 45, playerY, swordWidth, swordHeight);
       }
     }
-    else {
-      if(drawCall.isAttacking) {
-
-          // save the unrotated context of the canvas so we can restore it later
-          // the alternative is to untranslate & unrotate after drawing
-          ctx.save();
-        
-          //ctx.clearRect(0,0,worldWidth,worldHeight);
-
-          // move to the center of the canvas
-          ctx.translate(drawCall.position.x + 45,drawCall.position.y + 20);
-          ctx.translate(40,40);
-
-          // rotate the canvas to the specified degrees
-          ctx.rotate(Math.PI / 4);
-
-          // draw the image
-          // since the context is rotated, the image will be rotated also
-          //ctx.drawImage(image,-image.width/2,-image.width/2);
-          // to tint the image, draw it first
-          ctx.drawImage(swordImage, -swordWidth/2, -swordHeight/2, swordWidth, swordHeight);
-
-          // we’re done with the rotating so restore the unrotated context
-          ctx.restore();
-        }
-      else {
-        ctx.drawImage(swordImage, drawCall.position.x + 45, drawCall.position.y, swordWidth, swordHeight);
-      }
-    }
+    ctx.restore();
 
     //PLAYER DRAW
-    ctx.drawImage(playerImage, drawCall.spritePos.x, drawCall.spritePos.y, drawCall.spritePos.width, drawCall.spritePos.height, drawCall.position.x, drawCall.position.y, drawCall.position.width, drawCall.position.height);
+    if(drawCall.dead) {
+      ctx.globalAlpha = 0.5;
+      drawCall.spritePos.x = 0;
+      drawCall.spritePos.y = 0;
+    } else {
+      ctx.globalAlpha = 1.0;
+    }
+    ctx.drawImage(playerImage, drawCall.spritePos.x, drawCall.spritePos.y, drawCall.spritePos.width, drawCall.spritePos.height, drawCall.position.x, playerY, drawCall.position.width, drawCall.position.height);
 
-    //NAME
-    ctx.font = "36px serif";
-    ctx.strokeText(keys[i], drawCall.position.x, drawCall.position.y - 50);
+    //Name
+    if(keys[i] != user) {
+      ctx.font = "36px serif";
+      ctx.strokeText(keys[i], drawCall.position.x, playerY - 50);
+    } else {
+      drawStroked(drawCall.currentHealth + " / " + drawCall.maxHealth, drawCall.position.x, playerY - 50, 24)
+    }
 
     //HEALTH BAR
     ctx.globalAlpha = 1;
     ctx.fillStyle="white";
-    ctx.fillRect(drawCall.position.x,drawCall.position.y - 40, drawCall.position.width, 30);
+    ctx.fillRect(drawCall.position.x,playerY - 40, drawCall.position.width, 30);
     ctx.fillStyle="black";
-    ctx.fillRect(drawCall.position.x + 3,drawCall.position.y -37 , drawCall.position.width - 6, 24);
+    ctx.fillRect(drawCall.position.x + 3,playerY -37 , drawCall.position.width - 6, 24);
     ctx.fillStyle="green";
-    ctx.fillRect(drawCall.position.x + 3,drawCall.position.y - 37,(drawCall.currentHealth / drawCall.maxHealth) * (drawCall.position.width - 6) ,24);
+    ctx.fillRect(drawCall.position.x + 3,playerY - 37,(drawCall.currentHealth / drawCall.maxHealth) * (drawCall.position.width - 6) ,24);
   }
 
   //SCREEN DATA DRAW
+  //player stats
+  document.getElementById("name").innerHTML = user.toString().toUpperCase();
+  document.getElementById("level").innerHTML = "Level: " + players[user].level;
+  document.getElementById("exp").innerHTML = "EXP: " + players[user].exp + " / " + players[user].level;
+  document.getElementById("points").innerHTML = "Skill Points: " + players[user].points;
+  document.getElementById("health").innerHTML = players[user].maxHealth;
+  document.getElementById("attack").innerHTML = players[user].attack;
+  document.getElementById("speed").innerHTML = players[user].speed;
+  document.getElementById("spell").innerHTML = players[user].spellPower;
+
   //stage and distance
-  ctx.fillStyle = "black";
-  ctx.font = "36px serif";
-  ctx.fillText(`Stage: ${stage}`, 0, 50);
+  drawStroked(`Stage: ${stage}`, 0, 50, 80);
+  ctx.fillStyle = "white";
+  ctx.strokeStyle = "black";
+  ctx.font = "36px Verdana";
   let distance = Math.round((players[user].position.x / worldWidth) * 100);
   ctx.fillText(`Distance: ${(((stage-1)*100) + distance)}`, 0, 100);
   ctx.fillText(`Max Distance: ${players[user].maxDistance}`, 0, 150);
-
-  //player stats
-  ctx.font = "30px serif";
-  ctx.fillText(`Level: ${players[user].level}`, 30, (worldHeight / 2) + 40);
-  ctx.fillText(`Exp: ${players[user].exp} / ${players[user].level}`, 30, (worldHeight / 2) + 80);
-  ctx.fillText(`Skill Points: ${players[user].points}`, 30, (worldHeight / 2) + 120);
-  ctx.fillText(`Health: ${players[user].currentHealth} / ${players[user].maxHealth}`, 30, (worldHeight / 2) + 160);
-  ctx.fillText(`Attack: ${players[user].attack}`, 30, (worldHeight / 2) + 200);
-  ctx.fillText(`Speed: ${players[user].speed}`, 30, (worldHeight / 2) + 240);
-  ctx.fillText(`Spell Power: ${players[user].spellPower}`, 30, (worldHeight / 2) + 280);
   
   //ENEMIES
   keys = Object.keys(enemies);
@@ -573,11 +562,11 @@ const draw = () => {
       //HEALTH BAR
       ctx.globalAlpha = 1;
       ctx.fillStyle="white";
-      ctx.fillRect(drawCall.position.x,drawCall.position.y + 97, drawCall.position.width, 30);
+      ctx.fillRect(drawCall.position.x,drawCall.position.y+ drawCall.position.height - 3, drawCall.position.width, drawCall.position.height / 5 + 2);
       ctx.fillStyle="black";
-      ctx.fillRect(drawCall.position.x + 3,drawCall.position.y + 100, drawCall.position.width - 6, 24);
+      ctx.fillRect(drawCall.position.x + 3,drawCall.position.y + drawCall.position.height, drawCall.position.width - 6, drawCall.position.height / 5);
       ctx.fillStyle="red";
-      ctx.fillRect(drawCall.position.x + 3,drawCall.position.y + 100,(drawCall.currentHealth / drawCall.maxHealth) * (drawCall.position.width - 6) ,24);
+      ctx.fillRect(drawCall.position.x + 3,drawCall.position.y + drawCall.position.height,(drawCall.currentHealth / drawCall.maxHealth) * (drawCall.position.width - 6) ,drawCall.position.height / 5);
     }
   }
   
@@ -591,13 +580,21 @@ const draw = () => {
   }
 };
 
+function drawStroked(text, x, y, size) {
+    ctx.font = size + "px Sans-serif"
+    ctx.strokeStyle = 'black';
+    ctx.lineWidth = 4;
+    ctx.strokeText(text, x, y);
+    ctx.fillStyle = 'white';
+    ctx.fillText(text, x, y);
+}
+
 function fadeOut(text, x, y, width, height, r, g, b, num, time, decrease) {
     var alpha = 1.0,   // full opacity
         
     interval = setInterval(function () {
       ctx.clearRect(x,y-height,width,height+10);
       
-      //draw other texts
       //DRAW TEXT EFFECTS IF ANY EXIST
       let keys = Object.keys(players[user].texts);
       for(let i = 0; i < keys.length; i++) {
@@ -605,8 +602,7 @@ function fadeOut(text, x, y, width, height, r, g, b, num, time, decrease) {
         ctx.font = "italic 30pt Arial";
         ctx.fillText(players[user].texts[keys[i]].text, players[user].texts[keys[i]].x, players[user].texts[keys[i]].y);
       }
-      
-      
+        
       alpha = alpha - decrease; // decrease opacity (fade out)
       players[user].texts[num].alpha = alpha;
       y = y - 1;
@@ -626,8 +622,9 @@ function fadeOut(text, x, y, width, height, r, g, b, num, time, decrease) {
 const setupPlayer = () => {            
   const time = new Date().getTime();
   let x = 0;
-  let y = 300;
-  let position = {x:x, y:y,width:100,height:100};
+  let size = worldWidth / 10;
+  let y = size;
+  let position = {x:x, y:y,width:size,height:size};
   let spritePos = {x:96, y:96, width: 96, height: 96};
   players[user] = {
     room: room, 
@@ -642,8 +639,8 @@ const setupPlayer = () => {
     //currentHealth:20,
     dead:false,
     speed:speed,
-    attack:attack,
-    //attack:1,
+    //attack:attack,
+    attack:1,
     level:level,
     exp:exp,
     points:points,
@@ -674,13 +671,18 @@ const setupPlayer = () => {
 };
 
 const setupEnemy = () => {            
-  const time = new Date().getTime();         
-  let x = 200;
-  let y = 300;
+  const time = new Date().getTime();
+  let size = worldWidth / 10;
+  let y = worldHeight - size - 30;         // 30 is the healthbar 
+  let distanceBetween = worldWidth / 6;
 
-  for(let i = 1; i <= 5; i++) {
-      let position = {x:x + (i*200), y:y, width:100, height:100};
-      enemies[`enemy${i}`] = {
+  let numEnemies = Math.random() * (6 - 2) + 2;
+
+  for(let i = 1; i <= numEnemies; i++) {
+      let x = Math.random() * (distanceBetween - (distanceBetween / 4)) + (distanceBetween / 4);
+      let position = {x:x + (i*distanceBetween), y:y, width:size, height:size};
+      enemies[i] = {
+        number: i,
         lastUpdate: time, 
         lastSpriteUpdate: time,
         position:position, 

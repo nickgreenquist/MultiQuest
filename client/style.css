@@ -264,3 +264,97 @@ h3.domoAge {
 .domo:last-child {
     margin-bottom:10px;
 }
+
+canvas {
+    position:absolute;
+    background-image:url('/assets/img/background1.png');
+    background-size: 100% 100%;
+}
+
+#game {
+    position: absolute;
+    height: 33%;
+    top: 0;
+}
+
+#ui {
+    position: absolute;
+    height: 66.6666%;
+    width: 100%;
+    bottom: 0;
+    background-color: black;
+    color: white;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+
+    display: flex;
+    flex-direction: row;
+}
+
+#ui_left {
+    margin: 20px;
+    border-radius: 25px;
+    border: 2px solid white;
+    padding: 20px; 
+
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+#ui_right {
+    margin: 20px;
+    border-radius: 25px;
+    border: 2px solid white;
+    padding: 20px; 
+
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+#skill {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    margin: 10px;
+}
+
+#skill_left {
+    display: flex;
+    flex: 1;
+    justify-content: flex-start;
+}
+
+#skill_right {
+    display: flex;
+    justify-content: flex-end;
+    flex: 1;
+    margin-left: auto;
+}
+
+.skillButton {
+    margin: 5px;
+}
+
+#quitButton {
+    transition: background-color 0.4s ease;
+    display: block;
+    text-align: center;
+    margin: 0 auto;
+    font-size: 1.2em;
+    background-color: #55acee;
+    border-radius: 2px;
+    padding: 3px 0px;
+    color: white;
+    text-decoration: none;
+}
+
+.fa-plus-square {
+  color: white;
+  margin: 10px;
+}
+.fa-plus-square:active {
+  color: purple;
+}
