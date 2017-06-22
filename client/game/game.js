@@ -580,7 +580,7 @@ const draw = () => {
   {
     const drawCall = enemies[keys[i]];
     let enemyX = (drawCall.position.x / 100) * worldWidth;
-    if(!drawCall.dead) {
+    if(!drawCall.dead && enemyImages.length > 0) {
       let extraWidth = 0;
       let extraX = 0;
       let extraHeight = 0;
