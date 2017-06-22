@@ -57,8 +57,8 @@ enemySpritePos[2] = {x:125, y:5, width: 65, height: 95};
 enemySpritePos[3] = {x:165, y:95, width: 108, height: 98};
 
 let enemySpritePos1 = {};
-enemySpritePos1[1] = {x:32, y:2, width: 34, height: 31};
-enemySpritePos1[2] = {x:95, y:-3, width: 34, height: 28};
+enemySpritePos1[1] = {x:33, y:2, width: 32, height: 31};
+enemySpritePos1[2] = {x:96, y:0, width: 32, height: 22};
 enemySpritePos1[3] = {x:0, y:106, width: 31, height: 22};
 
 
@@ -580,7 +580,7 @@ const draw = () => {
   {
     const drawCall = enemies[keys[i]];
     let enemyX = (drawCall.position.x / 100) * worldWidth;
-    if(!drawCall.dead && enemyImages.length > 0) {
+    if(!drawCall.dead) {
       let extraWidth = 0;
       let extraX = 0;
       let extraHeight = 0;
@@ -591,9 +591,9 @@ const draw = () => {
         extraHeight = 5;
       }
       if(drawCall.type === 1 && drawCall.spritePos == 2) {
-        extraWidth = 20;
-        extraX = -13;
-        extraHeight = 0;
+        extraWidth = 10;
+        extraX = -10;
+        extraHeight = -20;
       }
       let enemySprite = enemySpritePositions[drawCall.type];
       ctx.drawImage(enemyImages[drawCall.type], enemySprite[drawCall.spritePos].x, enemySprite[drawCall.spritePos].y, enemySprite[drawCall.spritePos].width, enemySprite[drawCall.spritePos].height, enemyX + extraX, enemyY - extraHeight, enemySize + extraWidth, enemySize + extraHeight);
