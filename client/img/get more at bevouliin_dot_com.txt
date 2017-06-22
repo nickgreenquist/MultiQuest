@@ -1,0 +1,7 @@
+Land monster sprite sheets.
+
+file: transparent PNGs
+
+Get more game assets (game characters, backgrounds, game kits, and other game arts) at:
+
+http://bevouliin.com

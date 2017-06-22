@@ -28,6 +28,17 @@ let totalEXP = 0;
 let players = {};
 let enemies = {};
 
+//Always constant so people playing on different screens are drawn the same way
+let playerSize = (worldWidth / 10);
+let playerSizePercentage = 10;
+let playerY = worldHeight - (worldWidth / 10);
+let enemySize = (worldWidth / 10);
+let enemySizePercentage = 10;
+let enemyY = worldHeight - (worldWidth / 10) - (worldHeight / 20); 
+let healthBarHeight = (worldHeight / 20);
+//x coordinates must be stored and emitted as percentages of screen width
+
+
 /*
   Enemy Coord
   Standing: 2,15,60,85
@@ -37,17 +48,32 @@ let enemies = {};
   Attack4:392,190,96,93
 */
 
-//ENEMY IMAGE
+//ENEMY IMAGES
+let enemySpritePositions = [];
+
 let enemySpritePos = {};
 enemySpritePos[1] = {x:2, y:15, width: 60, height: 85};
-enemySpritePos[2] = {x:110, y:100, width: 57, height: 95};
+enemySpritePos[2] = {x:125, y:5, width: 65, height: 95};
 enemySpritePos[3] = {x:165, y:95, width: 108, height: 98};
-enemySpritePos[4] = {x:378, y:130, width: 105, height: 62};
-enemySpritePos[5] = {x:392, y:190, width: 96, height: 93};
-enemySpritePos[6] = {x:125, y:5, width: 65, height: 95};
+
+let enemySpritePos1 = {};
+enemySpritePos1[1] = {x:32, y:2, width: 34, height: 31};
+enemySpritePos1[2] = {x:95, y:-3, width: 34, height: 28};
+enemySpritePos1[3] = {x:0, y:106, width: 31, height: 22};
+
+
+enemySpritePositions.push(enemySpritePos);
+enemySpritePositions.push(enemySpritePos1);
+
+let enemyImages = [];
 
 let enemyImage = new Image();                      
 enemyImage.src = document.location.pathname + '/../assets/img/enemy.png';
+let enemyImage1 = new Image();                      
+enemyImage1.src = document.location.pathname + '/../assets/img/bat.png';
+
+enemyImages.push(enemyImage);
+enemyImages.push(enemyImage1);
 
 //PLAYER IMAGE
 let playerImage = new Image();                    
@@ -56,9 +82,9 @@ let swordImage = new Image();
 swordImage.src = document.location.pathname + '/../assets/img/weapon.png';
 
 //PLAYER UPDATE TIME
-let moveTimer = 300;
+let moveTimer = 500;
 let attackTimer = 1000;
-let movementDistance = 20;
+let movementDistance = 1.5; //percentage of screen
 let isColliding = false;
 let isCasting = false;
 let numEffects = 0;
@@ -230,9 +256,9 @@ const update = (modifier) => {
       if(timePassed > 500) {
         enemy.lastSpriteUpdate = time;
         if(enemy.spritePos == 1) {
-          enemy.spritePos = 6;
+          enemy.spritePos = 2;
         }
-        else if(enemy.spritePos == 6) {
+        else if(enemy.spritePos == 2) {
           enemy.spritePos = 1;
         }
         draw();
@@ -240,7 +266,7 @@ const update = (modifier) => {
     }
 
     //ATTACK
-    if(!enemy.dead && (players[user].position.x + players[user].position.width) > (enemy.position.x - enemy.lungeDistance)) {
+    if(!enemy.dead && (players[user].position.x + playerSizePercentage) > (enemy.position.x - enemy.lungeDistance)) {
       let timePassed = time - enemy.lastUpdate;
       if(timePassed > 200) {
         if(enemy.position.x == enemy.origX && timePassed > 1000 && !players[user].dead) {
@@ -261,9 +287,8 @@ const update = (modifier) => {
           socket.emit('updatePlayerHealth', {room: players[user].room, name: user, health: players[user].currentHealth,dead: players[user].dead, spritePos: players[user].spritePos});
 
           //draw damage
-          const playerY = worldHeight - players[user].position.y;
-          fadeOut(enemies[keys[i]].attack, players[user].position.x + (players[user].position.width / 2), playerY, 50, 100, 255, 0,0, numEffects, 20, .05);        
-          players[user].texts[numEffects] = {alpha: 1.0, red: 255, green: 0, blue: 0, text:enemies[keys[i]].attack, width: 50, height: 20, x: players[user].position.x + (players[user].position.width / 2), y: playerY};       
+          fadeOut(enemies[keys[i]].attack, players[user].position.x + (playerSizePercentage / 2), playerY, 50, 100, 255, 0,0, numEffects, 20, .05);        
+          players[user].texts[numEffects] = {alpha: 1.0, red: 255, green: 0, blue: 0, text:enemies[keys[i]].attack, width: 50, height: 20, x: players[user].position.x + (playerSizePercentage / 2), y: playerY};       
           numEffects++;
 
           draw();
@@ -298,7 +323,7 @@ const move = () => {
   }
 
   //Combat
-  if(players[user].direction && !players[user].dead && !enemy.dead && (players[user].position.x + players[user].position.width) > (enemy.origX - 15)) {
+  if(players[user].direction && !players[user].dead && !enemy.dead && (players[user].position.x + playerSizePercentage) > (enemy.origX - 1)) {
     isColliding = true;
 
     //don't update enemy stats if player has died...creates weird bugs if the world is reset same time as enemy is updated with damage
@@ -312,9 +337,9 @@ const move = () => {
         players[user].isAttacking = true;
       
         //draw damage
-        fadeOut(players[user].attack, enemy.origX + (enemy.position.width / 4), enemy.position.y, 50, 100, 0, 0,0, numEffects, 20, .05);
+        fadeOut(players[user].attack, enemy.origX + (enemySizePercentage / 4), enemyY, 50, 100, 0, 0,0, numEffects, 20, .05);
         
-        players[user].texts[numEffects] = {alpha: 1.0, red: 0, green: 0, blue: 0, text: players[user].attack, width: 50, height: 20, x: enemy.origX + (enemy.position.width / 4), y: enemy.position.y};
+        players[user].texts[numEffects] = {alpha: 1.0, red: 0, green: 0, blue: 0, text: players[user].attack, width: 50, height: 20, x: enemy.origX + (enemySizePercentage / 4), y: enemy.position.y};
         numEffects++;
         
         //to prevent insanely high key values
@@ -335,7 +360,6 @@ const move = () => {
             players[user].exp = 0;
             players[user].level++;
             
-            let playerY = worldHeight - players[user].position.y;
             fadeOut("LEVEL UP!", players[user].position.x, playerY, 150, 20, 0, 255,0, numEffects, 60, .03);
         
             players[user].texts[numEffects] = {alpha: 1.0, red: 0, green: 255, blue: 0, text: "LEVEL UP!", width: 150, height: 20, x: players[user].position.x, y: playerY};
@@ -367,14 +391,14 @@ const move = () => {
     }
 
     //update max distance
-    let distance = ((stage-1) * 100) + Math.round((players[user].position.x / worldWidth) * 100);
+    let distance = ((stage-1) * 100) + players[user].position.x;
     if(distance > players[user].maxDistance) {
       players[user].maxDistance = distance;
     }
 
 
     //check for reaching end of level
-    if(players[user].position.x > worldWidth) {
+    if(players[user].position.x > 100) {
       players[user].position.x = 0;
       stage += 1;
       socket.emit('moveToNextStage', {stage: stage, room: players[user].room});
@@ -405,11 +429,9 @@ const move = () => {
 const spell = (time) => {
   socket.emit('healSpell', {room: players[user].room, name: user, power: players[user].spellPower});
 
-  const playerY = worldHeight - players[user].position.y;
-  
-  fadeOut(user + " used Heal!", worldWidth/2 - 100, playerY - players[user].position.height, 250, 20, 0, 255,0, numEffects, 40, .04);
+  fadeOut(user + " used Heal!", 40, playerY - playerSizePercentage, 250, 20, 0, 255,0, numEffects, 40, .04);
         
-  players[user].texts[numEffects] = {alpha: 1.0, red: 0, green: 255, blue: 0, text: user + " HEALED YOU!", width: 250, height: 20, x: worldWidth/2 - 100, y: playerY - players[user].position.height};
+  players[user].texts[numEffects] = {alpha: 1.0, red: 0, green: 255, blue: 0, text: user + " HEALED YOU!", width: 250, height: 20, x: 40, y: playerY - playerSizePercentage};
   
   //emit the text effect
   socket.emit('updateText', {room: players[user].room, effect: players[user].texts[numEffects], name: user});
@@ -430,7 +452,6 @@ const draw = () => {
   let keys = Object.keys(players);   
   for(let i = 0; i < keys.length; i++) {
     const drawCall = players[keys[i]];
-    const playerY = worldHeight - drawCall.position.y;
 
     if(drawCall.dead) {
       ctx.globalAlpha = 0.5;
@@ -441,10 +462,11 @@ const draw = () => {
     }
     
     //WEAPON DRAW
-    let swordWidth = drawCall.position.width * .8;
-    let swordHeight = drawCall.position.width * .8;
-    let swordXOffset = drawCall.position.width * .45;
-    let swordYOffset = drawCall.position.width * .2;
+    let swordWidth = playerSize * .8;
+    let swordHeight = playerSize * .8;
+    let swordXOffset = playerSize * .45;
+    let swordYOffset = playerSize * .2;
+    let playerX = (drawCall.position.x / 100) * worldWidth;
     
     //HANDLE TINTED SWORDS
     let buffer;
@@ -469,7 +491,7 @@ const draw = () => {
       ctx.save();
 
       // move to the center of the canvas
-      ctx.translate(drawCall.position.x + swordXOffset,playerY + swordYOffset);
+      ctx.translate(playerX + swordXOffset,playerY + swordYOffset);
       ctx.translate(swordXOffset,swordXOffset);
       ctx.rotate(Math.PI / 4);
 
@@ -481,12 +503,12 @@ const draw = () => {
       }
     } 
     else {
-      ctx.drawImage(swordImage, drawCall.position.x + swordXOffset, playerY, swordWidth, swordHeight);
+      ctx.drawImage(swordImage, playerX + swordXOffset, playerY, swordWidth, swordHeight);
 
       if (drawCall.color != 'none') {
         //then set the global alpha to the amound that you want to tint it, and draw the buffer directly on top of it.
         ctx.globalAlpha = 0.5;
-        ctx.drawImage(buffer,drawCall.position.x + swordXOffset, playerY, swordWidth, swordHeight);
+        ctx.drawImage(buffer, playerX + swordXOffset, playerY, swordWidth, swordHeight);
       }
     }
     ctx.restore();
@@ -499,12 +521,12 @@ const draw = () => {
     } else {
       ctx.globalAlpha = 1.0;
     }
-    ctx.drawImage(playerImage, drawCall.spritePos.x, drawCall.spritePos.y, drawCall.spritePos.width, drawCall.spritePos.height, drawCall.position.x, playerY, drawCall.position.width, drawCall.position.height);
+    ctx.drawImage(playerImage, drawCall.spritePos.x, drawCall.spritePos.y, drawCall.spritePos.width, drawCall.spritePos.height, playerX, playerY, playerSize, playerSize);
 
     //Name
     if(keys[i] != user) {
       ctx.font = "36px serif";
-      ctx.strokeText(keys[i], drawCall.position.x, playerY - 50);
+      ctx.strokeText(keys[i], playerX, playerY - 50);
     } else {
       //nothing above the player
     }
@@ -513,30 +535,30 @@ const draw = () => {
     if(keys[i] != user) {
       ctx.globalAlpha = 1;
       ctx.fillStyle="white";
-      ctx.fillRect(drawCall.position.x,playerY - 40, drawCall.position.width, 30);
+      ctx.fillRect(playerX,playerY - healthBarHeight - 1, playerSize, healthBarHeight + 2);
       ctx.fillStyle="black";
-      ctx.fillRect(drawCall.position.x + 3,playerY -37 , drawCall.position.width - 6, 24);
+      ctx.fillRect(playerX + 1,playerY - healthBarHeight , playerSize - 2, healthBarHeight);
       ctx.fillStyle="green";
-      ctx.fillRect(drawCall.position.x + 3,playerY - 37,(drawCall.currentHealth / drawCall.maxHealth) * (drawCall.position.width - 6) ,24);
+      ctx.fillRect(playerX + 1,playerY - healthBarHeight,(drawCall.currentHealth / drawCall.maxHealth) * (playerSize - 2) ,healthBarHeight);
     }
   }
 
   //SCREEN DATA DRAW
   //player stats
   let barX = worldWidth / 30;
-  let barY = worldHeight / 4;
+  let barY = healthBarHeight;
   let barWidth = worldWidth / 4;
   ctx.globalAlpha = 1;
   ctx.fillStyle="white";
-  ctx.fillRect(barX,barY, barWidth, 30);
+  ctx.fillRect(barX,barY, barWidth, healthBarHeight);
   ctx.fillStyle="black";
-  ctx.fillRect(barX + 2,barY + 2, barWidth - 6, 24);
+  ctx.fillRect(barX + 1,barY + 1, barWidth - 2, healthBarHeight - 2);
   ctx.fillStyle="green";
-  ctx.fillRect(barX + 2,barY + 2,(players[user].currentHealth / players[user].maxHealth) * (barWidth - 6) ,24);
-  drawStroked(players[user].currentHealth + '/' + players[user].maxHealth, barX, barY - 6, 24)
+  ctx.fillRect(barX + 1,barY + 1,(players[user].currentHealth / players[user].maxHealth) * (barWidth - 2) ,healthBarHeight - 2);
+  drawStroked(players[user].currentHealth + '/' + players[user].maxHealth, barX, barY - 2, healthBarHeight - 2)
 
-
-  let distance = (players[user].position.x / worldWidth).toFixed(1);;
+ 
+  let distance = players[user].position.x.toFixed(1);;
   let diffMs = (Date.now() - startTime);
   let minutes = (((diffMs % 86400000) % 3600000) / 60000);
   document.getElementById("name").innerHTML = user.toString().toUpperCase();
@@ -557,35 +579,33 @@ const draw = () => {
   for(let i = 0; i < keys.length; i++)
   {
     const drawCall = enemies[keys[i]];
+    let enemyX = (drawCall.position.x / 100) * worldWidth;
     if(!drawCall.dead) {
       let extraWidth = 0;
       let extraX = 0;
       let extraHeight = 0;
 
-      if(drawCall.spritePos == 4) {
-        extraWidth = 50;
-        extraX = -50;
-      }
-      if(drawCall.spritePos == 5) {
-        extraWidth = 50;
-        extraX = -50;
-        extraHeight = 25
-      }
-      if(drawCall.spritePos == 6) {
+      if(drawCall.type === 0 && drawCall.spritePos == 2) {
         extraWidth = 10;
         extraX = -10;
-        extraHeight = 5
+        extraHeight = 5;
       }
-      ctx.drawImage(enemyImage, enemySpritePos[drawCall.spritePos].x, enemySpritePos[drawCall.spritePos].y, enemySpritePos[drawCall.spritePos].width, enemySpritePos[drawCall.spritePos].height, drawCall.position.x + extraX, drawCall.position.y - extraHeight, drawCall.position.width + extraWidth, drawCall.position.height + extraHeight);
+      if(drawCall.type === 1 && drawCall.spritePos == 2) {
+        extraWidth = 20;
+        extraX = -13;
+        extraHeight = 0;
+      }
+      let enemySprite = enemySpritePositions[drawCall.type];
+      ctx.drawImage(enemyImages[drawCall.type], enemySprite[drawCall.spritePos].x, enemySprite[drawCall.spritePos].y, enemySprite[drawCall.spritePos].width, enemySprite[drawCall.spritePos].height, enemyX + extraX, enemyY - extraHeight, enemySize + extraWidth, enemySize + extraHeight);
 
       //HEALTH BAR
       ctx.globalAlpha = 1;
       ctx.fillStyle="white";
-      ctx.fillRect(drawCall.position.x,drawCall.position.y+ drawCall.position.height - 3, drawCall.position.width, drawCall.position.height / 5 + 2);
+      ctx.fillRect(enemyX,enemyY+ enemySize - 1, enemySize, healthBarHeight + 1);
       ctx.fillStyle="black";
-      ctx.fillRect(drawCall.position.x + 3,drawCall.position.y + drawCall.position.height, drawCall.position.width - 6, drawCall.position.height / 5);
+      ctx.fillRect(enemyX + 1,enemyY + enemySize, enemySize - 2, healthBarHeight);
       ctx.fillStyle="red";
-      ctx.fillRect(drawCall.position.x + 3,drawCall.position.y + drawCall.position.height,(drawCall.currentHealth / drawCall.maxHealth) * (drawCall.position.width - 6) ,drawCall.position.height / 5);
+      ctx.fillRect(enemyX + 1,enemyY + enemySize,(drawCall.currentHealth / drawCall.maxHealth) * (enemySize - 2) ,healthBarHeight);
     }
   }
   
@@ -593,7 +613,8 @@ const draw = () => {
   //DRAW TEXT EFFECTS IF ANY EXIST
   keys = Object.keys(players[user].texts);
   for(let i = 0; i < keys.length; i++) {
-    drawStroked(players[user].texts[keys[i]].text, players[user].texts[keys[i]].x, players[user].texts[keys[i]].y, 50);
+    let playerX = (players[user].texts[keys[i]].x / 100) * worldWidth;
+    drawStroked(players[user].texts[keys[i]].text, playerX, players[user].texts[keys[i]].y, 50);
   }
 };
 
@@ -616,7 +637,8 @@ function fadeOut(text, x, y, width, height, r, g, b, num, time, decrease) {
       //DRAW TEXT EFFECTS IF ANY EXIST
       let keys = Object.keys(players[user].texts);
       for(let i = 0; i < keys.length; i++) {
-        drawStroked(players[user].texts[keys[i]].text, players[user].texts[keys[i]].x, players[user].texts[keys[i]].y, 50);
+        let playerX = (players[user].texts[keys[i]].x / 100) * worldWidth;
+        drawStroked(players[user].texts[keys[i]].text, playerX, players[user].texts[keys[i]].y, 50);
       }
         
       alpha = alpha - decrease; // decrease opacity (fade out)
@@ -633,6 +655,9 @@ function fadeOut(text, x, y, width, height, r, g, b, num, time, decrease) {
 
 
 //------------------------------- HELPER FUNCTIONS -------------------------------------------------//
+const enemySpriteOffsets = () => {
+
+}
 
 //PLAYER AND ENEMY SETUP FUNCTIONS
 const setupPlayer = () => {            
@@ -689,12 +714,14 @@ const setupPlayer = () => {
 const setupEnemy = () => {            
   const time = new Date().getTime();
   let size = worldWidth / 10;
-  let y = worldHeight - size - 30;         // 30 is the healthbar 
-  let distanceBetween = worldWidth / 6;
+  let y = worldHeight - size - healthBarHeight;         // 30 is the healthbar 
+  let distanceBetween = 15;                //percentage of screen witdh
 
   let numEnemies = Math.random() * (6 - 2) + 2;
 
   for(let i = 1; i <= numEnemies; i++) {
+      let type = Math.floor(Math.random() * 2);
+      console.log(type);
       let x = Math.random() * (distanceBetween - (distanceBetween / 4)) + (distanceBetween / 4);
       let position = {x:x + (i*distanceBetween), y:y, width:size, height:size};
       enemies[i] = {
@@ -707,8 +734,9 @@ const setupEnemy = () => {
         dead:false,
         attack:stage*5,
         spritePos:1,
-        lungeDistance:50,
+        lungeDistance:enemySizePercentage / 2, //percentage of screen
         origX:position.x,
+        type: type,
       };
   }
 };

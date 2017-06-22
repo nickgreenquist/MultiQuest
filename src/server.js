@@ -101,9 +101,10 @@ io.sockets.on('connection', (socket) => {
   console.log('started');
 
   socket.on('join', (data) => {
+    console.log(data.name + ' is entering the room hosted by ' + data.room);
     socket.join(data.room);
 
-    if (!(data.room in rooms)) {
+    if (!(data.room in rooms) || data.room === data.name) {
       rooms[data.room] = { name: data.room, players: 1, distance: 0 };
 
       console.log(`Host set to ${data.name}`);
