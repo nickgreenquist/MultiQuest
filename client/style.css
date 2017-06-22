@@ -284,8 +284,8 @@ canvas {
     bottom: 0;
     background-color: black;
     color: white;
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-    font-size: 24px;
+    font-family: 'Trebuchet MS';
+    font-size: 18px;
     font-weight: bold;
 
     display: flex;
@@ -314,7 +314,7 @@ canvas {
     flex: 1;
 }
 
-#skill {
+.row {
     display: flex;
     flex-flow: row;
     align-items: center;
@@ -325,6 +325,7 @@ canvas {
     display: flex;
     flex: 1;
     justify-content: flex-start;
+    align-items: center;
 }
 
 #skill_right {
@@ -332,10 +333,6 @@ canvas {
     justify-content: flex-end;
     flex: 1;
     margin-left: auto;
-}
-
-.skillButton {
-    margin: 5px;
 }
 
 #quitButton {
@@ -353,7 +350,7 @@ canvas {
 
 .fa-plus-square {
   color: white;
-  margin: 10px;
+  margin-right: 10px;
 }
 .fa-plus-square:active {
   color: purple;

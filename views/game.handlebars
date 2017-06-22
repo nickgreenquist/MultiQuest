@@ -24,49 +24,79 @@
     </div>
     <div id="ui">
         <div id="ui_left">
-            <p id="name" style="text-align: center"></p>
-            <p id="level">Level: </p>
-            <p id="exp">Exp: </p>
-            <p id="points">Skill Points: </p>
+            <div class="row">
+                <p id="name" class="row"></p>
+            </div>
+            <div class="row">
+                <p id="level" class="row"></p>
+            </div>
+            <div class="row">
+                <p id="expavg" class="row">0 EXP/MIN</p>
+            </div>
+            <div class="row">
+                <p id="distance" class="row">DISTANCE:</p>
+            </div>
+            <div class="row">
+                <p id="maxdistance" class="row">MAX DISTANCE:</p>
+            </div>
+            <div class="row">
+                <p id="time" class="row">PLAY TIME:</p>
+            </div>
+            <button id="quitButton" style="text-align: center">Save and Quit</button>
         </div>
         <div id="ui_right">
-            <div id="skill">
+            <div class="row">
                 <div id="skill_left">
                     <a id="healthButton" class="btn" href="#"> <i class="fa fa-plus-square fa-2x"></i></a>
-                    <p>MAX HEALTH:</p>
+                    <p>MAX HP:</p>
                 </div>
                 <div id="skill_right">
                     <p id="health"></p>
                 </div>
             </div>
-            <div id="skill">
+            <div class="row">
                 <div id="skill_left">
                     <a id="attackButton" class="btn" href="#"> <i class="fa fa-plus-square fa-2x"></i></a>
-                    <p>ATTACK:</p>
+                    <p>ATTK:</p>
                 </div>
                 <div id="skill_right">
                     <p id="attack"></p>
                 </div>
             </div>
-            <div id="skill">
+            <div class="row">
                 <div id="skill_left">
                     <a id="speedButton" class="btn" href="#"> <i class="fa fa-plus-square fa-2x"></i></a>
-                    <p>SPEED:</p>
+                    <p>SPD:</p>
                 </div>
                 <div id="skill_right">
                     <p id="speed"></p>
                 </div>
             </div>
-            <div id="skill">
+            <div class="row">
                 <div id="skill_left">
                     <a id="spellButton" class="btn" href="#"> <i class="fa fa-plus-square fa-2x"></i></a>
-                    <p>SPELL POWER:</p>
+                    <p>INT:</p>
                 </div>
                 <div id="skill_right">
                     <p id="spell"></p>
                 </div>
             </div>
-            <button id="quitButton">Save and Quit</button>
+            <div class="row">
+                <div id="skill_left">
+                    <p>EXP:</p>
+                </div>
+                <div id="skill_right">
+                    <p id="exp"></p>
+                </div>
+            </div>
+            <div class="row">
+                <div id="skill_left">
+                    <p>SKILL PTS:</p>
+                </div>
+                <div id="skill_right">
+                    <p id="points"></p>
+                </div>
+            </div>
         </div>
     </div>
 </body>

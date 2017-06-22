@@ -22,6 +22,8 @@ let worldWidth = window.innerWidth;
 let worldHeight = window.innerHeight / 3;
 let stage = 1;
 let then = Date.now();
+let startTime = Date.now();
+let totalEXP = 0;
 
 let players = {};
 let enemies = {};
@@ -260,8 +262,8 @@ const update = (modifier) => {
 
           //draw damage
           const playerY = worldHeight - players[user].position.y;
-          fadeOut(enemies[keys[i]].attack, players[user].position.x + 25, playerY - 85, 50, 100, 255, 0,0, numEffects, 20, .05);        
-          players[user].texts[numEffects] = {alpha: 1.0, red: 255, green: 0, blue: 0, text:enemies[keys[i]].attack, width: 50, height: 20, x: players[user].position.x + 25, y: playerY - 85};       
+          fadeOut(enemies[keys[i]].attack, players[user].position.x + (players[user].position.width / 2), playerY, 50, 100, 255, 0,0, numEffects, 20, .05);        
+          players[user].texts[numEffects] = {alpha: 1.0, red: 255, green: 0, blue: 0, text:enemies[keys[i]].attack, width: 50, height: 20, x: players[user].position.x + (players[user].position.width / 2), y: playerY};       
           numEffects++;
 
           draw();
@@ -310,9 +312,9 @@ const move = () => {
         players[user].isAttacking = true;
       
         //draw damage
-        fadeOut(players[user].attack, enemy.position.x + 25, enemy.position.y - 50, 50, 100, 0, 0,0, numEffects, 20, .05);
+        fadeOut(players[user].attack, enemy.origX + (enemy.position.width / 4), enemy.position.y, 50, 100, 0, 0,0, numEffects, 20, .05);
         
-        players[user].texts[numEffects] = {alpha: 1.0, red: 0, green: 0, blue: 0, text: players[user].attack, width: 50, height: 20, x: enemy.position.x + 25, y: enemy.position.y - 50};
+        players[user].texts[numEffects] = {alpha: 1.0, red: 0, green: 0, blue: 0, text: players[user].attack, width: 50, height: 20, x: enemy.origX + (enemy.position.width / 4), y: enemy.position.y};
         numEffects++;
         
         //to prevent insanely high key values
@@ -327,14 +329,16 @@ const move = () => {
 
           //gain experience
           players[user].exp += stage;
+          totalEXP += stage;
           if(players[user].exp >= players[user].level) {
             players[user].points += 5;
             players[user].exp = 0;
             players[user].level++;
             
-            fadeOut("LEVEL UP!", players[user].position.x, players[user].position.y - 85, 150, 20, 0, 255,0, numEffects, 60, .03);
+            let playerY = worldHeight - players[user].position.y;
+            fadeOut("LEVEL UP!", players[user].position.x, playerY, 150, 20, 0, 255,0, numEffects, 60, .03);
         
-            players[user].texts[numEffects] = {alpha: 1.0, red: 0, green: 255, blue: 0, text: "LEVEL UP!", width: 150, height: 20, x: players[user].position.x, y: players[user].position.y - 85};
+            players[user].texts[numEffects] = {alpha: 1.0, red: 0, green: 255, blue: 0, text: "LEVEL UP!", width: 150, height: 20, x: players[user].position.x, y: playerY};
             numEffects++;
           }
         }
@@ -403,9 +407,9 @@ const spell = (time) => {
 
   const playerY = worldHeight - players[user].position.y;
   
-  fadeOut(user + " used Heal!", worldWidth/2 - 150, playerY - players[user].position.height, 250, 20, 0, 255,0, numEffects, 40, .04);
+  fadeOut(user + " used Heal!", worldWidth/2 - 100, playerY - players[user].position.height, 250, 20, 0, 255,0, numEffects, 40, .04);
         
-  players[user].texts[numEffects] = {alpha: 1.0, red: 0, green: 255, blue: 0, text: user + " used Heal!", width: 250, height: 20, x: worldWidth/2 - 150, y: playerY - players[user].position.height};
+  players[user].texts[numEffects] = {alpha: 1.0, red: 0, green: 255, blue: 0, text: user + " HEALED YOU!", width: 250, height: 20, x: worldWidth/2 - 100, y: playerY - players[user].position.height};
   
   //emit the text effect
   socket.emit('updateText', {room: players[user].room, effect: players[user].texts[numEffects], name: user});
@@ -437,8 +441,10 @@ const draw = () => {
     }
     
     //WEAPON DRAW
-    let swordWidth = 80;
-    let swordHeight = 80;
+    let swordWidth = drawCall.position.width * .8;
+    let swordHeight = drawCall.position.width * .8;
+    let swordXOffset = drawCall.position.width * .45;
+    let swordYOffset = drawCall.position.width * .2;
     
     //HANDLE TINTED SWORDS
     let buffer;
@@ -463,8 +469,8 @@ const draw = () => {
       ctx.save();
 
       // move to the center of the canvas
-      ctx.translate(drawCall.position.x + 45,playerY + 20);
-      ctx.translate(40,40);
+      ctx.translate(drawCall.position.x + swordXOffset,playerY + swordYOffset);
+      ctx.translate(swordXOffset,swordXOffset);
       ctx.rotate(Math.PI / 4);
 
       ctx.drawImage(swordImage, -swordWidth/2, -swordHeight/2, swordWidth, swordHeight);
@@ -475,12 +481,12 @@ const draw = () => {
       }
     } 
     else {
-      ctx.drawImage(swordImage, drawCall.position.x + 45, playerY, swordWidth, swordHeight);
+      ctx.drawImage(swordImage, drawCall.position.x + swordXOffset, playerY, swordWidth, swordHeight);
 
       if (drawCall.color != 'none') {
         //then set the global alpha to the amound that you want to tint it, and draw the buffer directly on top of it.
         ctx.globalAlpha = 0.5;
-        ctx.drawImage(buffer,drawCall.position.x + 45, playerY, swordWidth, swordHeight);
+        ctx.drawImage(buffer,drawCall.position.x + swordXOffset, playerY, swordWidth, swordHeight);
       }
     }
     ctx.restore();
@@ -500,38 +506,51 @@ const draw = () => {
       ctx.font = "36px serif";
       ctx.strokeText(keys[i], drawCall.position.x, playerY - 50);
     } else {
-      drawStroked(drawCall.currentHealth + " / " + drawCall.maxHealth, drawCall.position.x, playerY - 50, 24)
+      //nothing above the player
     }
 
     //HEALTH BAR
-    ctx.globalAlpha = 1;
-    ctx.fillStyle="white";
-    ctx.fillRect(drawCall.position.x,playerY - 40, drawCall.position.width, 30);
-    ctx.fillStyle="black";
-    ctx.fillRect(drawCall.position.x + 3,playerY -37 , drawCall.position.width - 6, 24);
-    ctx.fillStyle="green";
-    ctx.fillRect(drawCall.position.x + 3,playerY - 37,(drawCall.currentHealth / drawCall.maxHealth) * (drawCall.position.width - 6) ,24);
+    if(keys[i] != user) {
+      ctx.globalAlpha = 1;
+      ctx.fillStyle="white";
+      ctx.fillRect(drawCall.position.x,playerY - 40, drawCall.position.width, 30);
+      ctx.fillStyle="black";
+      ctx.fillRect(drawCall.position.x + 3,playerY -37 , drawCall.position.width - 6, 24);
+      ctx.fillStyle="green";
+      ctx.fillRect(drawCall.position.x + 3,playerY - 37,(drawCall.currentHealth / drawCall.maxHealth) * (drawCall.position.width - 6) ,24);
+    }
   }
 
   //SCREEN DATA DRAW
   //player stats
+  let barX = worldWidth / 30;
+  let barY = worldHeight / 4;
+  let barWidth = worldWidth / 4;
+  ctx.globalAlpha = 1;
+  ctx.fillStyle="white";
+  ctx.fillRect(barX,barY, barWidth, 30);
+  ctx.fillStyle="black";
+  ctx.fillRect(barX + 2,barY + 2, barWidth - 6, 24);
+  ctx.fillStyle="green";
+  ctx.fillRect(barX + 2,barY + 2,(players[user].currentHealth / players[user].maxHealth) * (barWidth - 6) ,24);
+  drawStroked(players[user].currentHealth + '/' + players[user].maxHealth, barX, barY - 6, 24)
+
+
+  let distance = (players[user].position.x / worldWidth).toFixed(1);;
+  let diffMs = (Date.now() - startTime);
+  let minutes = (((diffMs % 86400000) % 3600000) / 60000);
   document.getElementById("name").innerHTML = user.toString().toUpperCase();
-  document.getElementById("level").innerHTML = "Level: " + players[user].level;
-  document.getElementById("exp").innerHTML = "EXP: " + players[user].exp + " / " + players[user].level;
-  document.getElementById("points").innerHTML = "Skill Points: " + players[user].points;
+  document.getElementById("level").innerHTML = "LEVEL: " + players[user].level;
+  document.getElementById("expavg").innerHTML = (totalEXP / minutes).toFixed(0) + ' EXP/MIN'
+  document.getElementById("distance").innerHTML = "DISTANCE: " + distance + 'KM';
+  document.getElementById("maxdistance").innerHTML = "MAX DISTANCE: " + (players[user].maxDistance / 100).toFixed(1) + 'KM';
+  document.getElementById("time").innerHTML = "PLAY TIME: " + minutes.toFixed(1) + 'MIN';
+  document.getElementById("points").innerHTML = players[user].points;
   document.getElementById("health").innerHTML = players[user].maxHealth;
   document.getElementById("attack").innerHTML = players[user].attack;
   document.getElementById("speed").innerHTML = players[user].speed;
   document.getElementById("spell").innerHTML = players[user].spellPower;
-
-  //stage and distance
-  drawStroked(`Stage: ${stage}`, 0, 50, 80);
-  ctx.fillStyle = "white";
-  ctx.strokeStyle = "black";
-  ctx.font = "36px Verdana";
-  let distance = Math.round((players[user].position.x / worldWidth) * 100);
-  ctx.fillText(`Distance: ${(((stage-1)*100) + distance)}`, 0, 100);
-  ctx.fillText(`Max Distance: ${players[user].maxDistance}`, 0, 150);
+  document.getElementById("exp").innerHTML = players[user].exp + " / " + players[user].level;
   
   //ENEMIES
   keys = Object.keys(enemies);
@@ -574,9 +593,7 @@ const draw = () => {
   //DRAW TEXT EFFECTS IF ANY EXIST
   keys = Object.keys(players[user].texts);
   for(let i = 0; i < keys.length; i++) {
-    ctx.fillStyle = "rgba(" + players[user].texts[keys[i]].red + ", " + players[user].texts[keys[i]].green + ", " + players[user].texts[keys[i]].blue + ", " + players[user].texts[keys[i]].alpha + ")";
-    ctx.font = "italic 30pt Arial";
-    ctx.fillText(players[user].texts[keys[i]].text, players[user].texts[keys[i]].x, players[user].texts[keys[i]].y);
+    drawStroked(players[user].texts[keys[i]].text, players[user].texts[keys[i]].x, players[user].texts[keys[i]].y, 50);
   }
 };
 
@@ -593,14 +610,13 @@ function fadeOut(text, x, y, width, height, r, g, b, num, time, decrease) {
     var alpha = 1.0,   // full opacity
         
     interval = setInterval(function () {
-      ctx.clearRect(x,y-height,width,height+10);
+      //ctx.clearRect(x,y-height,width,height+10);
+      draw();
       
       //DRAW TEXT EFFECTS IF ANY EXIST
       let keys = Object.keys(players[user].texts);
       for(let i = 0; i < keys.length; i++) {
-        ctx.fillStyle = "rgba(" + players[user].texts[keys[i]].red + ", " + players[user].texts[keys[i]].green + ", " + players[user].texts[keys[i]].blue + ", " + players[user].texts[keys[i]].alpha + ")";
-        ctx.font = "italic 30pt Arial";
-        ctx.fillText(players[user].texts[keys[i]].text, players[user].texts[keys[i]].x, players[user].texts[keys[i]].y);
+        drawStroked(players[user].texts[keys[i]].text, players[user].texts[keys[i]].x, players[user].texts[keys[i]].y, 50);
       }
         
       alpha = alpha - decrease; // decrease opacity (fade out)
@@ -608,7 +624,7 @@ function fadeOut(text, x, y, width, height, r, g, b, num, time, decrease) {
       y = y - 1;
       players[user].texts[num].y = y;
       if (alpha < 0) {
-          ctx.clearRect(x,y-height,width,height+10);
+          //ctx.clearRect(x,y-height,width,height+10);
           clearInterval(interval);
           delete players[user].texts[num]
       }
