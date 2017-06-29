@@ -7,6 +7,15 @@ if(!window.location.hash) {
 }
 */
 
+define(function (require) {
+    // Load any app-specific modules
+    // with a relative require call,
+    // like:
+    var messages = require('./gameUtil');
+
+    console.log(messages.getHello());
+});
+
 //--------------------------------------------- SET UP --------------------------------------------------//
 var socket;
 let canvas;
@@ -521,7 +530,11 @@ const draw = () => {
     } else {
       ctx.globalAlpha = 1.0;
     }
-    ctx.drawImage(playerImage, drawCall.spritePos.x, drawCall.spritePos.y, drawCall.spritePos.width, drawCall.spritePos.height, playerX, playerY, playerSize, playerSize);
+    let spriteXOffset = 0;
+    if (drawCall.isAttacking) {
+      spriteXOffset = 5;
+    }
+    ctx.drawImage(playerImage, drawCall.spritePos.x + spriteXOffset, drawCall.spritePos.y, drawCall.spritePos.width, drawCall.spritePos.height, playerX, playerY, playerSize, playerSize);
 
     //Name
     if(keys[i] != user) {
