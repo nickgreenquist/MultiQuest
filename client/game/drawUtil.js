@@ -144,8 +144,8 @@ draw = () => {
       let extraHeight = 0;
 
       if(drawCall.type === 0 && drawCall.spritePos == 2) {
-        extraWidth = 10;
-        extraX = -10;
+        extraWidth = 15;
+        extraX = -20;
         extraHeight = 5;
       }
       if(drawCall.type === 1 && drawCall.spritePos == 2) {
