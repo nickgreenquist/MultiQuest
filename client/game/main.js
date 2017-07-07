@@ -33,6 +33,9 @@ define(function (require) {
     window.addEventListener("touchend", handleTouchEnd, true);
 
     //WIRE BUTTONS
+    document.getElementById("heal").addEventListener("click", function(){
+      isCasting = true;
+    });
     document.getElementById("healthButton").addEventListener("click", function(){
       if(players[user].points > 0) {
         players[user].points--;
@@ -76,7 +79,7 @@ define(function (require) {
   const handleTouchStart = (e) => {
     //e.preventDefault();
     var xPos = e.touches[0].pageX;
-    players[user].direction = (xPos > ($(window).height() / 2));
+    players[user].direction = (xPos > (worldWidth / 2));
     players[user].isMoving = true;
   }
 
@@ -218,7 +221,7 @@ define(function (require) {
 
     fadeOut(user + " used Heal!", 40, playerY - playerSizePercentage, 250, 20, 0, 255,0, numEffects, 40, .04);
           
-    players[user].texts[numEffects] = {alpha: 1.0, red: 0, green: 255, blue: 0, text: user + " HEALED YOU!", width: 250, height: 20, x: 40, y: playerY - playerSizePercentage};
+    players[user].texts[numEffects] = {alpha: 1.0, red: 0, green: 255, blue: 0, text: user.toUpperCase() + " HEALED YOU!", width: 250, height: 20, x: 40, y: playerY - playerSizePercentage};
     
     //emit the text effect
     socket.emit('updateText', {room: players[user].room, effect: players[user].texts[numEffects], name: user});

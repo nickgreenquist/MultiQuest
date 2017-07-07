@@ -79,7 +79,15 @@ draw = () => {
     if (drawCall.isAttacking) {
       spriteXOffset = 5;
     }
-    ctx.drawImage(playerImage, drawCall.spritePos.x + spriteXOffset, drawCall.spritePos.y, drawCall.spritePos.width, drawCall.spritePos.height, playerX, playerY, playerSize, playerSize);
+    let playerSprite = playerSpritePositions[drawCall.type];
+    ctx.drawImage(
+      playerImages[drawCall.type], 
+      playerSprite[drawCall.spritePos].x + spriteXOffset, 
+      playerSprite[drawCall.spritePos].y, 
+      playerSprite[drawCall.spritePos].width, 
+      playerSprite[drawCall.spritePos].height, 
+      playerX, playerY, playerSize, playerSize
+    );
 
     //Name
     if(keys[i] != user) {
@@ -104,7 +112,7 @@ draw = () => {
   //SCREEN DATA DRAW
   //player stats
   let barX = worldWidth / 30;
-  let barY = healthBarHeight;
+  let barY = worldHeight / 10;;
   let barWidth = worldWidth / 4;
   ctx.globalAlpha = 1;
   ctx.fillStyle="white";
@@ -113,7 +121,7 @@ draw = () => {
   ctx.fillRect(barX + 1,barY + 1, barWidth - 2, healthBarHeight - 2);
   ctx.fillStyle="green";
   ctx.fillRect(barX + 1,barY + 1,(players[user].currentHealth / players[user].maxHealth) * (barWidth - 2) ,healthBarHeight - 2);
-  this.drawStroked(players[user].currentHealth + '/' + players[user].maxHealth, barX, barY - 2, healthBarHeight - 2)
+  drawStroked(players[user].currentHealth + '/' + players[user].maxHealth, barX, barY - 5, worldHeight / 15)
 
 
   let distance = (players[user].position.x / 100).toFixed(1);;

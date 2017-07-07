@@ -23,9 +23,9 @@ enemySpritePositions.push(enemySpritePos1);
 let enemyImages = [];
 
 let enemyImage = new Image();                      
-enemyImage.src = document.location.pathname + '/../assets/img/enemy.png';
+enemyImage.src = document.location.pathname + '/../assets/img/enemies/ogre.png';
 let enemyImage1 = new Image();                      
-enemyImage1.src = document.location.pathname + '/../assets/img/bat.png';
+enemyImage1.src = document.location.pathname + '/../assets/img/enemies/bat.png';
 
 enemyImages.push(enemyImage);
 enemyImages.push(enemyImage1);

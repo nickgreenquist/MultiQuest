@@ -102,13 +102,11 @@ define(function () {
           }
 
           //updte sprite
-          if(players[user].spritePos.x == 96) {
-          players[user].spritePos.y += 5;
-          players[user].spritePos.x = 192;
+          if(players[user].spritePos == 1) {
+            players[user].spritePos = 2;
           }
           else {
-          players[user].spritePos.y -= 5;
-          players[user].spritePos.x = 96;
+            players[user].spritePos = 1;
           }
 
           //using movement method for speed up
