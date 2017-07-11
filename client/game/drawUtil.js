@@ -8,9 +8,7 @@ draw = () => {
     const drawCall = players[keys[i]];
 
     if(drawCall.dead) {
-      ctx.globalAlpha = 0.5;s
-      drawCall.spritePos.x = 0;
-      drawCall.spritePos.y = 0;
+      ctx.globalAlpha = 0.5;
     } else {
       ctx.globalAlpha = 1.0;
     }
@@ -70,8 +68,6 @@ draw = () => {
     //PLAYER DRAW
     if(drawCall.dead) {
       ctx.globalAlpha = 0.5;
-      drawCall.spritePos.x = 0;
-      drawCall.spritePos.y = 0;
     } else {
       ctx.globalAlpha = 1.0;
     }

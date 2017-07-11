@@ -186,8 +186,7 @@ define(function (require) {
             players[user].currentHealth -= enemies[keys[i]].attack;
             if(players[user].currentHealth <= 0) {
               players[user].dead = true;
-              players[user].spritePos.x = 0;
-              players[user].spritePos.y = 0;
+              players[user].spritePos = 3;
               players[user].currentHealth = 0;
             }
             socket.emit('updatePlayerHealth', {room: players[user].room, name: user, health: players[user].currentHealth,dead: players[user].dead, spritePos: players[user].spritePos});

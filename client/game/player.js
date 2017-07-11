@@ -58,7 +58,7 @@ define(function () {
           position:position, 
           maxHealth:maxHealth, 
           //maxHealth:21,
-          currentHealth:maxHealth,
+          currentHealth:1,
           //currentHealth:20,
           dead:false,
           speed:speed,
