@@ -3,59 +3,56 @@
   <meta charset="utf-8"/>
   <title>Character</title>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
+  <script src="/assets/maker.js" type="text/babel"></script>
   <link rel="shortcut icon" href="/assets/img/favicon.png"/>
   <link rel="stylesheet" type="text/css" href="/assets/style.css"/>
 </head>
-<body>
-  <nav><a href="/login"><img id="logo" src="/assets/img/warriorIcon.png" alt="face logo"/></a>
-    <div class="navlink"><a href="/logout">Log out</a></div>
+<body class="body">
+  <nav>
+    <a href="/logout" class="navlink"><p>LOGOUT</p></a>
+    <a href="/lobby" class="navlink"><p>PLAY</p></a>
+    <a href="/leader" class="navlink"><p>LEADERBOARD</p></a>
   </nav>
-  <nav><a href="/login"><img id="logo" src="/assets/img/warriorIcon.png" alt="face logo"/></a>
-    <div class="navlink"><a href="/lobby">Enter Game</a></div>
-  </nav>
-  <nav><a href="/login"><img id="logo" src="/assets/img/warriorIcon.png" alt="face logo"/></a>
-    <div class="navlink"><a href="/leader">Leaderboard</a></div>
-  </nav>
-  <section id="makeDomo">
-    <form id="domoForm" name="domoForm" action="/maker" method="POST" class="domoForm">
-      <label for="name">Name: </label>
-      <input id="domoName" type="text" name="name" placeholder="Weapon Name"/>
-      <label for="color">Color: </label>
-      <!-- <input id="domoAge" type="text" name="color2" placeholder="Weapon Color"/> -->
-      <select id="weaponColor" name="color">
-        <option value="Red">Red</option>
-        <option value="Blue">Blue</option>
-        <option value="Green">Green</option>
-        <option value="Yellow">Yellow</option>
-        <option value="HotPink ">Hot Pink</option>
-        <option value="Purple">Purple</option>
-        <option value="Black">Black</option>
-        <option value="White">White</option>
-      </select>
-      <input id="csrf" type="hidden" name="_csrf" value={{csrfToken}} />
-      <a id="makeDomoSubmit" href="#" class="makeDomoSubmit">Make Weapon</a>
-    </form>
-  </section>
-  <section id="domos">
-    <div class="domo">
-      <img src="/assets/img/warriorIcon.png" style="width:128px;height:128px;" alt="domo face" class="domoFace"/>
-      <h3 class="domoName">Name: {{info.username}}</h3>
-      <h3 class="domoName">Max Distance: {{info.maxDistance}}</h3>
-      <h3 class="domoName">Level: {{info.level}}</h3>
-      <h3 class="domoAge">Exp: {{info.exp}}</h3>
-      <h3 class="domoName">Skill Points: {{info.points}}</h3>
-      <h3 class="domoAge">Attack: {{info.attack}}</h3>
-      <h3 class="domoName">Spell Power: {{info.spellPower}}</h3>
-      <h3 class="domoAge">Speed: {{info.speed}}</h3>
-      <h3 class="domoName">Health: {{info.maxHealth}}</h3>
-      <h3 class="domoAge">Weapon Color: {{info.color}}</h3>
-    </div>
-  </section>
-  <section id="domos">
-    <div class="domo">
+  <div class="content">
+    <section id="domos">
+      <div class="domo">
+        <img src="/assets/img/warriorIcon.png" style="width:128px;height:128px;" alt="domo face" class="domoFace"/>
+        <h3 class="domoName">Name: {{info.username}}</h3>
+        <h3 class="domoName">Max Distance: {{info.maxDistance}}</h3>
+        <h3 class="domoName">Level: {{info.level}}</h3>
+        <h3 class="domoAge">Exp: {{info.exp}}</h3>
+        <h3 class="domoName">Skill Points: {{info.points}}</h3>
+        <h3 class="domoAge">Attack: {{info.attack}}</h3>
+        <h3 class="domoName">Spell Power: {{info.spellPower}}</h3>
+        <h3 class="domoAge">Speed: {{info.speed}}</h3>
+        <h3 class="domoName">Health: {{info.maxHealth}}</h3>
+        <h3 class="domoAge">Weapon Color: {{info.color}}</h3>
+      </div>
+    </section>
+    <section class="col">
+      <section class="row">
+        <form id="domoForm" name="domoForm" action="/maker" method="POST" class="domoForm">
+          <label for="name">Name: </label>
+          <input id="domoName" type="text" name="name" placeholder="Weapon Name"/>
+          <label for="color">Color: </label>
+          <!-- <input id="domoAge" type="text" name="color2" placeholder="Weapon Color"/> -->
+          <select id="weaponColor" name="color">
+            <option value="Red">Red</option>
+            <option value="Blue">Blue</option>
+            <option value="Green">Green</option>
+            <option value="Yellow">Yellow</option>
+            <option value="HotPink ">Hot Pink</option>
+            <option value="Purple">Purple</option>
+            <option value="Black">Black</option>
+            <option value="White">White</option>
+          </select>
+          <input id="csrf" type="hidden" name="_csrf" value={{csrfToken}} />
+          <a id="makeDomoSubmit" href="#" class="makeDomoSubmit">Make Weapon</a>
+        </form>
+      </section>
       {{#if weapons}}
         {{#each weapons}}
-          <div class="domo">
             <form id="{{this.name}}" name="deleteForm" action="/remove" method="POST" class="deleteForm">
               <button type="submit" name="{{this.name}}" href="#" class="deleteDomoSubmit">Remove Weapon</button>
               <input type="hidden" name="_csrf"/>
@@ -67,17 +64,14 @@
             <img src="/assets/img/weapon.png" style="width:128px;height:128px;" alt="domo face" class="domoFace"/>
             <h3 class="domoName">Name: {{this.name}}</h3>
             <h3 class="domoAge">Color: {{this.color}}</h3>
-          </div>
         {{/each}}
       {{else}}
         <h3 class="emptyDomo">No Weapons yet</h3>
       {{/if}}
+    </section>
+    <div id="domoMessage"><img id="speech" src="/assets/img/speech.png" alt="speech box"/>
+      <h3><span id="errorMessage"></span></h3><img id="domo" src="assets/img/domo.png" alt="domo"/>
     </div>
-  </section>
-  <div id="domoMessage"><img id="speech" src="/assets/img/speech.png" alt="speech box"/>
-    <h3><span id="errorMessage"></span></h3><img id="domo" src="assets/img/domo.png" alt="domo"/>
   </div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
-  <script src="/assets/maker.js" type="text/babel"></script>
 </body>
 </html>

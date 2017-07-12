@@ -3,28 +3,28 @@
   <meta charset="utf-8"/>
   <title>MultiQuest</title>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
+  <script src="/assets/client.js" type="text/babel"></script> 
   <link rel="shortcut icon" href="/assets/img/favicon.png"/>
   <link rel="stylesheet" type="text/css" href="/assets/style.css"/>
 </head>
-<body> 
-  <nav><a href="/login"><img id="logo" src="/assets/img/warriorIcon.png" alt="face logo"/></a>
-    <div class="navlink"><a href="/login">Login</a></div>
-    <div class="navlink"><a href="/signup">Sign up</a></div>
+<body class="body"> 
+  <nav>
+    <a href="/login" class="navlink"><p>LOGIN</p></a>
+    <a href="/signup" class="navlink"><p>SIGN UP</p></a>
   </nav>
-  <section id="login">
+  <div class="content">
     <form id="loginForm" name="loginForm" action="/login" method="POST" class="mainForm">
-      <label for="username">Username: </label>
+      <label for="username">USERNAME: </label>
       <input id="user" type="text" name="username" placeholder="username"/>
-      <label for="pass">Password: </label>
+      <label for="pass">PASSWORD: </label>
       <input id="pass" type="password" name="pass" placeholder="password"/>
       <input type="hidden" name="_csrf" value={{csrfToken}} />
-      <a id="loginSubmit" href="#" class="formSubmit">Sign in</a>
+      <a id="loginSubmit" href="#" class="formSubmit">SIGN IN</a>
     </form>
-  </section>
-  <div id="domoMessage"><img id="speech" src="/assets/img/speech.png" alt="speech box"/>
-    <h3><span id="errorMessage">Wrong username or password</span></h3><img id="domo" src="assets/img/domo.png" alt="domo"/>
+    <div id="domoMessage"><img id="speech" src="/assets/img/speech.png" alt="speech box"/>
+      <h3><span id="errorMessage">Wrong username or password</span></h3><img id="domo" src="assets/img/domo.png" alt="domo"/>
+    </div>
   </div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
-  <script src="/assets/client.js" type="text/babel"></script> 
 </body>
 </html>
