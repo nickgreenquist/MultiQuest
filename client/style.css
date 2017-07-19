@@ -20,7 +20,7 @@ html, body {
     text-decoration: none;
     padding: 5px;
     color: white;
-    font-size: 2vw;
+    font-size: 2vmin;
 }
 
 .makeDomoSubmit:hover {
@@ -32,7 +32,7 @@ html, body {
     display: flex;
     flex-direction: column;
     margin: 0 auto;
-    font-size: 4vw;
+    font-size: 4vmin;
     color: white;
 }
 
@@ -44,7 +44,7 @@ html, body {
     display: inline-block;
     margin: 10px;
     text-align: left;
-    font-size: 4vw;
+    font-size: 4vmin;
 }
 
 .deleteDomoSubmit, .activateDomoSubmit {
@@ -54,7 +54,7 @@ html, body {
     border-radius: 2px;
     border-color: black;
     text-decoration: none;
-    font-size: 2vw;
+    font-size: 2vmin;
     color: white;
     padding: 5px;
 }
@@ -70,7 +70,7 @@ html, body {
     padding: 5px;
     color: black;
     text-decoration: none;
-    font-size: 4vw;
+    font-size: 4vmin;
 }
 
 .formSubmit:link, .formSubmit:visited, .formSubmit:hover, .formSubmit:active {
@@ -85,15 +85,15 @@ html, body {
 #user, #pass, #pass2 {
     text-align: center;
     border-radius: 6px;
-    font-size: 4vw;
-    width: 50vw;
+    font-size: 3vmin;
+    width: 50vmin;
 }
 
 #domoName, #weaponColor {
     text-align: center;
     border-radius: 6px;
-    font-size: 2.5vw;
-    width: 25vw;
+    font-size: 2.5vmin;
+    width: 25vmin;
 }
 
 #user:focus, #pass:focus, #pass2:focus {
@@ -125,7 +125,7 @@ canvas {
     background-color: black;
     color: white;
     font-family: 'Trebuchet MS';
-    font-size: 2vw;
+    font-size: 2vmin;
     font-weight: bold;
 
     display: flex;
@@ -133,10 +133,10 @@ canvas {
 }
 
 #ui_left {
-    margin: .5vw;
-    border-radius: 2vw;
+    margin: .5vmin;
+    border-radius: 2vmin;
     border: 2px solid white;
-    padding: 1vw; 
+    padding: 1vmin; 
 
     display: flex;
     flex-direction: column;
@@ -144,10 +144,10 @@ canvas {
 }
 
 #ui_right {
-    margin: .5vw;
-    border-radius: 2vw;
+    margin: .5vmin;
+    border-radius: 2vmin;
     border: 2px solid white;
-    padding: 1vw; 
+    padding: 1vmin; 
 
     display: flex;
     flex-direction: column;
@@ -158,7 +158,7 @@ canvas {
     display: flex;
     flex-flow: row;
     align-items: center;
-    margin: .5vw;
+    margin: .5vmin;
 }
 
 .col {
@@ -212,7 +212,7 @@ canvas {
     color: white; 
     flex: 1; 
     width: 100%;
-    font-size: 2vw;
+    font-size: 2vmin;
 }
 
 nav {
@@ -238,7 +238,7 @@ nav:nth-child(1) {
     justify-content: center;
     align-items: center;
     color: white;
-    font-size: 4vw;
+    font-size: 4vmin;
     border: 1px solid white;
     border-radius: 10px;
     text-decoration: none;
