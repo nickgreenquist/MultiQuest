@@ -15,59 +15,151 @@
     <a href="/leader" class="navlink"><p>LEADERBOARD</p></a>
   </nav>
   <div class="content">
-    <section id="domos">
-      <div class="domo">
-        <img src="/assets/img/warriorIcon.png" style="width:128px;height:128px;" alt="domo face" class="domoFace"/>
-        <h3 class="domoName">Name: {{info.username}}</h3>
-        <h3 class="domoName">Max Distance: {{info.maxDistance}}</h3>
-        <h3 class="domoName">Level: {{info.level}}</h3>
-        <h3 class="domoAge">Exp: {{info.exp}}</h3>
-        <h3 class="domoName">Skill Points: {{info.points}}</h3>
-        <h3 class="domoAge">Attack: {{info.attack}}</h3>
-        <h3 class="domoName">Spell Power: {{info.spellPower}}</h3>
-        <h3 class="domoAge">Speed: {{info.speed}}</h3>
-        <h3 class="domoName">Health: {{info.maxHealth}}</h3>
-        <h3 class="domoAge">Weapon Color: {{info.color}}</h3>
+    <section id="pageRow">
+    <div id="ui_left" style="height: 80%;">
+      <div class="row" style="justify-content: center;">
+          <img src="/assets/img/warriorIcon.png" style="height: 8vh; width: 8vh;" alt="domo face"/>
       </div>
-    </section>
-    <section class="col">
-      <section class="row">
-        <form id="domoForm" name="domoForm" action="/maker" method="POST" class="domoForm">
-          <label for="name">Name: </label>
-          <input id="domoName" type="text" name="name" placeholder="Weapon Name"/>
-          <label for="color">Color: </label>
-          <!-- <input id="domoAge" type="text" name="color2" placeholder="Weapon Color"/> -->
-          <select id="weaponColor" name="color">
-            <option value="Red">Red</option>
-            <option value="Blue">Blue</option>
-            <option value="Green">Green</option>
-            <option value="Yellow">Yellow</option>
-            <option value="HotPink ">Hot Pink</option>
-            <option value="Purple">Purple</option>
-            <option value="Black">Black</option>
-            <option value="White">White</option>
-          </select>
-          <input id="csrf" type="hidden" name="_csrf" value={{csrfToken}} />
-          <a id="makeDomoSubmit" href="#" class="makeDomoSubmit">Make Weapon</a>
-        </form>
-      </section>
+      <div class="row">
+          <div id="skill_left">
+              <p>NAME:</p>
+          </div>
+          <div id="skill_right">
+              <p>{{info.username}}</p>
+          </div>
+      </div>
+      <div class="row">
+          <div id="skill_left">
+              <p>MAX DISTANCE:</p>
+          </div>
+          <div id="skill_right">
+              <p>{{info.maxDistance}}</p>
+          </div>
+      </div>
+      <div class="row">
+          <div id="skill_left">
+              <p>LEVEL:</p>
+          </div>
+          <div id="skill_right">
+              <p>{{info.level}}</p>
+          </div>
+      </div>
+      <div class="row">
+          <div id="skill_left">
+              <p>ATTACK:</p>
+          </div>
+          <div id="skill_right">
+              <p>{{info.attack}}</p>
+          </div>
+      </div>
+      <div class="row">
+          <div id="skill_left">
+              <p>INTELLIGENCE:</p>
+          </div>
+          <div id="skill_right">
+              <p>{{info.spellPower}}</p>
+          </div>
+      </div>
+      <div class="row">
+          <div id="skill_left">
+              <p>SPEED:</p>
+          </div>
+          <div id="skill_right">
+              <p>{{info.speed}}</p>
+          </div>
+      </div>
+      <div class="row">
+          <div id="skill_left">
+              <p>MAX HEALTH:</p>
+          </div>
+          <div id="skill_right">
+              <p>{{info.maxHealth}}</p>
+          </div>
+      </div>
+      <div class="row">
+          <div id="skill_left">
+              <p>EQUIPPED WEAPON:</p>
+          </div>
+          <div id="skill_right">
+              <p>{{info.color}}</p>
+          </div>
+      </div>
+    </div>
+
+    <div id="ui_right" style="height: 80%;">
+      <form class="col" id="domoForm" name="domoForm" action="/maker" method="POST" style="flex: 4;">
+        <div class="row" style="justify-content: center;">
+            <p>WEAPON SHOP</p>
+        </div>
+        <div class="row">
+            <div id="skill_left">
+                <label for="name">WEAPON NAME: </label>
+            </div>
+            <div id="skill_right">
+                <input id="domoName" type="text" name="name" placeholder="weapon name"/>
+            </div>
+        </div>
+        <div class="row">
+            <div id="skill_left">
+                <label for="color">WEAPON ELEMENT: </label>
+            </div>
+            <div id="skill_right">
+                <select id="weaponColor" name="color">
+                  <option value="Red">Red</option>
+                  <option value="Blue">Blue</option>
+                  <option value="Green">Green</option>
+                  <option value="Yellow">Yellow</option>
+                  <option value="HotPink ">Hot Pink</option>
+                  <option value="Purple">Purple</option>
+                  <option value="Black">Black</option>
+                  <option value="White">White</option>
+                </select>
+            </div>
+        </div>
+        <input id="csrf" type="hidden" name="_csrf" value={{csrfToken}} />
+        <div class="row" style="justify-content: center;">
+          <a id="makeDomoSubmit" href="#" class="makeDomoSubmit">PURCHASE</a>
+        </div>
+      </form>
+      <section class="col" style="flex: 6;">
       {{#if weapons}}
         {{#each weapons}}
-            <form id="{{this.name}}" name="deleteForm" action="/remove" method="POST" class="deleteForm">
-              <button type="submit" name="{{this.name}}" href="#" class="deleteDomoSubmit">Remove Weapon</button>
-              <input type="hidden" name="_csrf"/>
-            </form>
-            <form id="{{this.color}}" name="activateForm" action="/activate" method="POST" class="activateForm">
-              <button type="submit" name="{{this.color}}" href="#" class="activateDomoSubmit">Activate Weapon</button>
-              <input type="hidden" name="_csrf"/>
-            </form>
-            <img src="/assets/img/weapon.png" style="width:128px;height:128px;" alt="domo face" class="domoFace"/>
-            <h3 class="domoName">Name: {{this.name}}</h3>
-            <h3 class="domoAge">Color: {{this.color}}</h3>
+            <div class="row" style="border: 1px solid white;">
+              <div class="row" style="width: 100%; justify-content: center;">
+                  <p>{{this.name}}</p>
+              </div>
+              <div class="row" style="width: 100%; justify-content: center;">
+                  <p>Color: {{this.color}}</p>
+              </div>
+              <form 
+                id="{{this.name}}" 
+                name="deleteForm" 
+                action="/remove" 
+                method="POST" 
+                class="deleteForm"
+                style="display: flex; flex-flow: row; align-items: center; margin: 10px;"
+              >
+                <a type="submit" name="{{this.name}}" href="#" class="deleteDomoSubmit">REMOVE</a>
+                <input type="hidden" name="_csrf"/>
+              </form>
+              <form 
+                id="{{this.color}}" 
+                name="activateForm" 
+                action="/activate" 
+                method="POST" 
+                class="activateForm"
+                style="display: flex; flex-flow: row; align-items: center; margin: 10px;"
+              >
+                <a type="submit" name="{{this.color}}" href="#" class="activateDomoSubmit">EQUIP</a>
+                <input type="hidden" name="_csrf"/>
+              </form>
+            </div>
         {{/each}}
       {{else}}
-        <h3 class="emptyDomo">No Weapons yet</h3>
+        <p style="align-self: center;">No Weapons yet</p>
       {{/if}}
+      </section>
+    </div>
     </section>
     <div id="domoMessage"><img id="speech" src="/assets/img/speech.png" alt="speech box"/>
       <h3><span id="errorMessage"></span></h3><img id="domo" src="assets/img/domo.png" alt="domo"/>

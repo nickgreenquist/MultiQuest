@@ -124,11 +124,11 @@ draw = () => {
   let diffMs = (Date.now() - startTime);
   let minutes = (((diffMs % 86400000) % 3600000) / 60000);
   document.getElementById("name").innerHTML = user.toString().toUpperCase();
-  document.getElementById("level").innerHTML = "LEVEL: " + players[user].level;
-  document.getElementById("expavg").innerHTML = (totalEXP / minutes).toFixed(0) + ' EXP/MIN'
-  document.getElementById("distance").innerHTML = "DISTANCE: " + distance + 'KM';
-  document.getElementById("maxdistance").innerHTML = "MAX DISTANCE: " + (players[user].maxDistance / 100).toFixed(1) + 'KM';
-  document.getElementById("time").innerHTML = "PLAY TIME: " + minutes.toFixed(1) + 'MIN';
+  document.getElementById("level").innerHTML = players[user].level;
+  document.getElementById("expavg").innerHTML = (totalEXP / minutes).toFixed(0);
+  document.getElementById("distance").innerHTML =  distance + 'KM';
+  document.getElementById("maxdistance").innerHTML = (players[user].maxDistance / 100).toFixed(1) + 'KM';
+  document.getElementById("time").innerHTML = minutes.toFixed(1) + 'MIN';
   document.getElementById("points").innerHTML = players[user].points;
   document.getElementById("health").innerHTML = players[user].maxHealth;
   document.getElementById("attack").innerHTML = players[user].attack;

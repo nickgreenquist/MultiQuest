@@ -77,7 +77,7 @@ define(function (require) {
   };
 
   const handleTouchStart = (e) => {
-    //e.preventDefault();
+    e.preventDefault();
     var xPos = e.touches[0].pageX;
     players[user].direction = (xPos > (worldWidth / 2));
     players[user].isMoving = true;

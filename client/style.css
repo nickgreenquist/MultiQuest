@@ -6,10 +6,159 @@ html, body {
     overflow-x: hidden;
 }
 
-.row {
+
+
+/* FORMS */
+
+.makeDomoSubmit {
+    transition: background-color 0.4s ease;
+    display: inline;
+    margin-top: 14px;
+    background-color: #55acee;
+    border-radius: 2px;
+    color: black;
+    text-decoration: none;
+    padding: 5px;
+    color: white;
+    font-size: 2vw;
+}
+
+.makeDomoSubmit:hover {
+    transition: background-color 0.4s ease;
+    background-color: #338acc;
+}
+
+.mainForm {
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    font-size: 4vh;
+    color: white;
+}
+
+.mainForm h3 {
+    text-align: center;
+}
+
+.mainForm label {
+    display: inline-block;
+    margin: 10px;
+    text-align: left;
+    font-size: 4vh;
+}
+
+.deleteDomoSubmit, .activateDomoSubmit {
+    transition: background-color 0.4s ease;
+    text-align: center;
+    background-color: #55acee;
+    border-radius: 2px;
+    border-color: black;
+    text-decoration: none;
+    font-size: 2vw;
+    color: white;
+    padding: 5px;
+}
+
+.formSubmit {
+    transition: background-color 0.4s ease;
+    display: block;
+    text-align: center;
+    margin: 0 auto;
+    margin-top: 14px;
+    background-color: #55acee;
+    border-radius: 2px;
+    padding: 5px;
+    color: black;
+    text-decoration: none;
+    font-size: 4vh;
+}
+
+.formSubmit:link, .formSubmit:visited, .formSubmit:hover, .formSubmit:active {
+    color: white;
+}
+
+.formSubmit:hover {
+    transition: background-color 0.4s ease;
+    background-color: #338acc;
+}
+
+#user, #pass, #pass2 {
+    text-align: center;
+    border-radius: 6px;
+    font-size: 4vh;
+    width: 50vw;
+}
+
+#domoName, #weaponColor {
+    text-align: center;
+    border-radius: 6px;
+    font-size: 1.5vw;
+    width: 20vw;
+}
+
+#user:focus, #pass:focus, #pass2:focus {
+    outline: none;
+    box-shadow: 0px 0px 1px 1px #55acee;
+}
+
+
+
+/* Game */
+
+canvas {
+    position:absolute;
+    background-image:url('/assets/img/background1.png');
+    background-size: 100% 100%;
+}
+
+#game {
+    position: absolute;
+    height: 33%;
+    top: 0;
+}
+
+#ui {
+    position: absolute;
+    height: 66.6666%;
+    width: 100%;
+    bottom: 0;
+    background-color: black;
+    color: white;
+    font-family: 'Trebuchet MS';
+    font-size: 2vw;
+    font-weight: bold;
+
     display: flex;
     flex-direction: row;
+}
+
+#ui_left {
+    margin: 20px;
+    border-radius: 25px;
+    border: 2px solid white;
+    padding: 20px; 
+
+    display: flex;
+    flex-direction: column;
     flex: 1;
+}
+
+#ui_right {
+    margin: 20px;
+    border-radius: 25px;
+    border: 2px solid white;
+    padding: 20px; 
+
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.row, #row {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    margin: 5px;
 }
 
 .col {
@@ -18,12 +167,53 @@ html, body {
     flex: 1;
 }
 
-#logo {
-    height: 100px;
-    width: 100px;
-    padding-top: 5px;
-    float:left;
-    border-radius: 8px;
+#skill_left {
+    display: flex;
+    flex: 1;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+#skill_right {
+    display: flex;
+    justify-content: flex-end;
+    flex: 1;
+    margin-left: auto;
+}
+
+#quitButton, #heal {
+    transition: background-color 0.4s ease;
+    display: block;
+    text-align: center;
+    margin: 0 auto;
+    font-size: 1.2em;
+    background-color: #55acee;
+    border-radius: 2px;
+    padding: 3px 0px;
+    color: white;
+    text-decoration: none;
+}
+
+.fa-plus-square {
+  color: white;
+  margin-right: 10px;
+}
+.fa-plus-square:active {
+  color: purple;
+}
+
+
+
+/* Pages */
+
+#pageRow {
+    display: flex; 
+    flex-direction: row; 
+    color: white; 
+    flex: 1; 
+    width: 100%;
+    font-size: 2vw;
+    border: 1px solid white;
 }
 
 nav {
@@ -81,108 +271,11 @@ nav:nth-child(1) {
     border-radius: 10px;
 }
 
-.domoForm {
-    border: 2px solid #338acc;
-    height: 35px;
-    width: 700px;
-    margin-top:0px;
-    padding-top:10px;
-    background-color: #55acee;
-    border-bottom-right-radius: 4px;
-    border-top-right-radius: 4px;
-}
 
-.domoForm label {
-    display: inline-block;
-    width: 75px;
-    margin-left: 10px;
-    font-size: 1.2em;
-    float: left;
-    color: white;
-}
 
-.domoForm input[type=text] {
-    float:left;
-}
 
-.makeDomoSubmit {
-    transition: background-color 0.4s ease;
-    display: inline;
-    margin-top: 14px;
-    font-size: 1.2em;
-    width: 90px;
-    background-color: #55acee;
-    border-radius: 2px;
-    padding: 3px 0px;
-    color: black;
-    text-decoration: none;
-    margin-left: 45px;
-    padding: 5px;
-}
 
-.makeDomoSubmit:link, .makeDomoSubmit:visited, .makeDomoSubmit:hover, .makeDomoSubmit:active {
-    color: white;
-}
-
-.makeDomoSubmit:hover {
-    transition: background-color 0.4s ease;
-    background-color: #338acc;
-}
-
-.mainForm {
-    display: flex;
-    flex-direction: column;
-    margin: 0 auto;
-    font-size: 4vh;
-    color: white;
-}
-
-.mainForm h3 {
-    text-align: center;
-}
-
-.mainForm label {
-    display: inline-block;
-    margin: 10px;
-    text-align: left;
-    font-size: 4vh;
-}
-
-.formSubmit {
-    transition: background-color 0.4s ease;
-    display: block;
-    text-align: center;
-    margin: 0 auto;
-    margin-top: 14px;
-    background-color: #55acee;
-    border-radius: 2px;
-    padding: 5px;
-    color: black;
-    text-decoration: none;
-    font-size: 4vh;
-
-}
-
-.formSubmit:link, .formSubmit:visited, .formSubmit:hover, .formSubmit:active {
-    color: white;
-}
-
-.formSubmit:hover {
-    transition: background-color 0.4s ease;
-    background-color: #338acc;
-}
-
-#user, #pass, #pass2 {
-    text-align: center;
-    border-radius: 6px;
-    font-size: 4vh;
-}
-
-#user:focus, #pass:focus, #pass2:focus {
-    outline: none;
-    box-shadow: 0px 0px 1px 1px #55acee;
-}
-
+/* MISCL */
 #domoMessage {
     display:none;
     top: 250px;
@@ -269,126 +362,10 @@ img.domoFace {
     float:left;
 }
 
-h3.emptyDomo {
-    width: 400px;
-    font-size: 1.5em;
-    margin: 0 auto;
-    text-align: center;
-    margin-top: 18px;
-}
-
-h3.domoName {
-    float:left;
-    width: 200px;
-    font-weight: bold;
-    padding-left: 65px;
-    font-size: 1.5em;
-}
-
-h3.domoAge {
-    float:right;
-    text-align: left;
-    width: 100px;
-    font-weight: bold;
-    padding-right: 40px;
-    font-size: 1.5em;
-}
-
 .domo:first-child {
     margin-top: 10px;
 }
 
 .domo:last-child {
     margin-bottom:10px;
-}
-
-canvas {
-    position:absolute;
-    background-image:url('/assets/img/background1.png');
-    background-size: 100% 100%;
-}
-
-#game {
-    position: absolute;
-    height: 33%;
-    top: 0;
-}
-
-#ui {
-    position: absolute;
-    height: 66.6666%;
-    width: 100%;
-    bottom: 0;
-    background-color: black;
-    color: white;
-    font-family: 'Trebuchet MS';
-    font-size: 18px;
-    font-weight: bold;
-
-    display: flex;
-    flex-direction: row;
-}
-
-#ui_left {
-    margin: 20px;
-    border-radius: 25px;
-    border: 2px solid white;
-    padding: 20px; 
-
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-}
-
-#ui_right {
-    margin: 20px;
-    border-radius: 25px;
-    border: 2px solid white;
-    padding: 20px; 
-
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-}
-
-.row {
-    display: flex;
-    flex-flow: row;
-    align-items: center;
-    margin: 10px;
-}
-
-#skill_left {
-    display: flex;
-    flex: 1;
-    justify-content: flex-start;
-    align-items: center;
-}
-
-#skill_right {
-    display: flex;
-    justify-content: flex-end;
-    flex: 1;
-    margin-left: auto;
-}
-
-#quitButton, #heal {
-    transition: background-color 0.4s ease;
-    display: block;
-    text-align: center;
-    margin: 0 auto;
-    font-size: 1.2em;
-    background-color: #55acee;
-    border-radius: 2px;
-    padding: 3px 0px;
-    color: white;
-    text-decoration: none;
-}
-
-.fa-plus-square {
-  color: white;
-  margin-right: 10px;
-}
-.fa-plus-square:active {
-  color: purple;
 }
