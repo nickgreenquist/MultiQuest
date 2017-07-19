@@ -32,7 +32,7 @@ html, body {
     display: flex;
     flex-direction: column;
     margin: 0 auto;
-    font-size: 4vh;
+    font-size: 4vw;
     color: white;
 }
 
@@ -44,7 +44,7 @@ html, body {
     display: inline-block;
     margin: 10px;
     text-align: left;
-    font-size: 4vh;
+    font-size: 4vw;
 }
 
 .deleteDomoSubmit, .activateDomoSubmit {
@@ -70,7 +70,7 @@ html, body {
     padding: 5px;
     color: black;
     text-decoration: none;
-    font-size: 4vh;
+    font-size: 4vw;
 }
 
 .formSubmit:link, .formSubmit:visited, .formSubmit:hover, .formSubmit:active {
@@ -85,14 +85,14 @@ html, body {
 #user, #pass, #pass2 {
     text-align: center;
     border-radius: 6px;
-    font-size: 4vh;
+    font-size: 4vw;
     width: 50vw;
 }
 
 #domoName, #weaponColor {
     text-align: center;
     border-radius: 6px;
-    font-size: 2vh;
+    font-size: 2.5vw;
     width: 25vw;
 }
 
