@@ -93,15 +93,15 @@
         </div>
         <div class="row">
             <div id="skill_left">
-                <label for="name">WEAPON NAME: </label>
+                <label for="name">NAME: </label>
             </div>
             <div id="skill_right">
-                <input id="domoName" type="text" name="name" placeholder="weapon name"/>
+                <input id="domoName" type="text" name="name" placeholder="name"/>
             </div>
         </div>
         <div class="row">
             <div id="skill_left">
-                <label for="color">WEAPON ELEMENT: </label>
+                <label for="color">COLOR: </label>
             </div>
             <div id="skill_right">
                 <select id="weaponColor" name="color">
@@ -118,7 +118,7 @@
         </div>
         <input id="csrf" type="hidden" name="_csrf" value={{csrfToken}} />
         <div class="row" style="justify-content: center;">
-          <a id="makeDomoSubmit" href="#" class="makeDomoSubmit">PURCHASE</a>
+          <a id="makeDomoSubmit" href="#" class="makeDomoSubmit">FORGE</a>
         </div>
       </form>
       <section class="col" style="flex: 6;">
@@ -132,17 +132,6 @@
                   <p>Color: {{this.color}}</p>
               </div>
               <form 
-                id="{{this.name}}" 
-                name="deleteForm" 
-                action="/remove" 
-                method="POST" 
-                class="deleteForm"
-                style="display: flex; flex-flow: row; align-items: center; margin: 10px;"
-              >
-                <a type="submit" name="{{this.name}}" href="#" class="deleteDomoSubmit">REMOVE</a>
-                <input type="hidden" name="_csrf"/>
-              </form>
-              <form 
                 id="{{this.color}}" 
                 name="activateForm" 
                 action="/activate" 
@@ -151,6 +140,17 @@
                 style="display: flex; flex-flow: row; align-items: center; margin: 10px;"
               >
                 <a type="submit" name="{{this.color}}" href="#" class="activateDomoSubmit">EQUIP</a>
+                <input type="hidden" name="_csrf"/>
+              </form>
+              <form 
+                id="{{this.name}}" 
+                name="deleteForm" 
+                action="/remove" 
+                method="POST" 
+                class="deleteForm"
+                style="display: flex; flex-flow: row; align-items: center; margin: 10px;"
+              >
+                <a type="submit" name="{{this.name}}" href="#" class="deleteDomoSubmit" style="background-color: red;">X</a>
                 <input type="hidden" name="_csrf"/>
               </form>
             </div>
