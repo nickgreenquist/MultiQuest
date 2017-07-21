@@ -84,7 +84,7 @@ define(function (require) {
   }
 
   const handleTouchEnd = (e) => {
-    e.preventDefault();
+    // e.preventDefault();
     players[user].isMoving = false;
   }
 
