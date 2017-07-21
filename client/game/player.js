@@ -57,13 +57,10 @@ define(function () {
           isMoving: false, 
           position:position, 
           maxHealth:maxHealth, 
-          //maxHealth:21,
-          currentHealth:1,
-          //currentHealth:20,
+          currentHealth:maxHealth,
           dead:false,
           speed:speed,
-          //attack:attack,
-          attack:1,
+          attack:attack,
           level:level,
           exp:exp,
           points:points,
@@ -75,7 +72,7 @@ define(function () {
           color: color, 
           texts: {},
           direction: true,
-          type:1,
+          type:0,
       };
 
       return newPlayer;

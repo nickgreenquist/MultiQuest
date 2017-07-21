@@ -117,20 +117,8 @@ io.sockets.on('connection', (socket) => {
   });
 
   socket.on('leave', (data) => {
-    console.log('User has left the game');
-    if ((data.room in rooms)) {
-      rooms[data.room].players -= 1;
-    }
-    if (data.isHost) {
-      console.log('user is host, removgin room');
-      console.log(data.name);
-      // host = 'null';
-      delete rooms[data.name];
-    }
-    socket.disconnect();
-
-
     // save character data
+    console.log('attempting to save');
     const query = { username: data.name };
     const update = {
       level: data.player.level,
@@ -148,6 +136,18 @@ io.sockets.on('connection', (socket) => {
       }
       console.log('succesfully saved');
     });
+
+    console.log('User has left the game');
+    if ((data.room in rooms)) {
+      rooms[data.room].players -= 1;
+    }
+    if (data.isHost) {
+      console.log('user is host, removgin room');
+      console.log(data.name);
+      // host = 'null';
+      delete rooms[data.name];
+    }
+    socket.disconnect();
   });
 
   socket.on('updateWorldData', (data) => {

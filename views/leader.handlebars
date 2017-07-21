@@ -3,35 +3,45 @@
   <meta charset="utf-8"/>
   <title>Character</title>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
+  <script src="/assets/maker.js" type="text/babel"></script>
   <link rel="shortcut icon" href="/assets/img/favicon.png"/>
   <link rel="stylesheet" type="text/css" href="/assets/style.css"/>
 </head>
 <body>
-  <nav>
+  <nav style="height: 11vh;">
     <a href="/logout" class="navlink"><p>LOGOUT</p></a>
     <a href="/lobby" class="navlink"><p>PLAY</p></a>
     <a href="/maker" class="navlink"><p>ARMORY</p></a>
   </nav>
-  <section id="domos">
-    <div class="domo">
-      {{#if board}}
-        {{#each board}}
-          <div class="domo">
-            <img src="/assets/img/warriorIcon.png" style="width:128px;height:128px;" alt="domo face" class="domoFace"/>
-            <h3 class="domoName">Name: {{this.username}}</h3>
-            <h3 class="domoAge">Level: {{this.level}}</h3>
-            <h3 class="domoAge">Distance: {{this.maxDistance}}</h3>
-          </div>
-        {{/each}}
-      {{else}}
-        <h3 class="emptyDomo">No Domos yet</h3>
-      {{/if}}
+  <div class="content">
+    <section id="pageRow">
+      <section class="col" style="margin: .5vmin; padding: 1vmin;">
+        {{#if board}}
+          {{#each board}}
+            <div class="row" style="border: 1px solid white; color: white; width: 75%; align-self: center;">
+              <div class="row" style="width: 100%; justify-content: center;">
+                <img src="/assets/img/warriorIcon.png" style="height: 8vh; width: 8vh;" alt="domo face"/>
+              </div>
+              <div class="row" style="width: 100%;">
+                <p>{{this.username}}</p>
+              </div>
+              <div class="row" style="width: 100%;">
+                <p>LVL: {{this.level}}</p>
+              </div>
+              <div class="row" style="width: 100%;">
+                <p>DIST: {{this.maxDistance}} KM</p>
+              </div>
+            </div>
+          {{/each}}
+        {{else}}
+          <p class="emptyDomo">NO PLAYERS HAVE VENTURED OUT</p>
+        {{/if}}
+      </section>
+    </section>
+    <div id="domoMessage"><img id="speech" src="/assets/img/speech.png" alt="speech box"/>
+      <h3><span id="errorMessage"></span></h3><img id="domo" src="assets/img/domo.png" alt="domo"/>
     </div>
-  </section>
-  <div id="domoMessage"><img id="speech" src="/assets/img/speech.png" alt="speech box"/>
-    <h3><span id="errorMessage"></span></h3><img id="domo" src="assets/img/domo.png" alt="domo"/>
   </div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
-  <script src="/assets/maker.js" type="text/babel"></script>
 </body>
 </html>

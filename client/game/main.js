@@ -511,9 +511,10 @@ define(function (require) {
   //QUIT
   const quit = () => {
     let tempRoom = players[user].room;
+    let tempPlayer = players[user];
     delete players[user];
     socket.emit('updateAllPlayers', {players: players, room: tempRoom});
-    socket.emit('leave', {name: user, player: players[user], isHost: isHost, room: tempRoom});
+    socket.emit('leave', {name: user, player: tempPlayer, isHost: isHost, room: tempRoom});
   }
 
 

@@ -6,38 +6,46 @@
   <link rel="shortcut icon" href="/assets/img/favicon.png"/>
   <link rel="stylesheet" type="text/css" href="/assets/style.css"/>
 </head>
-<body>
-  <nav>
+<body style="background-color: black;">
+  <nav style="height: 11vh;">
     <a href="/logout" class="navlink"><p>LOGOUT</p></a>
     <a href="/maker" class="navlink"><p>ARMORY</p></a>
     <a href="/leader" class="navlink"><p>LEADERBOARD</p></a>
   </nav>
   <input id="csrf" type="hidden" name="_csrf" value={{csrfToken}} />
-  <section id="domos">
-    <form id="{{info.username}}" name="deleteForm" action="/enter" method="POST" class="deleteForm">
-        <button type="submit" name="{{info.username}}" href="#" class="enterGameSubmit">New Room</button>
-        <input type="hidden" name="_csrf"/>
-  </form>
-    <div class="domo">
-      {{#if rooms}}
-        {{#each rooms}}
-          <div class="domo">
-            <form id="{{this.name}}" name="deleteForm" action="/enter" method="POST" class="deleteForm">
-              <button id="{{this.distance}}" type="submit" name="{{this.name}}" href="#" class="enterGameSubmit">Enter</button>
-              <input type="hidden" name="_csrf"/>
-            </form>
-            <h3 class="domoName">Room: {{this.name}}</h3>
-            <h3 class="domoName">Players: {{this.players}}</h3>
-            <h3 class="domoName">Distance: {{this.distance}}</h3>
-          </div>
-        {{/each}}
-      {{else}}
-        <h3 class="emptyDomo">No Active Rooms</h3>
-      {{/if}}
+  <div class="content">
+    <section id="pageRow">
+      <section class="col" style="margin: .5vmin; padding: 1vmin; min-height: 85vh;">
+        <form id="{{info.username}}" name="deleteForm" action="/enter" method="POST" class="deleteForm">
+          <button type="submit" name="{{info.username}}" href="#" class="enterGameSubmit">New Room</button>
+          <input type="hidden" name="_csrf"/>
+        </form>       
+         {{#if rooms}}
+          {{#each rooms}}
+            <div class="row" style="border: 1px solid white; color: white; width: 75%; align-self: center;">
+              <form class="row" style="width: 100%; justify-content: center;" id="{{this.name}}" name="deleteForm" action="/enter" method="POST" class="deleteForm">
+                <button id="{{this.distance}}" type="submit" name="{{this.name}}" href="#" class="enterGameSubmit">Enter</button>
+                <input type="hidden" name="_csrf"/>
+              </form>
+              <div class="row" style="width: 100%; justify-content: center;">
+                <h3>Room: {{this.name}}</h3>
+              </div>
+              <div class="row" style="width: 100%; justify-content: center;">
+                <h3>Players: {{this.players}}</h3>
+              </div>
+              <div class="row" style="width: 100%; justify-content: center;">
+              <h3>Distance: {{this.distance}}</h3>
+              </div>
+            </div>
+          {{/each}}
+        {{else}}
+          <h3>No Active Rooms</h3>
+        {{/if}}
+      </section>
+    </section>
+    <div id="domoMessage"><img id="speech" src="/assets/img/speech.png" alt="speech box"/>
+      <h3><span id="errorMessage"></span></h3><img id="domo" src="assets/img/domo.png" alt="domo"/>
     </div>
-  </section>
-  <div id="domoMessage"><img id="speech" src="/assets/img/speech.png" alt="speech box"/>
-    <h3><span id="errorMessage"></span></h3><img id="domo" src="assets/img/domo.png" alt="domo"/>
   </div>
   <script> 
       const username = `{{info.username}}`;

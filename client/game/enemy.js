@@ -7,8 +7,8 @@ let enemyY = worldHeight - (worldWidth / 10) - (worldHeight / 20);
 let enemySpritePositions = [];
 
 let enemySpritePos = {};
-enemySpritePos[1] = {x:2, y:15, width: 60, height: 85};
-enemySpritePos[2] = {x:125, y:5, width: 65, height: 95};
+enemySpritePos[1] = {x:2, y:15, width: 60, height: 80};
+enemySpritePos[2] = {x:125, y:5, width: 65, height: 90};
 enemySpritePos[3] = {x:165, y:95, width: 108, height: 98};
 
 let enemySpritePos1 = {};

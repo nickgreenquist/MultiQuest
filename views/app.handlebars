@@ -16,150 +16,147 @@
   </nav>
   <div class="content">
     <section id="pageRow">
-    <div id="ui_left" style="height: 80%;">
-      <div class="row" style="justify-content: center;">
-          <img src="/assets/img/warriorIcon.png" style="height: 8vh; width: 8vh;" alt="domo face"/>
+      <div id="ui_left" style="height: 80%;">
+        <div class="row" style="justify-content: center;">
+            <img src="/assets/img/warriorIcon.png" style="height: 8vh; width: 8vh;" alt="domo face"/>
+        </div>
+        <div class="row">
+            <div id="skill_left">
+                <p>NAME:</p>
+            </div>
+            <div id="skill_right">
+                <p>{{info.username}}</p>
+            </div>
+        </div>
+        <div class="row">
+            <div id="skill_left">
+                <p>MAX DISTANCE:</p>
+            </div>
+            <div id="skill_right">
+                <p>{{info.maxDistance}}</p>
+            </div>
+        </div>
+        <div class="row">
+            <div id="skill_left">
+                <p>LEVEL:</p>
+            </div>
+            <div id="skill_right">
+                <p>{{info.level}}</p>
+            </div>
+        </div>
+        <div class="row">
+            <div id="skill_left">
+                <p>ATTACK:</p>
+            </div>
+            <div id="skill_right">
+                <p>{{info.attack}}</p>
+            </div>
+        </div>
+        <div class="row">
+            <div id="skill_left">
+                <p>INTELLIGENCE:</p>
+            </div>
+            <div id="skill_right">
+                <p>{{info.spellPower}}</p>
+            </div>
+        </div>
+        <div class="row">
+            <div id="skill_left">
+                <p>SPEED:</p>
+            </div>
+            <div id="skill_right">
+                <p>{{info.speed}}</p>
+            </div>
+        </div>
+        <div class="row">
+            <div id="skill_left">
+                <p>MAX HEALTH:</p>
+            </div>
+            <div id="skill_right">
+                <p>{{info.maxHealth}}</p>
+            </div>
+        </div>
+        <div class="row">
+            <div id="skill_left">
+                <p>WEAPON COLOR:</p>
+            </div>
+            <div id="skill_right">
+                <p style="color: {{info.color}}">{{info.color}}</p>
+            </div>
+        </div>
       </div>
-      <div class="row">
-          <div id="skill_left">
-              <p>NAME:</p>
-          </div>
-          <div id="skill_right">
-              <p>{{info.username}}</p>
-          </div>
-      </div>
-      <div class="row">
-          <div id="skill_left">
-              <p>MAX DISTANCE:</p>
-          </div>
-          <div id="skill_right">
-              <p>{{info.maxDistance}}</p>
-          </div>
-      </div>
-      <div class="row">
-          <div id="skill_left">
-              <p>LEVEL:</p>
-          </div>
-          <div id="skill_right">
-              <p>{{info.level}}</p>
-          </div>
-      </div>
-      <div class="row">
-          <div id="skill_left">
-              <p>ATTACK:</p>
-          </div>
-          <div id="skill_right">
-              <p>{{info.attack}}</p>
-          </div>
-      </div>
-      <div class="row">
-          <div id="skill_left">
-              <p>INTELLIGENCE:</p>
-          </div>
-          <div id="skill_right">
-              <p>{{info.spellPower}}</p>
-          </div>
-      </div>
-      <div class="row">
-          <div id="skill_left">
-              <p>SPEED:</p>
-          </div>
-          <div id="skill_right">
-              <p>{{info.speed}}</p>
-          </div>
-      </div>
-      <div class="row">
-          <div id="skill_left">
-              <p>MAX HEALTH:</p>
-          </div>
-          <div id="skill_right">
-              <p>{{info.maxHealth}}</p>
-          </div>
-      </div>
-      <div class="row">
-          <div id="skill_left">
-              <p>EQUIPPED WEAPON:</p>
-          </div>
-          <div id="skill_right">
-              <p>{{info.color}}</p>
-          </div>
-      </div>
-    </div>
 
-    <div id="ui_right" style="height: 80%;">
-      <form class="col" id="domoForm" name="domoForm" action="/maker" method="POST" style="flex: 4;">
-        <div class="row" style="justify-content: center;">
-            <p>WEAPON SHOP</p>
-        </div>
-        <div class="row">
-            <div id="skill_left">
-                <label for="name">NAME: </label>
-            </div>
-            <div id="skill_right">
-                <input id="domoName" type="text" name="name" placeholder="name"/>
-            </div>
-        </div>
-        <div class="row">
-            <div id="skill_left">
-                <label for="color">COLOR: </label>
-            </div>
-            <div id="skill_right">
-                <select id="weaponColor" name="color">
-                  <option value="Red">Red</option>
-                  <option value="Blue">Blue</option>
-                  <option value="Green">Green</option>
-                  <option value="Yellow">Yellow</option>
-                  <option value="HotPink ">Hot Pink</option>
-                  <option value="Purple">Purple</option>
-                  <option value="Black">Black</option>
-                  <option value="White">White</option>
-                </select>
-            </div>
-        </div>
-        <input id="csrf" type="hidden" name="_csrf" value={{csrfToken}} />
-        <div class="row" style="justify-content: center;">
-          <a id="makeDomoSubmit" href="#" class="makeDomoSubmit">FORGE</a>
-        </div>
-      </form>
-      <section class="col" style="flex: 6;">
-      {{#if weapons}}
-        {{#each weapons}}
-            <div class="row" style="border: 1px solid white;">
-              <div class="row" style="width: 100%; justify-content: center;">
-                  <p>{{this.name}}</p>
+      <div id="ui_right" style="height: 80%;">
+        <form class="col" id="domoForm" name="domoForm" action="/maker" method="POST" style="flex: 4;">
+          <div class="row" style="justify-content: center;">
+              <p>WEAPON SHOP</p>
+          </div>
+          <div class="row">
+              <div id="skill_left">
+                  <label for="name">NAME: </label>
               </div>
-              <div class="row" style="width: 100%; justify-content: center;">
-                  <p>Color: {{this.color}}</p>
+              <div id="skill_right">
+                  <input id="domoName" type="text" name="name" placeholder="name"/>
               </div>
-              <form 
-                id="{{this.color}}" 
-                name="activateForm" 
-                action="/activate" 
-                method="POST" 
-                class="activateForm"
-                style="display: flex; flex-flow: row; align-items: center; margin: 10px;"
-              >
-                <a type="submit" name="{{this.color}}" href="#" class="activateDomoSubmit">EQUIP</a>
-                <input type="hidden" name="_csrf"/>
-              </form>
-              <form 
-                id="{{this.name}}" 
-                name="deleteForm" 
-                action="/remove" 
-                method="POST" 
-                class="deleteForm"
-                style="display: flex; flex-flow: row; align-items: center; margin: 10px;"
-              >
-                <a type="submit" name="{{this.name}}" href="#" class="deleteDomoSubmit" style="background-color: red;">X</a>
-                <input type="hidden" name="_csrf"/>
-              </form>
-            </div>
-        {{/each}}
-      {{else}}
-        <p style="align-self: center;">No Weapons yet</p>
-      {{/if}}
-      </section>
-    </div>
+          </div>
+          <div class="row">
+              <div id="skill_left">
+                  <label for="color">COLOR: </label>
+              </div>
+              <div id="skill_right">
+                  <select id="weaponColor" name="color">
+                    <option value="Red">Red</option>
+                    <option value="Blue">Blue</option>
+                    <option value="Green">Green</option>
+                    <option value="Yellow">Yellow</option>
+                    <option value="HotPink ">Hot Pink</option>
+                    <option value="Purple">Purple</option>
+                    <option value="Black">Black</option>
+                    <option value="White">White</option>
+                  </select>
+              </div>
+          </div>
+          <input id="csrf" type="hidden" name="_csrf" value={{csrfToken}} />
+          <div class="row" style="justify-content: center;">
+            <a id="makeDomoSubmit" href="#" class="makeDomoSubmit">FORGE</a>
+          </div>
+        </form>
+        <section class="col" style="flex: 6;">
+        {{#if weapons}}
+          {{#each weapons}}
+              <div class="row" style="border: 1px solid white;">
+                <div class="row" style="width: 100%; justify-content: center;">
+                    <p style="color: {{this.color}}">{{this.name}}</p>
+                </div>
+                <form 
+                  id="{{this.color}}" 
+                  name="activateForm" 
+                  action="/activate" 
+                  method="POST" 
+                  class="activateForm"
+                  style="display: flex; flex-flow: row; align-items: center; margin: 10px;"
+                >
+                  <a type="submit" name="{{this.color}}" href="#" class="activateDomoSubmit">EQUIP</a>
+                  <input type="hidden" name="_csrf"/>
+                </form>
+                <form 
+                  id="{{this.name}}" 
+                  name="deleteForm" 
+                  action="/remove" 
+                  method="POST" 
+                  class="deleteForm"
+                  style="display: flex; flex-flow: row; align-items: center; margin: 10px;"
+                >
+                  <a type="submit" name="{{this.name}}" href="#" class="deleteDomoSubmit" style="background-color: red;">X</a>
+                  <input type="hidden" name="_csrf"/>
+                </form>
+              </div>
+          {{/each}}
+        {{else}}
+          <p style="align-self: center;">No Weapons yet</p>
+        {{/if}}
+        </section>
+      </div>
     </section>
     <div id="domoMessage"><img id="speech" src="/assets/img/speech.png" alt="speech box"/>
       <h3><span id="errorMessage"></span></h3><img id="domo" src="assets/img/domo.png" alt="domo"/>
