@@ -45,6 +45,17 @@ const activateWeapon = (request, response) => {
   return response.json({ redirect: '/maker' });
 };
 
+const activateType = (request, response) => {
+  console.log('activated');
+  console.log(request.body.playerType);
+
+  const req = request;
+  req.session.account.playerType = request.body.playerType;
+
+  return response.json({ redirect: '/maker' });
+};
+
 module.exports.make = makeWeapon;
 module.exports.delete = deleteWeapon;
 module.exports.activate = activateWeapon;
+module.exports.activateType = activateType;

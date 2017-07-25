@@ -16,6 +16,7 @@ const lobby = (req, res) => {
     speed: req.session.account.speed,
     spellPower: req.session.account.spellPower,
     maxHealth: req.session.account.maxHealth,
+    playerType: req.session.account.playerType,
   };
 
   res.render('lobby', { info: accountInfo, rooms, csrfToken: req.csrfToken() });

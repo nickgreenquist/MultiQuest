@@ -129,6 +129,7 @@ io.sockets.on('connection', (socket) => {
       speed: data.player.speed,
       spellPower: data.player.spellPower,
       maxHealth: data.player.maxHealth,
+      playerType: data.player.type,
     };
     Account.AccountModel.findOneAndUpdate(query, update, { upsert: true }, (err) => {
       if (err) {

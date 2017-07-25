@@ -9,6 +9,7 @@ const leaderboard = (req, res) => {
     attack: req.session.account.attack,
     speed: req.session.account.speed,
     spellPower: req.session.account.spellPower,
+    playerType: req.session.account.playerType,
   };
 
   res.render('leader', { info: accountInfo, csrfToken: req.csrfToken() });

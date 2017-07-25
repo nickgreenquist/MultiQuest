@@ -9,7 +9,7 @@
   <link rel="stylesheet" type="text/css" href="/assets/style.css"/>
 </head>
 <body>
-  <nav style="height: 11vh;">
+  <nav>
     <a href="/logout" class="navlink"><p>LOGOUT</p></a>
     <a href="/lobby" class="navlink"><p>PLAY</p></a>
     <a href="/maker" class="navlink"><p>ARMORY</p></a>
@@ -21,7 +21,7 @@
           {{#each board}}
             <div class="row" style="border: 1px solid white; color: white; width: 75%; align-self: center;">
               <div class="row" style="width: 100%; justify-content: center;">
-                <img src="/assets/img/warriorIcon.png" style="height: 8vh; width: 8vh;" alt="domo face"/>
+                <img src="/assets/img/players/{{this.playerType}}.png" style="height: 8vh; width: 8vh;" alt="domo face"/>
               </div>
               <div class="row" style="width: 100%;">
                 <p>{{this.username}}</p>

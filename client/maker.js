@@ -79,6 +79,29 @@ $(document).ready(function() {
         
         return false;
     });
+
+    $(".activatePlayerType").on("click", (e) => {
+        e.preventDefault();
+
+        var data = e.target.parentElement;
+        const type = $("#playerType").val();
+        console.log(type);
+
+        if(!type) {
+            return false;
+        }
+    
+        data.querySelector('[name="_csrf"]').value = $("#csrf")[0].value;
+        data = $(data).serialize();
+        console.log("data: " + data);
+    
+        var temp = 'playerType=' + type + '&_csrf=' + $("#csrf")[0].value;
+        console.log("temp: " + temp);
+
+        sendAjax("/activateType", temp);
+        
+        return false;
+    });
   
   $(".enterGameSubmit").on("click", (e) => {
         console.log("enter game button hit");

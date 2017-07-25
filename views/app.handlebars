@@ -17,9 +17,22 @@
   <div class="content">
     <section id="pageRow">
       <div id="ui_left" style="height: 80%;">
-        <div class="row" style="justify-content: center;">
-            <img src="/assets/img/warriorIcon.png" style="height: 8vh; width: 8vh;" alt="domo face"/>
+        <div class="row" style="height: 20vh; justify-content: center;">
+            <img src="/assets/img/players/{{info.playerType}}.png" style="height: 12vh; width: 12vh;" alt="domo face"/>
         </div>
+        <form class="row" id="playerTypeForm" name="playerTypeForm" action="/maker" method="POST">
+            <div id="skill_left">
+                <select name="type" id="playerType">
+                  <option selected disabled>CLASS</option>
+                  <option value="0" >WARRIOR</option>
+                  <option value="1">SAMURAI</option>
+              </select>
+            </div>
+            <div id="skill_right">
+                <a type="submit" href="#" class="activatePlayerType">SELECT</a>
+                <input id="csrf" type="hidden" name="_csrf" value={{csrfToken}} />
+            </div>
+        </form>
         <div class="row">
             <div id="skill_left">
                 <p>NAME:</p>
@@ -78,7 +91,7 @@
         </div>
         <div class="row">
             <div id="skill_left">
-                <p>WEAPON COLOR:</p>
+                <p>WEAPON:</p>
             </div>
             <div id="skill_right">
                 <p style="color: {{info.color}}">{{info.color}}</p>
@@ -158,8 +171,10 @@
         </section>
       </div>
     </section>
-    <div id="domoMessage"><img id="speech" src="/assets/img/speech.png" alt="speech box"/>
-      <h3><span id="errorMessage"></span></h3><img id="domo" src="assets/img/domo.png" alt="domo"/>
+    <div id="domoMessage">
+      <img id="speech" src="/assets/img/speech.png" alt="speech box"/>
+      <h3><span id="errorMessage"></span></h3>
+      <img id="domo" src="assets/img/domo.png" alt="domo"/>
     </div>
   </div>
 </body>

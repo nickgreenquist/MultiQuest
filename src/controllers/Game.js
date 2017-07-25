@@ -18,6 +18,7 @@ const enterGame = (req, res) => {
     spellPower: req.session.account.spellPower,
     maxHealth: req.session.account.maxHealth,
     room: req.session.account.room,
+    playerType: req.session.account.playerType,
     color,
   };
 
@@ -38,6 +39,7 @@ const save = (req, res) => {
     speed: req.session.account.speed,
     spellPower: req.session.account.spellPower,
     maxHealth: req.session.account.maxHealth,
+    playerType: req.session.account.playerType,
   };
 
   // res.render('game', { info: accountInfo, csrfToken: req.csrfToken() });

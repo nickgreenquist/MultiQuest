@@ -72,7 +72,7 @@ define(function () {
           color: color, 
           texts: {},
           direction: true,
-          type:0,
+          type:type,
       };
 
       return newPlayer;

@@ -26,6 +26,7 @@ const makerPage = (req, res) => {
       speed: req.session.account.speed,
       spellPower: req.session.account.spellPower,
       maxHealth: req.session.account.maxHealth,
+      playerType: req.session.account.playerType,
       color,
     };
 
@@ -44,6 +45,7 @@ const leaderPage = (req, res) => {
     speed: req.session.account.speed,
     spellPower: req.session.account.spellPower,
     maxHealth: req.session.account.maxHealth,
+    playerType: req.session.account.playerType,
   };
 
   Account.AccountModel.find().sort({ maxDistance: -1 }).exec((err, docs) => {

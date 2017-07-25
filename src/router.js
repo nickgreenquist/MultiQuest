@@ -16,6 +16,7 @@ const router = (app) => {
   app.post('/maker', mid.requiresLogin, controllers.Weapon.make);
   app.post('/remove', mid.requiresLogin, controllers.Weapon.delete);
   app.post('/activate', mid.requiresLogin, controllers.Weapon.activate);
+  app.post('/activateType', mid.requiresLogin, controllers.Weapon.activateType);
   app.get('/', mid.requiresSecure, mid.requiresLogout, controllers.Account.loginPage);
 };
 

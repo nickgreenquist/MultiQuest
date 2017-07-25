@@ -54,7 +54,7 @@ html, body {
     font-size: 4vmin;
 }
 
-.deleteDomoSubmit, .activateDomoSubmit {
+.deleteDomoSubmit, .activateDomoSubmit, .activatePlayerType {
     transition: background-color 0.4s ease;
     text-align: center;
     background-color: #55acee;
@@ -96,7 +96,7 @@ html, body {
     width: 50vw;
 }
 
-#domoName, #weaponColor {
+#domoName, #weaponColor, #playerType {
     text-align: center;
     border-radius: 6px;
     font-size: 4vmin;
@@ -244,7 +244,7 @@ nav:nth-child(1) {
 
 .navlink {
     width: 100%;
-    height: 100%;
+    height: 11vh;
     display: flex;
     flex: 1;
     justify-content: center;
@@ -258,7 +258,7 @@ nav:nth-child(1) {
 
 .navlink:hover {
     width: 100%;
-    height: 100%;
+    height: 11vh;
     display: flex;
     flex: 1;
     justify-content: center;
@@ -289,9 +289,9 @@ nav:nth-child(1) {
 /* MISCL */
 #domoMessage {
     display:none;
-    top: 250px;
-    width: 250px;
-    height: 650px;
+    bottom: 0;
+    width: 25vmin;
+    height: 65vmin;
     position: absolute;
     z-index: 200;
     right: 0px;
@@ -299,15 +299,16 @@ nav:nth-child(1) {
 }
 
 #domoMessage h3 {
-    width: 200px;
+    width: 20vmin;
     position: absolute;
     top: 0px;
-    left: 20px;
+    left: 2vmin;
+    font-size: 2vmin;
 }
 
 #speech {
-    height: 120px;
-    width: 250px;
+    height: 20vmin;
+    width: 25vmin;
     z-index:300;
 }
 
@@ -320,10 +321,10 @@ nav:nth-child(1) {
 
 #domo {
     z-index: 225;
-    margin-top: -20px;
-    margin-left: 135px;
-    height: 450px;
-    width: 300px;
+    margin-top: -2vmin;
+    margin-left: 13.5vmin;
+    height: 45vmin;
+    width: 30vmin;
     -ms-transform: rotate(330deg);
     -webkit-transform: rotate(330deg); 
     transform: rotate(330deg);

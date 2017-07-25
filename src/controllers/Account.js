@@ -63,6 +63,7 @@ const signup = (request, response) => {
       points: 0,
       maxDistance: 0,
       spellPower: 5,
+      playerType: 0,
     };
 
     const newAccount = new Account.AccountModel(accountData);
