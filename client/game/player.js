@@ -6,29 +6,47 @@ let playerHealthBarHeight = (worldHeight / 20);
 //PLAYER IMAGE
 let playerSpritePositions = [];
 
-let playerSpritePos = {};
-playerSpritePos[1] = {x:96, y:96, width: 96, height: 96};
-playerSpritePos[2] = {x:192, y:101, width: 96, height: 96}; //second move
-playerSpritePos[3] = {x:0, y:0, width: 96, height: 96}; //dead
+let playerSpritePos0 = {};
+playerSpritePos0[1] = {x:105, y:100, width: 75, height: 83};
+playerSpritePos0[2] = {x:201, y:100, width: 75, height: 83}; //second move
+playerSpritePos0[3] = {x:0, y:0, width: 96, height: 96}; //dead
 
 let playerSpritePos1 = {};
 playerSpritePos1[1] = {x:375, y:45, width: 190, height: 305};
 playerSpritePos1[2] = {x:750, y:45, width: 190, height: 305}; //second move
 playerSpritePos1[3] = {x:0, y:0, width: 96, height: 96}; //dead
 
+let playerSpritePos2 = {};
+playerSpritePos2[1] = {x:0, y:64, width: 33, height: 33};
+playerSpritePos2[2] = {x:64, y:64, width: 33, height: 33}; //second move
+playerSpritePos2[3] = {x:0, y:0, width: 96, height: 96}; //dead
 
-playerSpritePositions.push(playerSpritePos);
+let playerSpritePos3 = {};
+playerSpritePos3[1] = {x:288, y:64, width: 33, height: 33};
+playerSpritePos3[2] = {x:352, y:64, width: 33, height: 33}; //second move
+playerSpritePos3[3] = {x:0, y:0, width: 96, height: 96}; //dead
+
+
+playerSpritePositions.push(playerSpritePos0);
 playerSpritePositions.push(playerSpritePos1);
+playerSpritePositions.push(playerSpritePos2);
+playerSpritePositions.push(playerSpritePos3);
 
 let playerImages = [];
 
-let playerImage = new Image();                      
-playerImage.src = document.location.pathname + '/../assets/img/players/warrior.png';
+let playerImage0 = new Image();                      
+playerImage0.src = document.location.pathname + '/../assets/img/players/warrior.png';
 let playerImage1 = new Image();                      
 playerImage1.src = document.location.pathname + '/../assets/img/players/samurai.png';
+let playerImage2 = new Image();                      
+playerImage2.src = document.location.pathname + '/../assets/img/players/multi.png';
+let playerImage3 = new Image();                      
+playerImage3.src = document.location.pathname + '/../assets/img/players/multi.png';
 
-playerImages.push(playerImage);
+playerImages.push(playerImage0);
 playerImages.push(playerImage1);
+playerImages.push(playerImage2);
+playerImages.push(playerImage3);
 
 let swordImage = new Image();
 swordImage.src = document.location.pathname + '/../assets/img/weapons/weapon.png';

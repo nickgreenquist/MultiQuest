@@ -54,7 +54,7 @@ html, body {
     font-size: 4vmin;
 }
 
-.deleteDomoSubmit, .activateDomoSubmit, .activatePlayerType {
+.deleteDomoSubmit, .activateDomoSubmit, .activatePlayerType, .enterGameSubmit {
     transition: background-color 0.4s ease;
     text-align: center;
     background-color: #55acee;

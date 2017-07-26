@@ -14,8 +14,8 @@ draw = () => {
     }
     
     //WEAPON DRAW
-    let swordWidth = playerSize * .8;
-    let swordHeight = playerSize * .8;
+    let swordWidth = playerSize * 1;
+    let swordHeight = playerSize * 1;
     let swordXOffset = playerSize * .45;
     let swordYOffset = playerSize * .2;
     let playerX = (drawCall.position.x / 100) * worldWidth;
@@ -66,6 +66,7 @@ draw = () => {
     ctx.restore();
 
     //PLAYER DRAW
+    let bounceYOffset = drawCall.spritePos === 2 ? -3 : 0;
     if(drawCall.dead) {
       ctx.globalAlpha = 0.5;
     } else {
@@ -82,7 +83,10 @@ draw = () => {
       playerSprite[drawCall.spritePos].y, 
       playerSprite[drawCall.spritePos].width, 
       playerSprite[drawCall.spritePos].height, 
-      playerX, playerY, playerSize, playerSize
+      playerX,
+      playerY + bounceYOffset,
+      playerSize, 
+      playerSize,
     );
 
     //Name

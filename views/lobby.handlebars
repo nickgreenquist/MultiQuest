@@ -16,30 +16,40 @@
   <div class="content">
     <section id="pageRow">
       <section class="col" style="margin: .5vmin; padding: 1vmin; min-height: 85vh;">
-        <form id="{{info.username}}" name="deleteForm" action="/enter" method="POST" class="deleteForm">
-          <button type="submit" name="{{info.username}}" href="#" class="enterGameSubmit">New Room</button>
+        <form 
+          class="row" 
+          style="width: 100%; justify-content: center; margin-top: 2vmin; margin-bottom: 2vmin;" 
+          id="{{info.username}}" 
+          name="deleteForm" 
+          action="/enter" 
+          method="POST" 
+          class="deleteForm"
+        >
+          <a type="submit" name="{{info.username}}" href="#" class="enterGameSubmit">NEW ADVENTURE</a>
           <input type="hidden" name="_csrf"/>
         </form>       
          {{#if rooms}}
           {{#each rooms}}
-            <div class="row" style="border: 1px solid white; color: white; width: 75%; align-self: center;">
-              <form class="row" style="width: 100%; justify-content: center;" id="{{this.name}}" name="deleteForm" action="/enter" method="POST" class="deleteForm">
-                <button id="{{this.distance}}" type="submit" name="{{this.name}}" href="#" class="enterGameSubmit">Enter</button>
+            <div class="row" style="border: 1px solid white; color: white; width: 90%; align-self: center;">
+              <div class="row" style="width: 100%; justify-content: center;">
+                <h3>HOST: {{this.name}}</h3>
+              </div>
+              <div class="row" style="width: 100%; justify-content: center;">
+                <h3># PLAYERS: {{this.players}}</h3>
+              </div>
+              <div class="row" style="width: 100%; justify-content: center;">
+                <h3>DIST: {{this.distance}} KM</h3>
+              </div>
+              <form class="row" style="width: 50%; justify-content: center;" id="{{this.name}}" name="deleteForm" action="/enter" method="POST" class="deleteForm">
+                <button id="{{this.distance}}" type="submit" name="{{this.name}}" href="#" class="enterGameSubmit">JOIN</button>
                 <input type="hidden" name="_csrf"/>
               </form>
-              <div class="row" style="width: 100%; justify-content: center;">
-                <h3>Room: {{this.name}}</h3>
-              </div>
-              <div class="row" style="width: 100%; justify-content: center;">
-                <h3>Players: {{this.players}}</h3>
-              </div>
-              <div class="row" style="width: 100%; justify-content: center;">
-              <h3>Distance: {{this.distance}}</h3>
-              </div>
             </div>
           {{/each}}
         {{else}}
-          <h3>No Active Rooms</h3>
+          <div class="row" style="width: 100%; justify-content: center;">
+            <h3>NO ROOMS</h3>
+          </div>
         {{/if}}
       </section>
     </section>

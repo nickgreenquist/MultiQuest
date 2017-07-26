@@ -5,6 +5,18 @@
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
   <script src="/assets/maker.js" type="text/babel"></script>
+  <script type="text/javascript">
+         window.onload = function(){
+            let cuisines = ["WARRIOR","SAMURAI","MAN BUN","NINJA"];     
+            let sel = document.getElementById('playerType');
+            for(var i = 0; i < cuisines.length; i++) {
+                let opt = document.createElement('option');
+                opt.innerHTML = cuisines[i];
+                opt.value = i;
+                sel.appendChild(opt);
+            }
+         };
+      </script>
   <link rel="shortcut icon" href="/assets/img/favicon.png"/>
   <link rel="stylesheet" type="text/css" href="/assets/style.css"/>
 </head>
@@ -24,8 +36,6 @@
             <div id="skill_left">
                 <select name="type" id="playerType">
                   <option selected disabled>CLASS</option>
-                  <option value="0" >WARRIOR</option>
-                  <option value="1">SAMURAI</option>
               </select>
             </div>
             <div id="skill_right">
@@ -100,6 +110,17 @@
       </div>
 
       <div id="ui_right" style="height: 80%;">
+        <form class="row" id="weaponTypeForm" name="weaponTypeForm" action="/maker" method="POST">
+            <div id="skill_left">
+                <select name="wType" id="weaponType">
+                  <option selected disabled>WEAPON</option>
+              </select>
+            </div>
+            <div id="skill_right">
+                <a type="submit" href="#" class="activateWeaponType">SELECT</a>
+                <input id="csrf" type="hidden" name="_csrf" value={{csrfToken}} />
+            </div>
+        </form>
         <form class="col" id="domoForm" name="domoForm" action="/maker" method="POST" style="flex: 4;">
           <div class="row" style="justify-content: center;">
               <p>WEAPON SHOP</p>
