@@ -1,6 +1,6 @@
 let playerSize = (worldWidth / 10);
 let playerSizePercentage = 10;
-let playerY = worldHeight - (worldWidth / 10);
+let playerY = worldHeight - (worldWidth / 10) - (worldHeight / 20);
 let playerHealthBarHeight = (worldHeight / 20);
 
 //PLAYER IMAGE
@@ -26,11 +26,17 @@ playerSpritePos3[1] = {x:288, y:64, width: 33, height: 33};
 playerSpritePos3[2] = {x:352, y:64, width: 33, height: 33}; //second move
 playerSpritePos3[3] = {x:0, y:0, width: 96, height: 96}; //dead
 
+let playerSpritePos4 = {};
+playerSpritePos4[1] = {x:96, y:192, width: 33, height: 33};
+playerSpritePos4[2] = {x:160, y:192, width: 33, height: 33}; //second move
+playerSpritePos4[3] = {x:0, y:0, width: 96, height: 96}; //dead
+
 
 playerSpritePositions.push(playerSpritePos0);
 playerSpritePositions.push(playerSpritePos1);
 playerSpritePositions.push(playerSpritePos2);
 playerSpritePositions.push(playerSpritePos3);
+playerSpritePositions.push(playerSpritePos4);
 
 let playerImages = [];
 
@@ -42,11 +48,14 @@ let playerImage2 = new Image();
 playerImage2.src = document.location.pathname + '/../assets/img/players/multi.png';
 let playerImage3 = new Image();                      
 playerImage3.src = document.location.pathname + '/../assets/img/players/multi.png';
+let playerImage4 = new Image();                      
+playerImage4.src = document.location.pathname + '/../assets/img/players/multi.png';
 
 playerImages.push(playerImage0);
 playerImages.push(playerImage1);
 playerImages.push(playerImage2);
 playerImages.push(playerImage3);
+playerImages.push(playerImage4);
 
 let swordImage = new Image();
 swordImage.src = document.location.pathname + '/../assets/img/weapons/weapon.png';
