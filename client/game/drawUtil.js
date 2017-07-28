@@ -12,60 +12,10 @@ draw = () => {
     } else {
       ctx.globalAlpha = 1.0;
     }
-    
-    //WEAPON DRAW
-    let swordWidth = playerSize * 1;
-    let swordHeight = playerSize * 1;
-    let swordXOffset = playerSize * .45;
-    let swordYOffset = playerSize * .2;
-    let playerX = (drawCall.position.x / 100) * worldWidth;
-    
-    //HANDLE TINTED SWORDS
-    let buffer;
-    let bx;
-    if(drawCall.color != 'none') {
-      buffer = document.createElement('canvas');
-      buffer.width = swordWidth;
-      buffer.height = swordHeight;
-      bx = buffer.getContext('2d');
-
-      // fill offscreen buffer with the tint color
-      bx.fillStyle = drawCall.color;
-      bx.fillRect(0,0,buffer.width,buffer.height);
-
-      // destination atop makes a result with an alpha channel identical to fg, but with all pixels retaining their original color *as far as I can tell*
-      bx.globalCompositeOperation = "destination-atop";
-      bx.drawImage(swordImage, 0,0,swordWidth, swordHeight);
-    }
-
-    //DRAW THE SWORD BASED ON ATTACK STATE
-    if (drawCall.isAttacking) {
-      ctx.save();
-
-      // move to the center of the canvas
-      ctx.translate(playerX + swordXOffset,playerY + swordYOffset);
-      ctx.translate(swordXOffset,swordXOffset);
-      ctx.rotate(Math.PI / 4);
-
-      ctx.drawImage(swordImage, -swordWidth/2, -swordHeight/2, swordWidth, swordHeight);
-      if (drawCall.color != 'none') {
-        //then set the global alpha to the amound that you want to tint it, and draw the buffer directly on top of it.
-        ctx.globalAlpha = 0.5;
-        ctx.drawImage(buffer, -swordWidth/2, -swordHeight/2, swordWidth, swordHeight);
-      }
-    } 
-    else {
-      ctx.drawImage(swordImage, playerX + swordXOffset, playerY, swordWidth, swordHeight);
-
-      if (drawCall.color != 'none') {
-        //then set the global alpha to the amound that you want to tint it, and draw the buffer directly on top of it.
-        ctx.globalAlpha = 0.5;
-        ctx.drawImage(buffer, playerX + swordXOffset, playerY, swordWidth, swordHeight);
-      }
-    }
-    ctx.restore();
 
     //PLAYER DRAW
+    let playerX = (drawCall.position.x / 100) * worldWidth;
+
     let bounceYOffset = drawCall.spritePos === 2 ? -3 : 0;
     if(drawCall.dead) {
       ctx.globalAlpha = 0.5;
@@ -88,6 +38,60 @@ draw = () => {
       playerSize, 
       playerSize,
     );
+    
+    //WEAPON DRAW
+    let weaponWidth = weaponSizes[drawCall.weaponType];
+    if(drawCall.isAttacking) {
+      weaponWidth *= 1.25;
+    }
+    let weaponHeight = weaponSizes[drawCall.weaponType];
+
+    let weaponX = playerX + (playerSize / 2);
+    let weaponY = playerY - (playerSize * .2) - (weaponSizes[drawCall.weaponType] - playerSize);
+    
+    //HANDLE TINTED WEAPONS
+    let buffer;
+    let bx;
+    if(drawCall.color != 'none') {
+      buffer = document.createElement('canvas');
+      buffer.width = weaponWidth;
+      buffer.height = weaponHeight;
+      bx = buffer.getContext('2d');
+
+      // fill offscreen buffer with the tint color
+      bx.fillStyle = drawCall.color;
+      bx.fillRect(0,0,buffer.width,buffer.height);
+
+      // destination atop makes a result with an alpha channel identical to fg, but with all pixels retaining their original color *as far as I can tell*
+      bx.globalCompositeOperation = "destination-atop";
+      if (drawCall.isAttacking) {
+        bx.drawImage(weaponAttackImages[drawCall.weaponType], 0,0,weaponWidth, weaponHeight);
+      }
+      else {
+        bx.drawImage(weaponImages[drawCall.weaponType], 0,0,weaponWidth, weaponHeight);
+      }
+    }
+
+    //DRAW THE weapon BASED ON ATTACK STATE
+    if (drawCall.isAttacking) {
+      ctx.drawImage(weaponAttackImages[drawCall.weaponType], weaponX, weaponY, weaponWidth, weaponHeight);
+
+      if (drawCall.color != 'none') {
+        //then set the global alpha to the amound that you want to tint it, and draw the buffer directly on top of it.
+        ctx.globalAlpha = 0.5;
+        ctx.drawImage(buffer, weaponX, weaponY, weaponWidth, weaponHeight);
+      }
+    } 
+    else {
+      ctx.drawImage(weaponImages[drawCall.weaponType], weaponX, weaponY, weaponWidth, weaponHeight);
+
+      if (drawCall.color != 'none') {
+        //then set the global alpha to the amound that you want to tint it, and draw the buffer directly on top of it.
+        ctx.globalAlpha = 0.5;
+        ctx.drawImage(buffer, weaponX, weaponY, weaponWidth, weaponHeight);
+      }
+    }
+    ctx.restore();
 
     //Name
     if(keys[i] != user) {

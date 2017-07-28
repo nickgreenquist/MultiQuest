@@ -3,7 +3,7 @@ let playerSizePercentage = 10;
 let playerY = worldHeight - (worldWidth / 10) - (worldHeight / 20);
 let playerHealthBarHeight = (worldHeight / 20);
 
-//PLAYER IMAGE
+//PLAYER SPRITE POS
 let playerSpritePositions = [];
 
 let playerSpritePos0 = {};
@@ -38,6 +38,8 @@ playerSpritePositions.push(playerSpritePos2);
 playerSpritePositions.push(playerSpritePos3);
 playerSpritePositions.push(playerSpritePos4);
 
+
+// PLAYER IMAGE
 let playerImages = [];
 
 let playerImage0 = new Image();                      
@@ -57,8 +59,33 @@ playerImages.push(playerImage2);
 playerImages.push(playerImage3);
 playerImages.push(playerImage4);
 
-let swordImage = new Image();
-swordImage.src = document.location.pathname + '/../assets/img/weapons/weapon.png';
+
+// WEAPON IMAGE
+let weaponImages = [];
+
+let weaponImage0 = new Image();
+weaponImage0.src = document.location.pathname + '/../assets/img/weapons/sword.png';
+let weaponImage1 = new Image();
+weaponImage1.src = document.location.pathname + '/../assets/img/weapons/hammer.png';
+
+weaponImages.push(weaponImage0);
+weaponImages.push(weaponImage1);
+
+// ATTACK IMAGES
+weaponAttackImages = [];
+
+let weaponAttackImage0 = new Image();
+weaponAttackImage0.src = document.location.pathname + '/../assets/img/weapons/sword_attack.png';
+let weaponAttackImage1 = new Image();
+weaponAttackImage1.src = document.location.pathname + '/../assets/img/weapons/hammer_attack.png';
+
+weaponAttackImages.push(weaponAttackImage0);
+weaponAttackImages.push(weaponAttackImage1);
+
+// WEAPON SIZES
+let weaponSizes = [];
+weaponSizes.push(playerSize * .9);
+weaponSizes.push(playerSize * 1.1);
 
 //PLAYER UPDATE TIME
 let moveTimer = 500;
@@ -83,8 +110,8 @@ define(function () {
           lastAttack: time,
           isMoving: false, 
           position:position, 
-          maxHealth:maxHealth, 
-          currentHealth:maxHealth,
+          maxHealth:10000, 
+          currentHealth:10000,
           dead:false,
           speed:speed,
           attack:attack,
@@ -100,6 +127,7 @@ define(function () {
           texts: {},
           direction: true,
           type:type,
+          weaponType:0,
       };
 
       return newPlayer;
