@@ -116,6 +116,8 @@ canvas {
     position:absolute;
     background-image:url('/assets/img/background2.gif');
     background-size: 100% 100%;
+    transform: translate3d(0,0,0);
+    -webkit-transform: translate3d(0,0,0);
 }
 
 #game {
