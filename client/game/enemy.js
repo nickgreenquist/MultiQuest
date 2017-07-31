@@ -1,3 +1,5 @@
+/*jshint esversion: 6 */
+
 //Always constant so people playing on different screens are drawn the same way
 let enemySize = (worldWidth / 10);
 let enemySizePercentage = 10;
@@ -64,5 +66,5 @@ define(function () {
       }
       return newEnemies;
     }
-  }
+  };
 });

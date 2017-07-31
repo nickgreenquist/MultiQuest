@@ -1,5 +1,7 @@
 // @TODO: Clen up spacing in this function
 
+/*jshint esversion: 6 */
+
 define(function () {
   return {
     move: function() {
@@ -114,5 +116,5 @@ define(function () {
 
       }
 }
-  }
+  };
 });
