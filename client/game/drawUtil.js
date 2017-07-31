@@ -1,3 +1,4 @@
+/*jshint esversion: 6 */
 
 draw = () => {
   ctx.clearRect(0,0,canvas.width, canvas.height);
@@ -36,7 +37,7 @@ draw = () => {
       playerX,
       playerY + bounceYOffset,
       playerSize, 
-      playerSize,
+      playerSize
     );
     
     //WEAPON DRAW
@@ -116,7 +117,7 @@ draw = () => {
   //SCREEN DATA DRAW
   //player stats
   let barX = worldWidth / 30;
-  let barY = worldHeight / 10;;
+  let barY = worldHeight / 10;
   let barWidth = worldWidth / 4;
   ctx.globalAlpha = 1;
   ctx.fillStyle="white";
@@ -125,10 +126,10 @@ draw = () => {
   ctx.fillRect(barX + 1,barY + 1, barWidth - 2, healthBarHeight - 2);
   ctx.fillStyle="green";
   ctx.fillRect(barX + 1,barY + 1,(players[user].currentHealth / players[user].maxHealth) * (barWidth - 2) ,healthBarHeight - 2);
-  drawStroked(players[user].currentHealth + '/' + players[user].maxHealth, barX, barY - 5, worldHeight / 15)
+  drawStroked(players[user].currentHealth + '/' + players[user].maxHealth, barX, barY - 5, worldHeight / 15);
 
 
-  let distance = (players[user].position.x / 100).toFixed(1);;
+  let distance = (players[user].position.x / 100).toFixed(1);
   let diffMs = (Date.now() - startTime);
   let minutes = (((diffMs % 86400000) % 3600000) / 60000);
   document.getElementById("name").innerHTML = user.toString().toUpperCase();
@@ -186,16 +187,16 @@ draw = () => {
     let playerX = (players[user].texts[keys[i]].x / 100) * worldWidth;
     drawStroked(players[user].texts[keys[i]].text, playerX, players[user].texts[keys[i]].y, 50);
   }
-}
+};
 
 drawStroked = (text, x, y, size) => {
-  ctx.font = size + "px Sans-serif"
+  ctx.font = size + "px Sans-serif";
   ctx.strokeStyle = 'black';
   ctx.lineWidth = 4;
   ctx.strokeText(text, x, y);
   ctx.fillStyle = 'white';
   ctx.fillText(text, x, y);
-}
+};
 
 fadeOut = (text, x, y, width, height, r, g, b, num, time, decrease) => {
   var alpha = 1.0,   // full opacity
@@ -218,7 +219,7 @@ fadeOut = (text, x, y, width, height, r, g, b, num, time, decrease) => {
     if (alpha < 0) {
         //ctx.clearRect(x,y-height,width,height+10);
         clearInterval(interval);
-        delete players[user].texts[num]
+        delete players[user].texts[num];
     }
   }, time); 
-}
+};

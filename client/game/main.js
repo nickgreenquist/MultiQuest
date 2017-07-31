@@ -1,3 +1,5 @@
+/*jshint esversion: 6 */
+
 define(function (require) {
   console.log('game starting');
 
@@ -81,12 +83,12 @@ define(function (require) {
     var xPos = e.touches[0].pageX;
     players[user].direction = (xPos > (worldWidth / 2));
     players[user].isMoving = true;
-  }
+  };
 
   const handleTouchEnd = (e) => {
     // e.preventDefault();
     players[user].isMoving = false;
-  }
+  };
 
   const handleKeyDown = (e) => {
     if(e.keyCode == 68) {
@@ -100,7 +102,7 @@ define(function (require) {
     if(e.keyCode == 32) {
       isCasting = true;
     }
-  }
+  };
 
   const handleKeyUp = (e) => {
     if(e.keyCode == 68) {
@@ -109,7 +111,7 @@ define(function (require) {
     if(e.keyCode == 65) {
       players[user].isMoving = false;
     }
-  }
+  };
 
   const update = (modifier) => {
     let time = new Date().getTime();
@@ -192,7 +194,7 @@ define(function (require) {
             socket.emit('updatePlayerHealth', {room: players[user].room, name: user, health: players[user].currentHealth,dead: players[user].dead, spritePos: players[user].spritePos});
 
             //draw damage
-            fadeOut(enemies[keys[i]].attack, players[user].position.x + (playerSizePercentage / 2), playerY, 50, 100, 255, 0,0, numEffects, 20, .05);        
+            fadeOut(enemies[keys[i]].attack, players[user].position.x + (playerSizePercentage / 2), playerY, 50, 100, 255, 0,0, numEffects, 20, 0.05);        
             players[user].texts[numEffects] = {alpha: 1.0, red: 255, green: 0, blue: 0, text:enemies[keys[i]].attack, width: 50, height: 20, x: players[user].position.x + (playerSizePercentage / 2), y: playerY};       
             numEffects++;
 
@@ -208,12 +210,12 @@ define(function (require) {
         }
       }
     }
-  }
+  };
 
   const move = () => {
     actions.move();
     draw();
-  }
+  };
 
   const spell = (time) => {
     socket.emit('healSpell', {room: players[user].room, name: user, power: players[user].spellPower});
@@ -232,7 +234,7 @@ define(function (require) {
       players[user].currentHealth = players[user].maxHealth;
     }
     draw();
-  }
+  };
 
   //PLAYER AND ENEMY SETUP FUNCTIONS
   const setupPlayer = () => {            
@@ -318,7 +320,7 @@ define(function (require) {
         //reset to stage 1 and reset all data and propogate this reset to all users
         let keys = Object.keys(players);
         for(let i = 0; i < keys.length; i++) {
-          players[keys[i]].position.x = 0
+          players[keys[i]].position.x = 0;
           players[keys[i]].spritePos.x = 96;
           players[keys[i]].spritePos.y = 96;
           players[keys[i]].currentHealth = players[keys[i]].maxHealth;
@@ -379,7 +381,7 @@ define(function (require) {
       setupPlayer();
       setupEnemy();
       draw();
-    })
+    });
 
     //player updates for host
     socket.on('getPlayersHost', (data) => {
@@ -446,7 +448,7 @@ define(function (require) {
 
     socket.on('setNextStageAll', (data) => {
       stage = data;
-    })
+    });
 
     socket.on('requestWorldData', (data) => {
       if(isHost) {
@@ -515,7 +517,7 @@ define(function (require) {
     delete players[user];
     socket.emit('updateAllPlayers', {players: players, room: tempRoom});
     socket.emit('leave', {name: user, player: tempPlayer, isHost: isHost, room: tempRoom});
-  }
+  };
 
 
   //ALWAYS PLACE THIS AT END OF FILE
@@ -523,5 +525,5 @@ define(function (require) {
 
   window.onbeforeunload = function(){
     quit();
-  }
+  };
 });

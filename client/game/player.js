@@ -1,3 +1,5 @@
+/*jshint esversion: 6 */
+
 let playerSize = (worldWidth / 10);
 let playerSizePercentage = 10;
 let playerY = worldHeight - (worldWidth / 10) - (worldHeight / 20);
