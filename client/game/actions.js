@@ -85,7 +85,7 @@ define(function () {
           }
 
           //update max distance
-          let distance = ((stage-1) * 100) + players[user].position.x;
+          let distance = ((stage-1) + (players[user].position.x / 100)).toFixed(1);
           if(distance > players[user].maxDistance) {
           players[user].maxDistance = distance;
           }

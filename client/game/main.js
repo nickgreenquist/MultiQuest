@@ -177,14 +177,23 @@ define(function (require) {
       if(!enemy.dead && (players[user].position.x + (playerSizePercentage / 2)) > (enemy.position.x - enemy.lungeDistance)) {
         let timePassed = time - enemy.lastUpdate;
         if(timePassed > 200) {
-          if(enemy.position.x == enemy.origX && timePassed > 1000 && !players[user].dead) {
+          if(enemy.position.x == enemy.origX && timePassed > enemyTimeBetweenAttack && !players[user].dead) {
+
             enemy.lastUpdate = time;
             enemy.position.x -= enemy.lungeDistance;
-            enemies[keys[i]].spritePos = 3;
+            enemy.spritePos = 3;
 
-            socket.emit('updateEnemy', {room: players[user].room, name: keys[i], health:enemies[keys[i]].currentHealth, dead:enemies[keys[i]].dead, positionX:enemies[keys[i]].position.x, spritePos:enemies[keys[i]].spritePos});
+            socket.emit('updateEnemy', {
+              room: players[user].room, 
+              name: keys[i], 
+              health:enemy.currentHealth, 
+              dead:enemy.dead, 
+              positionX:enemy.position.x, 
+              spritePos:enemy.spritePos,
+            });
 
             //Update Health and Check Death
+            players[user].position.x -= 5;
             players[user].currentHealth -= enemies[keys[i]].attack;
             if(players[user].currentHealth <= 0) {
               players[user].dead = true;
@@ -244,7 +253,7 @@ define(function (require) {
     if(!isHost) {
       window.setInterval(function(){
         if(players[user].currentHealth < players[user].maxHealth && !players[user].dead) {
-          players[user].currentHealth += 5;
+          players[user].currentHealth += players[user].spellPower;
           if(players[user].currentHealth > players[user].maxHealth) {
             players[user].currentHealth = players[user].maxHealth;
           }
@@ -252,7 +261,7 @@ define(function (require) {
 
           draw();
         }
-      }, 5000);
+      }, 10000);
     }
   };
 

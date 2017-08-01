@@ -1,7 +1,7 @@
 /*jshint esversion: 6 */
 
 let worldWidth = window.innerWidth;
-let worldHeight = window.innerHeight / 3;
+let worldHeight = window.innerHeight * .25;
 
 var socket;
 let canvas;

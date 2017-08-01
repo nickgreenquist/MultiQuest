@@ -56,13 +56,13 @@ const signup = (request, response) => {
       salt,
       password: hash,
       level: 1,
-      maxHealth: 10,
-      attack: 2,
-      speed: 15,
+      maxHealth: 5,
+      attack: 1,
+      speed: 5,
       exp: 0,
       points: 0,
       maxDistance: 0,
-      spellPower: 5,
+      spellPower: 1,
       playerType: 0,
     };
 

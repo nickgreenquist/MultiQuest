@@ -5,6 +5,8 @@ let enemySize = (worldWidth / 10);
 let enemySizePercentage = 10;
 let enemyY = worldHeight - (worldWidth / 10) - (worldHeight / 20); 
 
+let enemyTimeBetweenAttack = 2000;
+
 //ENEMY IMAGES
 let enemySpritePositions = [];
 
@@ -57,7 +59,7 @@ define(function () {
           maxHealth:10*stage, 
           currentHealth:10*stage,
           dead:false,
-          attack:stage*5,
+          attack:stage,
           spritePos:1,
           lungeDistance:enemySizePercentage, //percentage of screen
           origX:position.x,

@@ -120,6 +120,7 @@ io.sockets.on('connection', (socket) => {
     // save character data
     console.log('attempting to save');
     const query = { username: data.name };
+    data.player.maxDistance = (data.player.maxDistance / 100).toFixed(1);
     const update = {
       level: data.player.level,
       maxDistance: data.player.maxDistance,

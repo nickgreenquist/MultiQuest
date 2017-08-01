@@ -7,38 +7,13 @@ draw = () => {
   let keys = Object.keys(players);   
   for(let i = 0; i < keys.length; i++) {
     const drawCall = players[keys[i]];
-
-    if(drawCall.dead) {
-      ctx.globalAlpha = 0.5;
-    } else {
-      ctx.globalAlpha = 1.0;
-    }
-
-    //PLAYER DRAW
     let playerX = (drawCall.position.x / 100) * worldWidth;
 
-    let bounceYOffset = drawCall.spritePos === 2 ? -3 : 0;
     if(drawCall.dead) {
       ctx.globalAlpha = 0.5;
     } else {
       ctx.globalAlpha = 1.0;
     }
-    let spriteXOffset = 0;
-    if (drawCall.isAttacking) {
-      spriteXOffset = 5;
-    }
-    let playerSprite = playerSpritePositions[drawCall.type];
-    ctx.drawImage(
-      playerImages[drawCall.type], 
-      playerSprite[drawCall.spritePos].x + spriteXOffset, 
-      playerSprite[drawCall.spritePos].y, 
-      playerSprite[drawCall.spritePos].width, 
-      playerSprite[drawCall.spritePos].height, 
-      playerX,
-      playerY + bounceYOffset,
-      playerSize, 
-      playerSize
-    );
     
     //WEAPON DRAW
     let weaponWidth = weaponSizes[drawCall.weaponType];
@@ -48,7 +23,7 @@ draw = () => {
     let weaponHeight = weaponSizes[drawCall.weaponType];
 
     let weaponX = playerX + (playerSize / 2);
-    let weaponY = playerY - (playerSize * .2) - (weaponSizes[drawCall.weaponType] - playerSize);
+    let weaponY = playerY - (playerSize * .1) - (weaponSizes[drawCall.weaponType] - playerSize);
     
     //HANDLE TINTED WEAPONS
     let buffer;
@@ -94,6 +69,30 @@ draw = () => {
     }
     ctx.restore();
 
+    //PLAYER DRAW
+    let bounceYOffset = drawCall.spritePos === 2 ? -(playerSize / 15) : 0;
+    if(drawCall.dead) {
+      ctx.globalAlpha = 0.5;
+    } else {
+      ctx.globalAlpha = 1.0;
+    }
+    let spriteXOffset = 0;
+    if (drawCall.isAttacking) {
+      spriteXOffset = -5;
+    }
+    let playerSprite = playerSpritePositions[drawCall.type];
+    ctx.drawImage(
+      playerImages[drawCall.type], 
+      playerSprite[drawCall.spritePos].x + spriteXOffset, 
+      playerSprite[drawCall.spritePos].y, 
+      playerSprite[drawCall.spritePos].width, 
+      playerSprite[drawCall.spritePos].height, 
+      playerX,
+      playerY + bounceYOffset,
+      playerSize, 
+      playerSize
+    );
+
     //Name
     if(keys[i] != user) {
       ctx.font = "36px serif";
@@ -117,16 +116,16 @@ draw = () => {
   //SCREEN DATA DRAW
   //player stats
   let barX = worldWidth / 30;
-  let barY = worldHeight / 10;
+  let barY = worldHeight / 5;
   let barWidth = worldWidth / 4;
   ctx.globalAlpha = 1;
   ctx.fillStyle="white";
-  ctx.fillRect(barX,barY, barWidth, healthBarHeight);
+  ctx.fillRect(barX,barY, barWidth, playerHealthBarHeight);
   ctx.fillStyle="black";
-  ctx.fillRect(barX + 1,barY + 1, barWidth - 2, healthBarHeight - 2);
+  ctx.fillRect(barX + 1,barY + 1, barWidth - 2, playerHealthBarHeight - 2);
   ctx.fillStyle="green";
-  ctx.fillRect(barX + 1,barY + 1,(players[user].currentHealth / players[user].maxHealth) * (barWidth - 2) ,healthBarHeight - 2);
-  drawStroked(players[user].currentHealth + '/' + players[user].maxHealth, barX, barY - 5, worldHeight / 15);
+  ctx.fillRect(barX + 1,barY + 1,(players[user].currentHealth / players[user].maxHealth) * (barWidth - 2) ,playerHealthBarHeight - 2);
+  drawStroked(players[user].currentHealth + '/' + players[user].maxHealth, barX, barY - 5, worldHeight / 10);
 
 
   let distance = (players[user].position.x / 100).toFixed(1);
@@ -136,7 +135,7 @@ draw = () => {
   document.getElementById("level").innerHTML = players[user].level;
   document.getElementById("expavg").innerHTML = (totalEXP / minutes).toFixed(0);
   document.getElementById("distance").innerHTML =  distance + 'KM';
-  document.getElementById("maxdistance").innerHTML = (players[user].maxDistance / 100).toFixed(1) + 'KM';
+  document.getElementById("maxdistance").innerHTML = players[user].maxDistance + 'KM';
   document.getElementById("time").innerHTML = minutes.toFixed(1) + 'MIN';
   document.getElementById("points").innerHTML = players[user].points;
   document.getElementById("health").innerHTML = players[user].maxHealth;

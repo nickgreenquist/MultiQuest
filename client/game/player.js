@@ -3,7 +3,7 @@
 let playerSize = (worldWidth / 10);
 let playerSizePercentage = 10;
 let playerY = worldHeight - (worldWidth / 10) - (worldHeight / 20);
-let playerHealthBarHeight = (worldHeight / 20);
+let playerHealthBarHeight = (worldHeight / 10);
 
 //PLAYER SPRITE POS
 let playerSpritePositions = [];
@@ -14,8 +14,8 @@ playerSpritePos0[2] = {x:201, y:100, width: 75, height: 83}; //second move
 playerSpritePos0[3] = {x:0, y:0, width: 96, height: 96}; //dead
 
 let playerSpritePos1 = {};
-playerSpritePos1[1] = {x:375, y:45, width: 190, height: 305};
-playerSpritePos1[2] = {x:750, y:45, width: 190, height: 305}; //second move
+playerSpritePos1[1] = {x:0, y:192, width: 33, height: 33};
+playerSpritePos1[2] = {x:64, y:192, width: 33, height: 33}; //second move
 playerSpritePos1[3] = {x:0, y:0, width: 96, height: 96}; //dead
 
 let playerSpritePos2 = {};
@@ -47,7 +47,7 @@ let playerImages = [];
 let playerImage0 = new Image();                      
 playerImage0.src = document.location.pathname + '/../assets/img/players/warrior.png';
 let playerImage1 = new Image();                      
-playerImage1.src = document.location.pathname + '/../assets/img/players/samurai.png';
+playerImage1.src = document.location.pathname + '/../assets/img/players/multi.png';
 let playerImage2 = new Image();                      
 playerImage2.src = document.location.pathname + '/../assets/img/players/multi.png';
 let playerImage3 = new Image();                      
@@ -92,7 +92,7 @@ weaponSizes.push(playerSize * 1.1);
 //PLAYER UPDATE TIME
 let moveTimer = 500;
 let attackTimer = 1000;
-let movementDistance = 1.5; //percentage of screen
+let movementDistance = 1.75; //percentage of screen
 let isColliding = false;
 let isCasting = false;
 let numEffects = 0;
