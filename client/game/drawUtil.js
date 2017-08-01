@@ -128,7 +128,7 @@ draw = () => {
   drawStroked(players[user].currentHealth + '/' + players[user].maxHealth, barX, barY - 5, worldHeight / 10);
 
 
-  let distance = (players[user].position.x / 100).toFixed(1);
+  let distance = ((stage-1) + (players[user].position.x / 100)).toFixed(1);
   let diffMs = (Date.now() - startTime);
   let minutes = (((diffMs % 86400000) % 3600000) / 60000);
   document.getElementById("name").innerHTML = user.toString().toUpperCase();

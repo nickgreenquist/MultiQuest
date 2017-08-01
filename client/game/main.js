@@ -41,8 +41,8 @@ define(function (require) {
     document.getElementById("healthButton").addEventListener("click", function(){
       if(players[user].points > 0) {
         players[user].points--;
-        players[user].maxHealth += 5;
-        players[user].currentHealth += 5;
+        players[user].maxHealth++;
+        players[user].currentHealth++;
         draw();
       }
     });
