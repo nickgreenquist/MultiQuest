@@ -7,13 +7,22 @@
   <script src="/assets/maker.js" type="text/babel"></script>
   <script type="text/javascript">
          window.onload = function(){
-            let cuisines = ["WARRIOR","MUSTACHE","MAN BUN","NINJA","GREEN BERET"];     
-            let sel = document.getElementById('playerType');
-            for(var i = 0; i < cuisines.length; i++) {
+            let classes = ["WARRIOR","MUSTACHE","MAN BUN","NINJA","GREEN BERET"];     
+            let selClass = document.getElementById('playerType');
+            for(var i = 0; i < classes.length; i++) {
                 let opt = document.createElement('option');
-                opt.innerHTML = cuisines[i];
+                opt.innerHTML = classes[i];
                 opt.value = i;
-                sel.appendChild(opt);
+                selClass.appendChild(opt);
+            }
+
+            let weapons = ["SWORD","HAMMER"];     
+            let selWeapon = document.getElementById('weaponType');
+            for(var i = 0; i < weapons.length; i++) {
+                let opt = document.createElement('option');
+                opt.innerHTML = weapons[i];
+                opt.value = i;
+                selWeapon.appendChild(opt);
             }
          };
       </script>
@@ -110,14 +119,17 @@
       </div>
 
       <div id="ui_right" style="height: 80%;">
+          <div class="row" style="height: 20vh; justify-content: center;">
+            <img src="/assets/img/weapons/{{info.weaponType}}.png" style="height: 12vh; width: 12vh;" alt="domo face"/>
+        </div>
         <form class="row" id="weaponTypeForm" name="weaponTypeForm" action="/maker" method="POST">
             <div id="skill_left">
-                <select name="wType" id="weaponType">
+                <select name="type" id="weaponType">
                   <option selected disabled>WEAPON</option>
               </select>
             </div>
             <div id="skill_right">
-                <a type="submit" href="#" class="activateWeaponType">SELECT</a>
+                <a type="submit" href="#" class="activateWeaponType">EQUIP</a>
                 <input id="csrf" type="hidden" name="_csrf" value={{csrfToken}} />
             </div>
         </form>

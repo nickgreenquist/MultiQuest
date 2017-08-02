@@ -10,6 +10,7 @@ const leaderboard = (req, res) => {
     speed: req.session.account.speed,
     spellPower: req.session.account.spellPower,
     playerType: req.session.account.playerType,
+    weaponType: req.session.account.weaponType,
   };
 
   res.render('leader', { info: accountInfo, csrfToken: req.csrfToken() });

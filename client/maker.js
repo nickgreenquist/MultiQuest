@@ -102,6 +102,29 @@ $(document).ready(function() {
         
         return false;
     });
+
+    $(".activateWeaponType").on("click", (e) => {
+        e.preventDefault();
+
+        var data = e.target.parentElement;
+        const type = $("#weaponType").val();
+        console.log(type);
+
+        if(!type) {
+            return false;
+        }
+    
+        data.querySelector('[name="_csrf"]').value = $("#csrf")[0].value;
+        data = $(data).serialize();
+        console.log("data: " + data);
+    
+        var temp = 'weaponType=' + type + '&_csrf=' + $("#csrf")[0].value;
+        console.log("temp: " + temp);
+
+        sendAjax("/activateWeaponType", temp);
+        
+        return false;
+    });
   
   $(".enterGameSubmit").on("click", (e) => {
         console.log("enter game button hit");

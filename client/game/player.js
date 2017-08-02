@@ -129,7 +129,7 @@ define(function () {
           texts: {},
           direction: true,
           type:type,
-          weaponType:0,
+          weaponType:weaponType,
       };
 
       return newPlayer;

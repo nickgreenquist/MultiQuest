@@ -61,6 +61,10 @@ const AccountSchema = new mongoose.Schema({
   playerType: {
     type: Number,
     required: true,
+  },
+  weaponType: {
+    type: Number,
+    required: true,
   }
 });
 
@@ -77,6 +81,7 @@ AccountSchema.statics.toAPI = doc => ({
   maxDistance: doc.maxDistance,
   spellPower: doc.spellPower,
   playerType: doc.playerType,
+  weaponType: doc.weaponType,
 });
 
 const validatePassword = (doc, password, callback) => {

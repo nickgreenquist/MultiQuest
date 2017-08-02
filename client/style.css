@@ -54,7 +54,7 @@ html, body {
     font-size: 4vmin;
 }
 
-.deleteDomoSubmit, .activateDomoSubmit, .activatePlayerType, .enterGameSubmit {
+.deleteDomoSubmit, .activateDomoSubmit, .activatePlayerType, .enterGameSubmit, .activateWeaponType {
     transition: background-color 0.4s ease;
     text-align: center;
     background-color: #55acee;
@@ -96,7 +96,7 @@ html, body {
     width: 50vw;
 }
 
-#domoName, #weaponColor, #playerType {
+#domoName, #weaponColor, #playerType, #weaponType {
     text-align: center;
     border-radius: 6px;
     font-size: 4vmin;
