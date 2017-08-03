@@ -24,6 +24,12 @@ draw = () => {
 
     let weaponX = playerX + (playerSize / 2);
     let weaponY = playerY - (playerSize * .1) - (weaponSizes[drawCall.weaponType] - playerSize);
+
+    let weaponSrc = weaponImages[drawCall.weaponType];
+    if(drawCall.isAttacking) {
+      weaponSrc = weaponAttackImages[drawCall.weaponType];
+      weaponY += (weaponHeight / 4);
+    }
     
     //HANDLE TINTED WEAPONS
     let buffer;
@@ -40,32 +46,16 @@ draw = () => {
 
       // destination atop makes a result with an alpha channel identical to fg, but with all pixels retaining their original color *as far as I can tell*
       bx.globalCompositeOperation = "destination-atop";
-      if (drawCall.isAttacking) {
-        bx.drawImage(weaponAttackImages[drawCall.weaponType], 0,0,weaponWidth, weaponHeight);
-      }
-      else {
-        bx.drawImage(weaponImages[drawCall.weaponType], 0,0,weaponWidth, weaponHeight);
-      }
+      bx.drawImage(weaponSrc, 0,0,weaponWidth, weaponHeight);
     }
 
     //DRAW THE weapon BASED ON ATTACK STATE
-    if (drawCall.isAttacking) {
-      ctx.drawImage(weaponAttackImages[drawCall.weaponType], weaponX, weaponY, weaponWidth, weaponHeight);
+    ctx.drawImage(weaponSrc, weaponX, weaponY, weaponWidth, weaponHeight);
 
-      if (drawCall.color != 'none') {
-        //then set the global alpha to the amound that you want to tint it, and draw the buffer directly on top of it.
-        ctx.globalAlpha = 0.5;
-        ctx.drawImage(buffer, weaponX, weaponY, weaponWidth, weaponHeight);
-      }
-    } 
-    else {
-      ctx.drawImage(weaponImages[drawCall.weaponType], weaponX, weaponY, weaponWidth, weaponHeight);
-
-      if (drawCall.color != 'none') {
-        //then set the global alpha to the amound that you want to tint it, and draw the buffer directly on top of it.
-        ctx.globalAlpha = 0.5;
-        ctx.drawImage(buffer, weaponX, weaponY, weaponWidth, weaponHeight);
-      }
+    if (drawCall.color != 'none') {
+      //then set the global alpha to the amound that you want to tint it, and draw the buffer directly on top of it.
+      ctx.globalAlpha = 0.5;
+      ctx.drawImage(buffer, weaponX, weaponY, weaponWidth, weaponHeight);
     }
     ctx.restore();
 
