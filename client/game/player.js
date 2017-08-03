@@ -68,10 +68,19 @@ let weaponImages = [];
 let weaponImage0 = new Image();
 weaponImage0.src = document.location.pathname + '/../assets/img/weapons/sword.png';
 let weaponImage1 = new Image();
-weaponImage1.src = document.location.pathname + '/../assets/img/weapons/hammer.png';
+weaponImage1.src = document.location.pathname + '/../assets/img/weapons/polearm.png';
+let weaponImage2 = new Image();
+weaponImage2.src = document.location.pathname + '/../assets/img/weapons/staff.png';
+let weaponImage3 = new Image();
+weaponImage3.src = document.location.pathname + '/../assets/img/weapons/cleaver.png';
+let weaponImage4 = new Image();
+weaponImage4.src = document.location.pathname + '/../assets/img/weapons/shamansblade.png';
 
 weaponImages.push(weaponImage0);
 weaponImages.push(weaponImage1);
+weaponImages.push(weaponImage2);
+weaponImages.push(weaponImage3);
+weaponImages.push(weaponImage4);
 
 // ATTACK IMAGES
 weaponAttackImages = [];
@@ -79,15 +88,27 @@ weaponAttackImages = [];
 let weaponAttackImage0 = new Image();
 weaponAttackImage0.src = document.location.pathname + '/../assets/img/weapons/sword_attack.png';
 let weaponAttackImage1 = new Image();
-weaponAttackImage1.src = document.location.pathname + '/../assets/img/weapons/hammer_attack.png';
+weaponAttackImage1.src = document.location.pathname + '/../assets/img/weapons/polearm_attack.png';
+let weaponAttackImage2 = new Image();
+weaponAttackImage2.src = document.location.pathname + '/../assets/img/weapons/staff_attack.png';
+let weaponAttackImage3 = new Image();
+weaponAttackImage3.src = document.location.pathname + '/../assets/img/weapons/cleaver_attack.png';
+let weaponAttackImage4 = new Image();
+weaponAttackImage4.src = document.location.pathname + '/../assets/img/weapons/shamansblade_attack.png';
 
 weaponAttackImages.push(weaponAttackImage0);
 weaponAttackImages.push(weaponAttackImage1);
+weaponAttackImages.push(weaponAttackImage2);
+weaponAttackImages.push(weaponAttackImage3);
+weaponAttackImages.push(weaponAttackImage4);
 
 // WEAPON SIZES
 let weaponSizes = [];
 weaponSizes.push(playerSize * .9);
-weaponSizes.push(playerSize * 1.1);
+weaponSizes.push(playerSize * 1);
+weaponSizes.push(playerSize * 1);
+weaponSizes.push(playerSize * 1);
+weaponSizes.push(playerSize * 1);
 
 //PLAYER UPDATE TIME
 let moveTimer = 500;

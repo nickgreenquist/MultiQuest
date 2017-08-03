@@ -120,7 +120,7 @@ io.sockets.on('connection', (socket) => {
     // save character data
     console.log('attempting to save');
     const query = { username: data.name };
-    data.player.maxDistance = (data.player.maxDistance / 100).toFixed(1);
+    // data.player.maxDistance = (data.player.maxDistance / 100).toFixed(1);
     const update = {
       level: data.player.level,
       maxDistance: data.player.maxDistance,
@@ -131,6 +131,7 @@ io.sockets.on('connection', (socket) => {
       spellPower: data.player.spellPower,
       maxHealth: data.player.maxHealth,
       playerType: data.player.type,
+      weaponType: data.player.weaponType,
     };
     Account.AccountModel.findOneAndUpdate(query, update, { upsert: true }, (err) => {
       if (err) {

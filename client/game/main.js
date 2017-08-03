@@ -521,7 +521,7 @@ define(function (require) {
 
   //QUIT
   const quit = () => {
-    let tempRoom = players[user].room;
+    let tempRoom = room;
     let tempPlayer = players[user];
     delete players[user];
     socket.emit('updateAllPlayers', {players: players, room: tempRoom});
