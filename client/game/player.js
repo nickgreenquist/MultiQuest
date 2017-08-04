@@ -83,9 +83,9 @@ for(let i = 0; i < 10; i++) {
 weaponSizes[9] = (playerSize * 1.2);
 
 //PLAYER UPDATE TIME
-let moveTimer = 500;
-let attackTimer = 1000;
-let movementDistance = 1.75; //percentage of screen
+let moveTimer = 10000;
+let attackTimer = 40000;
+let movementDistance = 1.5; //percentage of screen
 let isColliding = false;
 let isCasting = false;
 let numEffects = 0;

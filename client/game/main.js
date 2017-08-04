@@ -41,8 +41,8 @@ define(function (require) {
     document.getElementById("healthButton").addEventListener("click", function(){
       if(players[user].points > 0) {
         players[user].points--;
-        players[user].maxHealth++;
-        players[user].currentHealth++;
+        players[user].maxHealth += 5;
+        players[user].currentHealth += 5;
         draw();
       }
     });
@@ -128,15 +128,15 @@ define(function (require) {
     if (isMoving) {
       //only move if enough time has occured, otherwise server is overloaded
       let timePassed = time - players[user].lastUpdate;
-      let speed = moveTimer / (Math.log(players[user].speed));
+      let speedCheck = moveTimer / ((90 + ((130 - 90) * (players[user].speed / 100))));
 
       //make sword go back up, always half the time before next move call is made 
-      if(timePassed > speed / 2) {
+      if(timePassed > speedCheck / 2) {
         players[user].isAttacking = false;
         socket.emit('updatePlayerMovement', {room: players[user].room, name: user, positionX: players[user].position.x, spritePos: players[user].spritePos, isAttacking: players[user].isAttacking});
         draw();
       }
-      if(timePassed > speed) {
+      if(timePassed > speedCheck) {
         players[user].lastUpdate = time;
         move();
       }
@@ -192,20 +192,31 @@ define(function (require) {
               spritePos:enemy.spritePos,
             });
 
-            //Update Health and Check Death
-            players[user].position.x -= 5;
-            players[user].currentHealth -= enemies[keys[i]].attack;
-            if(players[user].currentHealth <= 0) {
-              players[user].dead = true;
-              players[user].spritePos = 3;
-              players[user].currentHealth = 0;
-            }
-            socket.emit('updatePlayerHealth', {room: players[user].room, name: user, health: players[user].currentHealth,dead: players[user].dead, spritePos: players[user].spritePos});
+            //check for miss
+            let missChance = (players[user].speed / enemy.attack) / 2;
+            let randomHit = Math.random();
+            console.log("miss chance: " + missChance);
+            console.log("randomHit: " + randomHit);
+            if(missChance < randomHit) {
+              //Update Health and Check Death
+              players[user].position.x -= 5;
+              players[user].currentHealth -= enemy.attack;
+              if(players[user].currentHealth <= 0) {
+                players[user].dead = true;
+                players[user].spritePos = 3;
+                players[user].currentHealth = 0;
+              }
+              socket.emit('updatePlayerHealth', {room: players[user].room, name: user, health: players[user].currentHealth,dead: players[user].dead, spritePos: players[user].spritePos});
 
-            //draw damage
-            fadeOut(enemies[keys[i]].attack, players[user].position.x + (playerSizePercentage / 2), playerY, 50, 100, 255, 0,0, numEffects, 20, 0.05);        
-            players[user].texts[numEffects] = {alpha: 1.0, red: 255, green: 0, blue: 0, text:enemies[keys[i]].attack, width: 50, height: 20, x: players[user].position.x + (playerSizePercentage / 2), y: playerY};       
-            numEffects++;
+              //draw damage
+              fadeOut(enemies[keys[i]].attack, players[user].position.x + (playerSizePercentage / 2), playerY, 50, 100, 255, 0,0, numEffects, 20, 0.05);        
+              players[user].texts[numEffects] = {alpha: 1.0, red: 255, green: 0, blue: 0, text:enemies[keys[i]].attack, width: 50, height: 20, x: players[user].position.x + (playerSizePercentage / 2), y: playerY};       
+              numEffects++;
+            } else {
+              fadeOut("MISS", players[user].position.x + (playerSizePercentage / 2), playerY, 50, 100, 255, 0,0, numEffects, 20, 0.05);        
+              players[user].texts[numEffects] = {alpha: 1.0, red: 255, green: 0, blue: 0, text:"MISS", width: 50, height: 20, x: players[user].position.x + (playerSizePercentage / 2), y: playerY};       
+              numEffects++;
+            }
 
             draw();
 
@@ -253,7 +264,7 @@ define(function (require) {
     if(!isHost) {
       window.setInterval(function(){
         if(players[user].currentHealth < players[user].maxHealth && !players[user].dead) {
-          players[user].currentHealth += players[user].spellPower;
+          players[user].currentHealth += 1;
           if(players[user].currentHealth > players[user].maxHealth) {
             players[user].currentHealth = players[user].maxHealth;
           }
@@ -261,7 +272,7 @@ define(function (require) {
 
           draw();
         }
-      }, 10000);
+      }, 1000);
     }
   };
 

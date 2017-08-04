@@ -132,7 +132,8 @@ draw = () => {
   document.getElementById("attack").innerHTML = players[user].attack;
   document.getElementById("speed").innerHTML = players[user].speed;
   document.getElementById("spell").innerHTML = players[user].spellPower;
-  document.getElementById("exp").innerHTML = players[user].exp + " / " + players[user].level;
+  document.getElementById("exp_total").innerHTML = players[user].exp + ((players[user].level - 1) * 4);
+  document.getElementById("exp_next").innerHTML = players[user].exp + '/' + (players[user].level * 4);
   
   //ENEMIES
   keys = Object.keys(enemies);

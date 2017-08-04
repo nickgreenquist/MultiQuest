@@ -58,7 +58,7 @@ const signup = (request, response) => {
       level: 1,
       maxHealth: 5,
       attack: 1,
-      speed: 5,
+      speed: 1,
       exp: 0,
       points: 0,
       maxDistance: 0,

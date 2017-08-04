@@ -46,6 +46,15 @@ define(function () {
 
       let newEnemies = {};
 
+      // All monsters have 5 HP, 1 POW/INT, 1 SPD and 1 EXP at level 1
+      let enemyHP = 5;
+      let enemyAttack = 1;
+      let statMultiplier = (stage-1) * (1 + (0.003 * (stage-1)));
+      if(stage > 1) {
+        enemyHP = Math.floor(statMultiplier * 15);
+        enemyAttack = Math.floor(statMultiplier * 4.2);
+      }
+
       for(let i = 1; i <= numEnemies; i++) {
         let type = Math.floor(Math.random() * 2);
         console.log(type);
@@ -56,10 +65,10 @@ define(function () {
           lastUpdate: time, 
           lastSpriteUpdate: time,
           position:position, 
-          maxHealth:10*stage, 
-          currentHealth:10*stage,
+          maxHealth:enemyHP, 
+          currentHealth:enemyHP,
           dead:false,
-          attack:stage,
+          attack:enemyAttack,
           spritePos:1,
           lungeDistance:enemySizePercentage, //percentage of screen
           origX:position.x,

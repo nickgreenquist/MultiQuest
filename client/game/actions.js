@@ -26,8 +26,8 @@ define(function () {
 
           let time = new Date().getTime();
           let timePassed = time - players[user].lastAttack;
-          let speed = attackTimer / Math.log(players[user].speed);
-          if(timePassed > speed) {
+          let speedCheck = attackTimer / ((90 + ((130 - 90) * (players[user].speed / 100))));
+          if(timePassed > speedCheck) {
               players[user].lastAttack = time;
               players[user].isAttacking = true;
           
@@ -50,7 +50,7 @@ define(function () {
               //gain experience
               players[user].exp += stage;
               totalEXP += stage;
-              if(players[user].exp >= players[user].level) {
+              if(players[user].exp >= (players[user].level * 4)) {
                   players[user].points += 5;
                   players[user].exp = 0;
                   players[user].level++;
