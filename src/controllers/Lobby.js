@@ -32,7 +32,7 @@ const enterGame = (request, response) => {
   const req = request;
   req.session.account.room = req.body.name;
 
-  if (req.session.account.maxDistance < req.body.dis) {
+  if ((req.session.account.maxDistance * 100) < req.body.dis) {
     return response.status(401).json({ error: 'You are not strong enough for this room' });
   }
 

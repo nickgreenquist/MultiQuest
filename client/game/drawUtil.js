@@ -85,8 +85,7 @@ draw = () => {
 
     //Name
     if(keys[i] != user) {
-      ctx.font = "36px serif";
-      ctx.strokeText(keys[i], playerX, playerY - 50);
+      drawStroked(keys[i], playerX, playerY - textSize, textSize);
     } else {
       //nothing above the player
     }
@@ -147,14 +146,14 @@ draw = () => {
       let extraHeight = 0;
 
       if(drawCall.type === 0 && drawCall.spritePos == 2) {
-        extraWidth = 15;
-        extraX = -20;
-        extraHeight = 5;
+        extraWidth = 15 / worldWidth;
+        extraX = -20 / worldWidth;
+        extraHeight = 5 / worldWidth;
       }
       if(drawCall.type === 1 && drawCall.spritePos == 2) {
-        extraWidth = 10;
-        extraX = -10;
-        extraHeight = -20;
+        extraWidth = 10 / worldWidth;
+        extraX = -10 / worldWidth;
+        extraHeight = -20 / worldWidth;
       }
       let enemySprite = enemySpritePositions[drawCall.type];
       ctx.drawImage(enemyImages[drawCall.type], enemySprite[drawCall.spritePos].x, enemySprite[drawCall.spritePos].y, enemySprite[drawCall.spritePos].width, enemySprite[drawCall.spritePos].height, enemyX + extraX, enemyY - extraHeight, enemySize + extraWidth, enemySize + extraHeight);
@@ -175,7 +174,7 @@ draw = () => {
   keys = Object.keys(players[user].texts);
   for(let i = 0; i < keys.length; i++) {
     let playerX = (players[user].texts[keys[i]].x / 100) * worldWidth;
-    drawStroked(players[user].texts[keys[i]].text, playerX, players[user].texts[keys[i]].y, 50);
+    drawStroked(players[user].texts[keys[i]].text, playerX, players[user].texts[keys[i]].y, textSize);
   }
 };
 
@@ -199,7 +198,7 @@ fadeOut = (text, x, y, width, height, r, g, b, num, time, decrease) => {
     let keys = Object.keys(players[user].texts);
     for(let i = 0; i < keys.length; i++) {
       let playerX = (players[user].texts[keys[i]].x / 100) * worldWidth;
-      this.drawStroked(players[user].texts[keys[i]].text, playerX, players[user].texts[keys[i]].y, 50);
+      this.drawStroked(players[user].texts[keys[i]].text, playerX, players[user].texts[keys[i]].y, textSize);
     }
       
     alpha = alpha - decrease; // decrease opacity (fade out)

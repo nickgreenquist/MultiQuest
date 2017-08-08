@@ -141,18 +141,7 @@ canvas {
     flex-direction: row;
 }
 
-#ui_left {
-    margin: .5vmin;
-    border-radius: 2vmin;
-    border: 2px solid white;
-    padding: 1vmin; 
-
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-}
-
-#ui_right {
+#ui_right, #ui_right_levelup, #ui_left {
     margin: .5vmin;
     border-radius: 2vmin;
     border: 2px solid white;
@@ -196,25 +185,38 @@ canvas {
     margin-left: auto;
 }
 
-#quitButton, #heal {
+#quitButton, #levelUpButton, #leaveLevelUpButton {
     transition: background-color 0.4s ease;
     display: block;
     text-align: center;
-    margin: 0 auto;
-    font-size: 1.2em;
-    background-color: #55acee;
+    margin: 1vmin auto;
+    font-size: 4vmin;
+    background-color: black;
     border-radius: 2px;
-    padding: 3px 0px;
+    padding: .5vmin;
+    color: white;
+    text-decoration: none;
+}
+
+#heal {
+    transition: background-color 0.4s ease;
+    display: block;
+    text-align: center;
+    margin: 1vmin auto;
+    font-size: 8vmin;
+    background-color: forestgreen;
+    border-radius: 2px;
+    padding: .5vmin;
     color: white;
     text-decoration: none;
 }
 
 .fa-plus-square {
-  color: #55acee;
+  color: white;
   margin-right: 10px;
 }
 .fa-plus-square:active {
-  color: white;
+  color: #55acee;
 }
 
 

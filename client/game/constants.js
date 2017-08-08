@@ -21,3 +21,5 @@ let players = {};
 let enemies = {};
 
 let healthBarHeight = (worldHeight / 20);
+
+let textSize = worldHeight / 10;

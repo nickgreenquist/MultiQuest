@@ -74,7 +74,6 @@ define(function () {
 
       //Moving
       if(!isColliding && !players[user].dead) {
-          console.log("moving");
           players[user].isAttacking = false;
           
           if(players[user].direction) {

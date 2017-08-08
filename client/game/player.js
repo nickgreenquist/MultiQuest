@@ -116,7 +116,7 @@ define(function () {
           maxDistance:maxDistance, 
           spritePos:1, 
           spellPower:spellPower, 
-          spellCooldown:1000, 
+          spellCooldown:5000, 
           isAttacking:false, 
           color: color, 
           texts: {},

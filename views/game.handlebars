@@ -44,14 +44,6 @@
             </div>
             <div class="row">
                 <div id="skill_left">
-                    <p>EXP/MIN:</p>
-                </div>
-                <div id="skill_right">
-                    <p id="expavg"></p>
-                </div>
-            </div>
-            <div class="row">
-                <div id="skill_left">
                     <p>DISTANCE::</p>
                 </div>
                 <div id="skill_right">
@@ -74,16 +66,51 @@
                     <p id="time"></p>
                 </div>
             </div>
-            <div class="row" style="justify-content: space-between;">
-                <div class="row">
-                    <button id="quitButton">SAVE & QUIT</button>
-                </div>
-                <div class="row">
-                    <button id="heal">HEAL</button>
-                </div>
+            <div class="row">
+                <button id="quitButton">SAVE & QUIT</button>
             </div>
         </div>
         <div id="ui_right">
+            <div class="row">
+                <div id="skill_left">
+                    <p>EXP:</p>
+                </div>
+                <div id="skill_right">
+                    <p id="exp_total"></p>
+                </div>
+            </div>
+            <div class="row">
+                <div id="skill_left">
+                    <p>NEXT:</p>
+                </div>
+                <div id="skill_right">
+                    <p id="exp_next"></p>
+                </div>
+            </div>
+            <div class="row">
+                <div id="skill_left">
+                    <p>EXP/MIN:</p>
+                </div>
+                <div id="skill_right">
+                    <p id="expavg"></p>
+                </div>
+            </div>
+            <div class="row">
+                <button id="levelUpButton">LEVEL UP</button>
+            </div>
+            <div class="row" id="healButtonRow" style="align-self: center; display: none; position: absolute; bottom: 0;">
+                <button id="heal">HEAL</button>
+            </div>
+        </div>
+        <div id="ui_right_levelup" style="display: none;">
+            <div class="row">
+                <div id="skill_left">
+                    <p>SKILL PTS:</p>
+                </div>
+                <div id="skill_right">
+                    <p id="points"></p>
+                </div>
+            </div>
             <div class="row">
                 <div id="skill_left">
                     <a id="healthButton" class="btn" href="#"> <i class="fa fa-plus-square fa-2x"></i></a>
@@ -121,28 +148,7 @@
                 </div>
             </div>
             <div class="row">
-                <div id="skill_left">
-                    <p>EXP:</p>
-                </div>
-                <div id="skill_right">
-                    <p id="exp_total"></p>
-                </div>
-            </div>
-            <div class="row">
-                <div id="skill_left">
-                    <p>NEXT:</p>
-                </div>
-                <div id="skill_right">
-                    <p id="exp_next"></p>
-                </div>
-            </div>
-            <div class="row">
-                <div id="skill_left">
-                    <p>SKILL PTS:</p>
-                </div>
-                <div id="skill_right">
-                    <p id="points"></p>
-                </div>
+                <button id="leaveLevelUpButton">DONE</button>
             </div>
         </div>
     </div>

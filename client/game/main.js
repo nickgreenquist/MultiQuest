@@ -35,6 +35,18 @@ define(function (require) {
     window.addEventListener("touchend", handleTouchEnd, true);
 
     //WIRE BUTTONS
+    document.getElementById("levelUpButton").addEventListener("click", function(){
+      let ui_right = document.getElementById('ui_right');
+      ui_right.style.display = 'none';
+      let ui_right_levelup = document.getElementById('ui_right_levelup');
+      ui_right_levelup.style.display = 'block';
+    });
+    document.getElementById("leaveLevelUpButton").addEventListener("click", function(){
+      let ui_right = document.getElementById('ui_right');
+      ui_right.style.display = 'block';
+      let ui_right_levelup = document.getElementById('ui_right_levelup');
+      ui_right_levelup.style.display = 'none';
+    });
     document.getElementById("heal").addEventListener("click", function(){
       isCasting = true;
     });
@@ -143,6 +155,12 @@ define(function (require) {
     }
 
     // CHECK FOR SPELL CAST
+    let healButtonRow = document.getElementById('healButtonRow');
+    if(players[user] && time - players[user].lastSpell > players[user].spellCooldown && !players[user].dead) {
+      healButtonRow.style.display = 'block';
+    } else {
+      healButtonRow.style.display = 'none';
+    }
     if (isCasting) {
       //only cast if enough time has occured, otherwise server is overloaded
       if(time - players[user].lastSpell > players[user].spellCooldown && !players[user].dead) {
