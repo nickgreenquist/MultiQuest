@@ -128,16 +128,8 @@ define(function (require) {
   const update = (modifier) => {
     let time = new Date().getTime();
 
-    // CHECK FOR MOVEMENT
-    let isMoving = false;
-    try {
-      isMoving = players[user].isMoving;
-    } catch (e) {
-      // player not set up yet
-    }
-    
     // Based on input, update game accordingly
-    if (isMoving) {
+    if (players[user] && players[user].isMoving) {
       //only move if enough time has occured, otherwise server is overloaded
       let timePassed = time - players[user].lastUpdate;
       let speedCheck = moveTimer / ((90 + ((130 - 90) * (players[user].speed / 100))));
@@ -151,6 +143,11 @@ define(function (require) {
       if(timePassed > speedCheck) {
         players[user].lastUpdate = time;
         move();
+      }
+    } else if(players[user] && !players[user].isMoving) {
+      if(players[user].spritePos === 2) {
+        players[user].spritePos = 1;
+        draw();
       }
     }
 
