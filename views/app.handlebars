@@ -6,17 +6,49 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
   <script src="/assets/maker.js" type="text/babel"></script>
   <script type="text/javascript">
-         window.onload = function(){
-            let classes = ["WARRIOR","MUSTACHE","MAN BUN","NINJA","GREEN BERET"];     
+        let classes = [
+            {
+                "name": "WARRIOR",
+                "health": 0,
+                "speed": 0,
+                "intelligence": -10,
+            },
+            {
+                "name": "MUSTACHE",
+                "health": 15,
+                "speed": -10,
+                "intelligence": 25,
+            },
+            {
+                "name": "MAN BUN",
+                "health": -10,
+                "speed": 25,
+                "intelligence": -50,
+            },
+            {
+                "name": "NINJA",
+                "health": -50,
+                "speed": 50,
+                "intelligence": 0,
+            },
+            {
+                "name": "GREEN BERET",
+                "health": 25,
+                "speed": 25,
+                "intelligence": 25,
+            },
+        ];  
+        let weapons = ["SWORD","POLEARM","STAFF","CLEAVER","SHAMAN BLADE","HERO SWORD","WIZARD STAFF","SERPENT STAFF","MASTER SWORD","TRI SWORD"]; 
+
+         window.onload = function(){   
             let selClass = document.getElementById('playerType');
             for(var i = 0; i < classes.length; i++) {
                 let opt = document.createElement('option');
-                opt.innerHTML = classes[i];
+                opt.innerHTML = classes[i].name;
                 opt.value = i;
                 selClass.appendChild(opt);
             }
-
-            let weapons = ["SWORD","POLEARM","STAFF","CLEAVER","SHAMAN BLADE","HERO SWORD","WIZARD STAFF","SERPENT STAFF","MASTER SWORD","TRI SWORD"];     
+    
             let selWeapon = document.getElementById('weaponType');
             for(var i = 0; i < weapons.length; i++) {
                 let opt = document.createElement('option');
@@ -24,7 +56,54 @@
                 opt.value = i;
                 selWeapon.appendChild(opt);
             }
+
+            let elem = document.getElementById('armorRowArrow');
+            elem.style.display = 'none';
+            elem = document.getElementById('armorRowNew');
+            elem.style.display = 'none';
+
+            setArmorMultipliers({{info.playerType}});
          };
+
+         function onSelectArmor(value) {
+            let elem = document.getElementById('armorRowArrow');
+            elem.style.display = 'block';
+            elem = document.getElementById('armorRowNew');
+            elem.style.display = 'block';
+            
+            document.getElementById("armorRowNewImage").src = "/assets/img/players/" + value + ".png";
+
+            setArmorMultipliers(value);
+         }
+
+         function setArmorMultipliers(value){
+             let elem = document.getElementById('healthMultiplierArmor');
+             setValueAndColor(elem, classes[value].health);
+
+             elem = document.getElementById('speedMultiplierArmor');
+             setValueAndColor(elem, classes[value].speed);
+
+             elem = document.getElementById('intMultiplierArmor');
+             setValueAndColor(elem, classes[value].intelligence);
+         }
+
+         function setValueAndColor(elem, value) {
+            let str = value.toString();
+            let color = 'white';
+            if(value > 0) { 
+                color = 'green'; 
+                str = '+' + value + '%';
+            }
+            else if(value < 0) { 
+                color = 'red'; 
+                str = value + '%';
+            }
+            else {
+                str = '+' + value + '%';
+            }
+            elem.innerHTML = str.fontcolor(color);
+         }
+
       </script>
   <link rel="shortcut icon" href="/assets/img/favicon.png"/>
   <link rel="stylesheet" type="text/css" href="/assets/style.css"/>
@@ -38,170 +117,165 @@
   <div class="content">
     <section id="pageRow">
       <div id="ui_left" style="height: 80%;">
-        <div class="row" style="height: 20vh; justify-content: center;">
-            <img src="/assets/img/players/{{info.playerType}}.png" style="height: 12vh; width: 12vh;" alt="domo face"/>
-        </div>
-        <form class="row" id="playerTypeForm" name="playerTypeForm" action="/maker" method="POST">
-            <div id="skill_left">
-                <select name="type" id="playerType">
-                  <option selected disabled>CLASS</option>
-              </select>
+        <div class="col">
+            <div class="row" style="height: 15vh;">
+                <div class="row" style="flex: 1; justify-content: center;">
+                    <img src="/assets/img/players/{{info.playerType}}.png" style="height: 10vh; width: 10vh;" alt="domo face"/>
+                </div>
+                <div class="row" id="armorRowArrow" style="flex: .2; justify-content: center; display: none">
+                    <img src="/assets/img/arrow.png" style="height: 2vh; width: 2vh;" alt="domo face"/>
+                </div>
+                <div class="row" id="armorRowNew" style="flex: 1; justify-content: center; display: none">
+                    <img id="armorRowNewImage" style="height: 10vh; width: 10vh;" alt="domo face"/>
+                </div>
             </div>
-            <div id="skill_right">
-                <a type="submit" href="#" class="activatePlayerType">SELECT</a>
-                <input id="csrf" type="hidden" name="_csrf" value={{csrfToken}} />
+            <form class="row" id="playerTypeForm" name="playerTypeForm" action="/maker" method="POST">
+                <div id="skill_left">
+                    <select name="type" id="playerType" onchange="onSelectArmor(this.value)">
+                    <option selected disabled>ARMOR</option>
+                </select>
+                </div>
+                <div id="skill_right">
+                    <a type="submit" href="#" class="activatePlayerType">EQUIP</a>
+                    <input id="csrf" type="hidden" name="_csrf" value={{csrfToken}} />
+                </div>
+            </form>
+            <div class="row">
+                <div id="skill_left">
+                    <p>HEALTH+:</p>
+                </div>
+                <div id="skill_right">
+                    <p id="healthMultiplierArmor">0%</p>
+                </div>
             </div>
-        </form>
-        <div class="row">
-            <div id="skill_left">
-                <p>NAME:</p>
+            <div class="row">
+                <div id="skill_left">
+                    <p>SPEED+:</p>
+                </div>
+                <div id="skill_right">
+                    <p id="speedMultiplierArmor">0%</p>
+                </div>
             </div>
-            <div id="skill_right">
-                <p>{{info.username}}</p>
-            </div>
-        </div>
-        <div class="row">
-            <div id="skill_left">
-                <p>MAX DISTANCE:</p>
-            </div>
-            <div id="skill_right">
-                <p>{{info.maxDistance}}</p>
-            </div>
-        </div>
-        <div class="row">
-            <div id="skill_left">
-                <p>LEVEL:</p>
-            </div>
-            <div id="skill_right">
-                <p>{{info.level}}</p>
-            </div>
-        </div>
-        <div class="row">
-            <div id="skill_left">
-                <p>ATTACK:</p>
-            </div>
-            <div id="skill_right">
-                <p>{{info.attack}}</p>
-            </div>
-        </div>
-        <div class="row">
-            <div id="skill_left">
-                <p>INTELLIGENCE:</p>
-            </div>
-            <div id="skill_right">
-                <p>{{info.spellPower}}</p>
+            <div class="row">
+                <div id="skill_left">
+                    <p>INTELLIGENCE+:</p>
+                </div>
+                <div id="skill_right">
+                    <p id="intMultiplierArmor">0%</p>
+                </div>
             </div>
         </div>
-        <div class="row">
-            <div id="skill_left">
-                <p>SPEED:</p>
+        <div class="col">
+            <div class="row">
+                <div id="skill_left">
+                    <p>NAME:</p>
+                </div>
+                <div id="skill_right">
+                    <p>{{info.username}}</p>
+                </div>
             </div>
-            <div id="skill_right">
-                <p>{{info.speed}}</p>
+            <div class="row">
+                <div id="skill_left">
+                    <p>DISTANCE:</p>
+                </div>
+                <div id="skill_right">
+                    <p>{{info.maxDistance}}</p>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div id="skill_left">
-                <p>MAX HEALTH:</p>
-            </div>
-            <div id="skill_right">
-                <p>{{info.maxHealth}}</p>
-            </div>
-        </div>
-        <div class="row">
-            <div id="skill_left">
-                <p>WEAPON:</p>
-            </div>
-            <div id="skill_right">
-                <p style="color: {{info.color}}">{{info.color}}</p>
+            <div class="row">
+                <div id="skill_left">
+                    <p>LEVEL:</p>
+                </div>
+                <div id="skill_right">
+                    <p>{{info.level}}</p>
+                </div>
             </div>
         </div>
       </div>
 
       <div id="ui_right" style="height: 80%;">
-          <div class="row" style="height: 20vh; justify-content: center;">
-            <img src="/assets/img/weapons/{{info.weaponType}}.png" style="height: 12vh; width: 12vh;" alt="domo face"/>
-        </div>
-        <form class="row" id="weaponTypeForm" name="weaponTypeForm" action="/maker" method="POST">
-            <div id="skill_left">
-                <select name="type" id="weaponType">
-                  <option selected disabled>WEAPON</option>
-              </select>
-            </div>
-            <div id="skill_right">
-                <a type="submit" href="#" class="activateWeaponType">EQUIP</a>
-                <input id="csrf" type="hidden" name="_csrf" value={{csrfToken}} />
-            </div>
-        </form>
-        <form class="col" id="domoForm" name="domoForm" action="/maker" method="POST" style="flex: 4;">
-          <div class="row" style="justify-content: center;">
-              <p>WEAPON SHOP</p>
-          </div>
-          <div class="row">
-              <div id="skill_left">
-                  <label for="name">NAME: </label>
-              </div>
-              <div id="skill_right">
-                  <input id="domoName" type="text" name="name" placeholder="name"/>
-              </div>
-          </div>
-          <div class="row">
-              <div id="skill_left">
-                  <label for="color">COLOR: </label>
-              </div>
-              <div id="skill_right">
-                  <select id="weaponColor" name="color">
-                    <option value="Red">Red</option>
-                    <option value="Blue">Blue</option>
-                    <option value="Green">Green</option>
-                    <option value="Yellow">Yellow</option>
-                    <option value="HotPink ">Hot Pink</option>
-                    <option value="Purple">Purple</option>
-                    <option value="Black">Black</option>
-                    <option value="White">White</option>
-                  </select>
-              </div>
-          </div>
-          <input id="csrf" type="hidden" name="_csrf" value={{csrfToken}} />
-          <div class="row" style="justify-content: center;">
-            <a id="makeDomoSubmit" href="#" class="makeDomoSubmit">FORGE</a>
-          </div>
-        </form>
-        <section class="col" style="flex: 6;">
-        {{#if weapons}}
-          {{#each weapons}}
-              <div class="row" style="border: 1px solid white;">
-                <div class="row" style="width: 100%; justify-content: center;">
-                    <p style="color: {{this.color}}">{{this.name}}</p>
+        <div class="col">
+            <div class="row" style="height: 15vh;">
+                <div class="row" style="flex: 1; justify-content: center;">
+                    <img src="/assets/img/weapons/{{info.weaponType}}.png" style="height: 10vh; width: 10vh;" alt="domo face"/>
                 </div>
-                <form 
-                  id="{{this.color}}" 
-                  name="activateForm" 
-                  action="/activate" 
-                  method="POST" 
-                  class="activateForm"
-                  style="display: flex; flex-flow: row; align-items: center; margin: 10px;"
-                >
-                  <a type="submit" name="{{this.color}}" href="#" class="activateDomoSubmit">EQUIP</a>
-                  <input type="hidden" name="_csrf"/>
-                </form>
-                <form 
-                  id="{{this.name}}" 
-                  name="deleteForm" 
-                  action="/remove" 
-                  method="POST" 
-                  class="deleteForm"
-                  style="display: flex; flex-flow: row; align-items: center; margin: 10px;"
-                >
-                  <a type="submit" name="{{this.name}}" href="#" class="deleteDomoSubmit" style="background-color: red;">X</a>
-                  <input type="hidden" name="_csrf"/>
-                </form>
-              </div>
-          {{/each}}
-        {{else}}
-          <p style="align-self: center;">No Weapons yet</p>
-        {{/if}}
-        </section>
+                <div class="row" style="flex: .2; justify-content: center;">
+                    <img src="/assets/img/arrow.png" style="height: 2vh; width: 2vh;" alt="domo face"/>
+                </div>
+                <div class="row" style="flex: 1; justify-content: center;">
+                    <img src="/assets/img/weapons/{{info.weaponType}}.png" style="height: 10vh; width: 10vh;" alt="domo face"/>
+                </div>
+            </div>
+            <form class="row" id="weaponTypeForm" name="weaponTypeForm" action="/maker" method="POST">
+                <div id="skill_left">
+                    <select name="type" id="weaponType">
+                    <option selected disabled>WEAPON</option>
+                </select>
+                </div>
+                <div id="skill_right">
+                    <a type="submit" href="#" class="activateWeaponType">EQUIP</a>
+                    <input id="csrf" type="hidden" name="_csrf" value={{csrfToken}} />
+                </div>
+            </form>
+            <div class="row">
+                <div id="skill_left">
+                    <p>ATTACK+:</p>
+                </div>
+                <div id="skill_right">
+                    <p>0%</p>
+                </div>
+            </div>
+            <div class="row">
+                <div id="skill_left">
+                    <p>SPEED+:</p>
+                </div>
+                <div id="skill_right">
+                    <p>0%</p>
+                </div>
+            </div>
+            <div class="row">
+                <div id="skill_left">
+                    <p>INTELLIGENCE+:</p>
+                </div>
+                <div id="skill_right">
+                    <p>0%</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="row">
+                <div id="skill_left">
+                    <p>ATTACK:</p>
+                </div>
+                <div id="skill_right">
+                    <p>{{info.attack}}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div id="skill_left">
+                    <p>INTELLIGENCE:</p>
+                </div>
+                <div id="skill_right">
+                    <p>{{info.spellPower}}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div id="skill_left">
+                    <p>SPEED:</p>
+                </div>
+                <div id="skill_right">
+                    <p>{{info.speed}}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div id="skill_left">
+                    <p>MAX HEALTH:</p>
+                </div>
+                <div id="skill_right">
+                    <p>{{info.maxHealth}}</p>
+                </div>
+            </div>
+        </div>
       </div>
     </section>
     <div id="domoMessage">
