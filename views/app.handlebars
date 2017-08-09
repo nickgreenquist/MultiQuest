@@ -5,41 +5,8 @@
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
   <script src="/assets/maker.js" type="text/babel"></script>
+  <script src="/assets/items.js"></script>
   <script type="text/javascript">
-        let classes = [
-            {
-                "name": "WARRIOR",
-                "health": 0,
-                "speed": 0,
-                "intelligence": -10,
-            },
-            {
-                "name": "MUSTACHE",
-                "health": 15,
-                "speed": -10,
-                "intelligence": 25,
-            },
-            {
-                "name": "MAN BUN",
-                "health": -10,
-                "speed": 25,
-                "intelligence": -50,
-            },
-            {
-                "name": "NINJA",
-                "health": -50,
-                "speed": 50,
-                "intelligence": 0,
-            },
-            {
-                "name": "GREEN BERET",
-                "health": 25,
-                "speed": 25,
-                "intelligence": 25,
-            },
-        ];  
-        let weapons = ["SWORD","POLEARM","STAFF","CLEAVER","SHAMAN BLADE","HERO SWORD","WIZARD STAFF","SERPENT STAFF","MASTER SWORD","TRI SWORD"]; 
-
          window.onload = function(){   
             let selClass = document.getElementById('playerType');
             for(var i = 0; i < classes.length; i++) {
@@ -52,18 +19,47 @@
             let selWeapon = document.getElementById('weaponType');
             for(var i = 0; i < weapons.length; i++) {
                 let opt = document.createElement('option');
-                opt.innerHTML = weapons[i];
+                opt.innerHTML = weapons[i].name;
                 opt.value = i;
                 selWeapon.appendChild(opt);
             }
 
+            // Update armor image change row
             let elem = document.getElementById('armorRowArrow');
             elem.style.display = 'none';
             elem = document.getElementById('armorRowNew');
             elem.style.display = 'none';
-
             setArmorMultipliers({{info.playerType}});
+
+            // Update weapon image change row
+            elem = document.getElementById('weaponRowArrow');
+            elem.style.display = 'none';
+            elem = document.getElementById('weaponRowNew');
+            elem.style.display = 'none';
+            setWeaponMultipliers({{info.playerType}});
          };
+
+         function onSelectWeapon(value) {
+            let elem = document.getElementById('weaponRowArrow');
+            elem.style.display = 'block';
+            elem = document.getElementById('weaponRowNew');
+            elem.style.display = 'block';
+            
+            document.getElementById("weaponRowNewImage").src = "/assets/img/weapons/" + value + ".png";
+
+            setWeaponMultipliers(value);
+         }
+
+         function setWeaponMultipliers(value){
+             let elem = document.getElementById('attackMultiplierWeapon');
+             setValueAndColor(elem, weappns[value].attack);
+
+             elem = document.getElementById('speedMultiplierWeapon');
+             setValueAndColor(elem, weappns[value].speed);
+
+             elem = document.getElementById('intMultiplierWeapon');
+             setValueAndColor(elem, weappns[value].intelligence);
+         }
 
          function onSelectArmor(value) {
             let elem = document.getElementById('armorRowArrow');
@@ -132,8 +128,8 @@
             <form class="row" id="playerTypeForm" name="playerTypeForm" action="/maker" method="POST">
                 <div id="skill_left">
                     <select name="type" id="playerType" onchange="onSelectArmor(this.value)">
-                    <option selected disabled>ARMOR</option>
-                </select>
+                        <option selected disabled>ARMOR</option>
+                    </select>
                 </div>
                 <div id="skill_right">
                     <a type="submit" href="#" class="activatePlayerType">EQUIP</a>
@@ -176,18 +172,18 @@
             </div>
             <div class="row">
                 <div id="skill_left">
-                    <p>DISTANCE:</p>
-                </div>
-                <div id="skill_right">
-                    <p>{{info.maxDistance}}</p>
-                </div>
-            </div>
-            <div class="row">
-                <div id="skill_left">
                     <p>LEVEL:</p>
                 </div>
                 <div id="skill_right">
                     <p>{{info.level}}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div id="skill_left">
+                    <p>DISTANCE:</p>
+                </div>
+                <div id="skill_right">
+                    <p>{{info.maxDistance}}</p>
                 </div>
             </div>
         </div>
@@ -199,18 +195,18 @@
                 <div class="row" style="flex: 1; justify-content: center;">
                     <img src="/assets/img/weapons/{{info.weaponType}}.png" style="height: 10vh; width: 10vh;" alt="domo face"/>
                 </div>
-                <div class="row" style="flex: .2; justify-content: center;">
+                <div class="row" id="weaponRowArrow" style="flex: .2; justify-content: center; display: none;">
                     <img src="/assets/img/arrow.png" style="height: 2vh; width: 2vh;" alt="domo face"/>
                 </div>
-                <div class="row" style="flex: 1; justify-content: center;">
-                    <img src="/assets/img/weapons/{{info.weaponType}}.png" style="height: 10vh; width: 10vh;" alt="domo face"/>
+                <div class="row" id="weaponRowNew" style="flex: 1; justify-content: center; display: none">
+                    <img id="weaponRowNewImage" style="height: 10vh; width: 10vh;" alt="domo face"/>
                 </div>
             </div>
             <form class="row" id="weaponTypeForm" name="weaponTypeForm" action="/maker" method="POST">
                 <div id="skill_left">
-                    <select name="type" id="weaponType">
-                    <option selected disabled>WEAPON</option>
-                </select>
+                    <select name="type" id="weaponType" onchange="onSelectWeapon(this.value)">
+                        <option selected disabled>WEAPON</option>
+                    </select>
                 </div>
                 <div id="skill_right">
                     <a type="submit" href="#" class="activateWeaponType">EQUIP</a>
@@ -222,7 +218,7 @@
                     <p>ATTACK+:</p>
                 </div>
                 <div id="skill_right">
-                    <p>0%</p>
+                    <p id="attackMultiplierWeapon">0%</p>
                 </div>
             </div>
             <div class="row">
@@ -230,7 +226,7 @@
                     <p>SPEED+:</p>
                 </div>
                 <div id="skill_right">
-                    <p>0%</p>
+                    <p id="speedMultiplierWeapon">0%</p>
                 </div>
             </div>
             <div class="row">
@@ -238,7 +234,7 @@
                     <p>INTELLIGENCE+:</p>
                 </div>
                 <div id="skill_right">
-                    <p>0%</p>
+                    <p id="intMultiplierWeapon">0%</p>
                 </div>
             </div>
         </div>
