@@ -6,6 +6,7 @@ const router = (app) => {
   app.post('/game', mid.requiresSecure, controllers.Game.save);
   app.get('/login', mid.requiresSecure, mid.requiresLogout, controllers.Account.loginPage);
   app.post('/login', mid.requiresSecure, mid.requiresLogout, controllers.Account.login);
+  app.post('/save', mid.requiresLogin, controllers.Account.save);
   app.get('/signup', mid.requiresSecure, mid.requiresLogout, controllers.Account.signupPage);
   app.post('/signup', mid.requiresSecure, mid.requiresLogout, controllers.Account.signup);
   app.get('/logout', mid.requiresLogin, controllers.Account.logout);

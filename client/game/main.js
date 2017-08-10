@@ -81,9 +81,7 @@ define(function (require) {
     });
     document.getElementById("quitButton").addEventListener("click", function(){
       quit();
-
-      //logout so progress is saved
-      location.href = "/logout";
+      location.href = "/lobby";
     });
 
     //Ready to play
@@ -545,15 +543,6 @@ define(function (require) {
     });
   };
 
-  //QUIT
-  const quit = () => {
-    let tempRoom = room;
-    let tempPlayer = players[user];
-    delete players[user];
-    socket.emit('updateAllPlayers', {players: players, room: tempRoom});
-    socket.emit('leave', {name: user, player: tempPlayer, isHost: isHost, room: tempRoom});
-  };
-
 
   //ALWAYS PLACE THIS AT END OF FILE
   $(document).ready(init);
@@ -562,3 +551,12 @@ define(function (require) {
     quit();
   };
 });
+
+//QUIT
+const quit = () => {
+  let tempRoom = room;
+  let tempPlayer = players[user];
+  delete players[user];
+  socket.emit('updateAllPlayers', {players: players, room: tempRoom});
+  socket.emit('leave', {name: user, player: tempPlayer, isHost: isHost, room: tempRoom});
+};

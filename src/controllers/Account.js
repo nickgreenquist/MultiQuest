@@ -16,6 +16,7 @@ const logout = (req, res) => {
 };
 
 const login = (request, response) => {
+  console.log("logging in");
   const req = request;
   const res = response;
 
@@ -36,6 +37,25 @@ const login = (request, response) => {
 
     return res.json({ redirect: '/maker' });
   });
+};
+
+const save = (request, response) => {
+  const req = request;
+  const res = response;
+  console.dir(req.body);
+
+  req.session.account.level = req.body.level;
+  req.session.account.maxHealth = req.body.maxHealth;
+  req.session.account.attack = req.body.attack;
+  req.session.account.speed = req.body.speed;
+  req.session.account.exp = req.body.exp;
+  req.session.account.points = req.body.points;
+  req.session.account.maxDistance = req.body.maxDistance;
+  req.session.account.spellPower = req.body.spellPower;
+  req.session.account.playerType = req.body.playerType;
+  req.session.account.weaponType = req.body.weaponType;
+
+  return res.json({ redirect: '/maker' });
 };
 
 const signup = (request, response) => {
@@ -86,3 +106,4 @@ module.exports.login = login;
 module.exports.logout = logout;
 module.exports.signupPage = signupPage;
 module.exports.signup = signup;
+module.exports.save = save;

@@ -23,8 +23,7 @@ const enterGame = (req, res) => {
     color,
   };
 
-  // res.render('game', { info: accountInfo, csrfToken: req.csrfToken() });
-  res.render('game', { info: accountInfo });
+  res.render('game', { info: accountInfo, csrfToken: req.csrfToken() });
 };
 
 const save = (req, res) => {

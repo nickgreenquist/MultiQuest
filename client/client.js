@@ -57,4 +57,40 @@ $(document).ready(() => {
         sendAjax($("#loginForm").attr("action"), $("#loginForm").serialize());
         return false;
     });
+
+    $("#quitButton").on("click", (e) => {
+        console.log("updating redis after leaving game");
+        e.preventDefault();
+
+        let data = '';
+        data += 'level=' + players[user].level;
+        data += '&' + 'maxHealth=' + players[user].maxHealth;
+        data += '&' + 'attack=' + players[user].attack;
+        data += '&' + 'speed=' + players[user].speed;
+        data += '&' + 'exp=' + players[user].exp;
+        data += '&' + 'points=' + players[user].points;
+        data += '&' + 'maxDistance=' + players[user].maxDistance;
+        data += '&' + 'spellPower=' + players[user].spellPower;
+        data += '&' + 'playerType=' + players[user].type;
+        data += '&' + 'weaponType=' + players[user].weaponType;
+        data += '&' + '_csrf=' + $('#csrf').val();
+
+        console.log(data);
+
+        quit();
+
+        $.ajax({
+            cache: false,
+            type: "POST",
+            url: '/save',
+            data: data,
+            dataType: "json",
+            success: (result, status, xhr) => {
+                console.log("success");
+            },
+            error: (xhr, status, error) => {
+                console.log("error");
+            }
+        });  
+    });
 });
