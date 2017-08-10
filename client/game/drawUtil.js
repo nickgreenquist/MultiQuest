@@ -115,24 +115,6 @@ draw = () => {
   ctx.fillStyle="green";
   ctx.fillRect(barX + 1,barY + 1,(players[user].currentHealth / players[user].maxHealth) * (barWidth - 2) ,playerHealthBarHeight - 2);
   drawStroked(players[user].currentHealth + '/' + players[user].maxHealth, barX, barY - 5, worldHeight / 10);
-
-
-  let distance = ((stage-1) + (players[user].position.x / 100)).toFixed(1);
-  let diffMs = (Date.now() - startTime);
-  let minutes = (((diffMs % 86400000) % 3600000) / 60000);
-  document.getElementById("name").innerHTML = user.toString().toUpperCase();
-  document.getElementById("level").innerHTML = players[user].level;
-  document.getElementById("expavg").innerHTML = (totalEXP / minutes).toFixed(0);
-  document.getElementById("distance").innerHTML =  distance + 'KM';
-  document.getElementById("maxdistance").innerHTML = players[user].maxDistance + 'KM';
-  document.getElementById("time").innerHTML = minutes.toFixed(1) + 'MIN';
-  document.getElementById("points").innerHTML = players[user].points;
-  document.getElementById("health").innerHTML = players[user].maxHealth;
-  document.getElementById("attack").innerHTML = players[user].attack;
-  document.getElementById("speed").innerHTML = players[user].speed;
-  document.getElementById("spell").innerHTML = players[user].spellPower;
-  document.getElementById("exp_total").innerHTML = players[user].exp + ((players[user].level - 1) * 4);
-  document.getElementById("exp_next").innerHTML = players[user].exp + '/' + (players[user].level * 4);
   
   //ENEMIES
   keys = Object.keys(enemies);

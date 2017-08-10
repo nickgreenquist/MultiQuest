@@ -3,6 +3,7 @@
 define(function (require) {
   console.log('game starting');
 
+  var items = require('../items');
   var player = require('./player');
   var enemy = require('./enemy');
   var drawUtil = require('./drawUtil');
@@ -88,6 +89,27 @@ define(function (require) {
     main();
   };
 
+  const updateUi = () => {
+    let distance = ((stage-1) + (players[user].position.x / 100)).toFixed(1);
+    let diffMs = (Date.now() - startTime);
+    let minutes = (((diffMs % 86400000) % 3600000) / 60000);
+    document.getElementById("name").innerHTML = user.toString().toUpperCase();
+    document.getElementById("level").innerHTML = players[user].level;
+    document.getElementById("weapon").innerHTML = weapons[players[user].weaponType].name;
+    document.getElementById("armor").innerHTML = classes[players[user].type].name;
+    document.getElementById("expavg").innerHTML = (totalEXP / minutes).toFixed(0);
+    document.getElementById("distance").innerHTML =  distance + 'KM';
+    document.getElementById("maxdistance").innerHTML = players[user].maxDistance + 'KM';
+    document.getElementById("time").innerHTML = minutes.toFixed(1) + 'MIN';
+    document.getElementById("points").innerHTML = players[user].points;
+    document.getElementById("health").innerHTML = players[user].maxHealth;
+    document.getElementById("attack").innerHTML = players[user].attack;
+    document.getElementById("speed").innerHTML = players[user].speed;
+    document.getElementById("spell").innerHTML = players[user].spellPower;
+    document.getElementById("exp_total").innerHTML = players[user].exp + ((players[user].level - 1) * 4);
+    document.getElementById("exp_next").innerHTML = players[user].exp + '/' + (players[user].level * 4);
+  }
+
   const handleTouchStart = (e) => {
     // e.preventDefault();
     var xPos = e.touches[0].pageX;
@@ -126,119 +148,123 @@ define(function (require) {
   const update = (modifier) => {
     let time = new Date().getTime();
 
-    // Based on input, update game accordingly
-    if (players[user] && players[user].isMoving) {
-      //only move if enough time has occured, otherwise server is overloaded
-      let timePassed = time - players[user].lastUpdate;
-      let speedCheck = moveTimer / ((90 + ((130 - 90) * (players[user].speed / 100))));
+    if(players[user]) {
+      updateUi();
 
-      //make sword go back up, always half the time before next move call is made 
-      if(timePassed > speedCheck / 2) {
-        players[user].isAttacking = false;
-        socket.emit('updatePlayerMovement', {room: players[user].room, name: user, positionX: players[user].position.x, spritePos: players[user].spritePos, isAttacking: players[user].isAttacking});
-        draw();
-      }
-      if(timePassed > speedCheck) {
-        players[user].lastUpdate = time;
-        move();
-      }
-    } else if(players[user] && !players[user].isMoving) {
-      if(players[user].spritePos === 2) {
-        players[user].spritePos = 1;
-        draw();
-      }
-    }
+      // Based on input, update game accordingly
+      if (players[user].isMoving) {
+        //only move if enough time has occured, otherwise server is overloaded
+        let timePassed = time - players[user].lastUpdate;
+        let speedCheck = moveTimer / ((90 + ((130 - 90) * (players[user].speed / 100))));
 
-    // CHECK FOR SPELL CAST
-    let healButtonRow = document.getElementById('healButtonRow');
-    if(players[user] && time - players[user].lastSpell > players[user].spellCooldown && !players[user].dead) {
-      healButtonRow.style.display = 'block';
-    } else {
-      healButtonRow.style.display = 'none';
-    }
-    if (isCasting) {
-      //only cast if enough time has occured, otherwise server is overloaded
-      if(time - players[user].lastSpell > players[user].spellCooldown && !players[user].dead) {
-        players[user].lastSpell = time;
-        spell();
-      }
-      isCasting = false;
-    }
-
-    // CHECK ENEMY UPDATES
-    let keys = Object.keys(enemies);
-    for(let i = 0; i < keys.length; i++)
-    {
-      const enemy = enemies[keys[i]];
-
-      //MOVE IN PLACE
-      if(!enemy.dead) {
-        let timePassed = time - enemy.lastSpriteUpdate;
-        if(timePassed > 500) {
-          enemy.lastSpriteUpdate = time;
-          if(enemy.spritePos == 1) {
-            enemy.spritePos = 2;
-          }
-          else if(enemy.spritePos == 2) {
-            enemy.spritePos = 1;
-          }
+        //make sword go back up, always half the time before next move call is made 
+        if(timePassed > speedCheck / 2) {
+          players[user].isAttacking = false;
+          socket.emit('updatePlayerMovement', {room: players[user].room, name: user, positionX: players[user].position.x, spritePos: players[user].spritePos, isAttacking: players[user].isAttacking});
+          draw();
+        }
+        if(timePassed > speedCheck) {
+          players[user].lastUpdate = time;
+          move();
+        }
+      } else {
+        if(players[user].spritePos === 2) {
+          players[user].spritePos = 1;
           draw();
         }
       }
 
-      //ATTACK
-      if(!enemy.dead && (players[user].position.x + (playerSizePercentage / 2)) > (enemy.position.x - enemy.lungeDistance)) {
-        let timePassed = time - enemy.lastUpdate;
-        if(timePassed > 200) {
-          if(enemy.position.x == enemy.origX && timePassed > enemyTimeBetweenAttack && !players[user].dead) {
+      // CHECK FOR SPELL CAST
+      let healButtonRow = document.getElementById('healButtonRow');
+      if(time - players[user].lastSpell > players[user].spellCooldown && !players[user].dead) {
+        healButtonRow.style.display = 'block';
+      } else {
+        healButtonRow.style.display = 'none';
+      }
+      if (isCasting) {
+        //only cast if enough time has occured, otherwise server is overloaded
+        if(time - players[user].lastSpell > players[user].spellCooldown && !players[user].dead) {
+          players[user].lastSpell = time;
+          spell();
+        }
+        isCasting = false;
+      }
 
-            enemy.lastUpdate = time;
-            enemy.position.x -= enemy.lungeDistance;
-            enemy.spritePos = 3;
+      // CHECK ENEMY UPDATES
+      let keys = Object.keys(enemies);
+      for(let i = 0; i < keys.length; i++)
+      {
+        const enemy = enemies[keys[i]];
 
-            socket.emit('updateEnemy', {
-              room: players[user].room, 
-              name: keys[i], 
-              health:enemy.currentHealth, 
-              dead:enemy.dead, 
-              positionX:enemy.position.x, 
-              spritePos:enemy.spritePos,
-            });
-
-            //check for miss
-            let missChance = (players[user].speed / enemy.attack) / 2;
-            let randomHit = Math.random();
-            console.log("miss chance: " + missChance);
-            console.log("randomHit: " + randomHit);
-            if(missChance < randomHit) {
-              //Update Health and Check Death
-              players[user].position.x -= 5;
-              players[user].currentHealth -= enemy.attack;
-              if(players[user].currentHealth <= 0) {
-                players[user].dead = true;
-                players[user].spritePos = 3;
-                players[user].currentHealth = 0;
-              }
-              socket.emit('updatePlayerHealth', {room: players[user].room, name: user, health: players[user].currentHealth,dead: players[user].dead, spritePos: players[user].spritePos});
-
-              //draw damage
-              fadeOut(enemies[keys[i]].attack, players[user].position.x + (playerSizePercentage / 2), playerY, 50, 100, 255, 0,0, numEffects, 20, 0.05);        
-              players[user].texts[numEffects] = {alpha: 1.0, red: 255, green: 0, blue: 0, text:enemies[keys[i]].attack, width: 50, height: 20, x: players[user].position.x + (playerSizePercentage / 2), y: playerY};       
-              numEffects++;
-            } else {
-              fadeOut("MISS", players[user].position.x + (playerSizePercentage / 2), playerY, 50, 100, 255, 0,0, numEffects, 20, 0.05);        
-              players[user].texts[numEffects] = {alpha: 1.0, red: 255, green: 0, blue: 0, text:"MISS", width: 50, height: 20, x: players[user].position.x + (playerSizePercentage / 2), y: playerY};       
-              numEffects++;
+        //MOVE IN PLACE
+        if(!enemy.dead) {
+          let timePassed = time - enemy.lastSpriteUpdate;
+          if(timePassed > 500) {
+            enemy.lastSpriteUpdate = time;
+            if(enemy.spritePos == 1) {
+              enemy.spritePos = 2;
             }
-
+            else if(enemy.spritePos == 2) {
+              enemy.spritePos = 1;
+            }
             draw();
+          }
+        }
 
-          } else if(enemy.position.x < enemy.origX) {
-            enemy.position.x = enemy.origX;
-            enemies[keys[i]].spritePos = 1;
-            socket.emit('updateEnemy', {room: players[user].room, name: keys[i], health:enemies[keys[i]].currentHealth, dead:enemies[keys[i]].dead, positionX:enemies[keys[i]].position.x, spritePos:enemies[keys[i]].spritePos});
-            
-            draw();
+        //ATTACK
+        if(!enemy.dead && (players[user].position.x + (playerSizePercentage / 2)) > (enemy.position.x - enemy.lungeDistance)) {
+          let timePassed = time - enemy.lastUpdate;
+          if(timePassed > 200) {
+            if(enemy.position.x == enemy.origX && timePassed > enemyTimeBetweenAttack && !players[user].dead) {
+
+              enemy.lastUpdate = time;
+              enemy.position.x -= enemy.lungeDistance;
+              enemy.spritePos = 3;
+
+              socket.emit('updateEnemy', {
+                room: players[user].room, 
+                name: keys[i], 
+                health:enemy.currentHealth, 
+                dead:enemy.dead, 
+                positionX:enemy.position.x, 
+                spritePos:enemy.spritePos,
+              });
+
+              //check for miss
+              let missChance = (players[user].speed / enemy.attack) / 2;
+              let randomHit = Math.random();
+              console.log("miss chance: " + missChance);
+              console.log("randomHit: " + randomHit);
+              if(missChance < randomHit) {
+                //Update Health and Check Death
+                players[user].position.x -= 5;
+                players[user].currentHealth -= enemy.attack;
+                if(players[user].currentHealth <= 0) {
+                  players[user].dead = true;
+                  players[user].spritePos = 3;
+                  players[user].currentHealth = 0;
+                }
+                socket.emit('updatePlayerHealth', {room: players[user].room, name: user, health: players[user].currentHealth,dead: players[user].dead, spritePos: players[user].spritePos});
+
+                //draw damage
+                fadeOut(enemies[keys[i]].attack, players[user].position.x + (playerSizePercentage / 2), playerY, 50, 100, 255, 0,0, numEffects, 20, 0.05);        
+                players[user].texts[numEffects] = {alpha: 1.0, red: 255, green: 0, blue: 0, text:enemies[keys[i]].attack, width: 50, height: 20, x: players[user].position.x + (playerSizePercentage / 2), y: playerY};       
+                numEffects++;
+              } else {
+                fadeOut("MISS", players[user].position.x + (playerSizePercentage / 2), playerY, 50, 100, 255, 0,0, numEffects, 20, 0.05);        
+                players[user].texts[numEffects] = {alpha: 1.0, red: 255, green: 0, blue: 0, text:"MISS", width: 50, height: 20, x: players[user].position.x + (playerSizePercentage / 2), y: playerY};       
+                numEffects++;
+              }
+
+              draw();
+
+            } else if(enemy.position.x < enemy.origX) {
+              enemy.position.x = enemy.origX;
+              enemies[keys[i]].spritePos = 1;
+              socket.emit('updateEnemy', {room: players[user].room, name: keys[i], health:enemies[keys[i]].currentHealth, dead:enemies[keys[i]].dead, positionX:enemies[keys[i]].position.x, spritePos:enemies[keys[i]].spritePos});
+              
+              draw();
+            }
           }
         }
       }
