@@ -108,6 +108,7 @@ define(function (require) {
     document.getElementById("spell").innerHTML = players[user].spellPower;
     document.getElementById("exp_total").innerHTML = players[user].exp + ((players[user].level - 1) * 4);
     document.getElementById("exp_next").innerHTML = players[user].exp + '/' + (players[user].level * 4);
+    document.getElementById("levelUpButton").innerHTML = players[user].points > 0 ? 'LVL UP' : 'STATS';
   }
 
   const handleTouchStart = (e) => {

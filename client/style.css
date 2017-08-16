@@ -185,12 +185,12 @@ canvas {
     margin-left: auto;
 }
 
-#quitButton, #levelUpButton, #leaveLevelUpButton {
+#quitButton, #levelUpButton, #leaveLevelUpButton, #heal {
     transition: background-color 0.4s ease;
     display: block;
     text-align: center;
     margin: 1vmin auto;
-    font-size: 4vmin;
+    font-size: 8vmin;
     background-color: black;
     border-radius: 2px;
     padding: .5vmin;
@@ -199,16 +199,7 @@ canvas {
 }
 
 #heal {
-    transition: background-color 0.4s ease;
-    display: block;
-    text-align: center;
-    margin: 1vmin auto;
-    font-size: 8vmin;
     background-color: forestgreen;
-    border-radius: 2px;
-    padding: .5vmin;
-    color: white;
-    text-decoration: none;
 }
 
 .fa-plus-square {
