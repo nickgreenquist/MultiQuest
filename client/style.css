@@ -121,16 +121,11 @@ canvas {
 }
 
 #game {
-    position: absolute;
     height: 25%;
-    top: 0;
 }
 
-#ui {
-    position: absolute;
-    height: 75%;
+#ui, #ui_bottom {
     width: 100%;
-    bottom: 0;
     background-color: black;
     color: white;
     font-family: 'Trebuchet MS';
@@ -139,6 +134,14 @@ canvas {
 
     display: flex;
     flex-direction: row;
+}
+
+#ui {
+    height: 65%;
+}
+
+#ui_bottom {
+    height: 10%;
 }
 
 #ui_right, #ui_right_levelup, #ui_left {

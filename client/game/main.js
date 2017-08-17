@@ -40,11 +40,11 @@ define(function (require) {
       let ui_right = document.getElementById('ui_right');
       ui_right.style.display = 'none';
       let ui_right_levelup = document.getElementById('ui_right_levelup');
-      ui_right_levelup.style.display = 'block';
+      ui_right_levelup.style.display = 'flex';
     });
     document.getElementById("leaveLevelUpButton").addEventListener("click", function(){
       let ui_right = document.getElementById('ui_right');
-      ui_right.style.display = 'block';
+      ui_right.style.display = 'flex';
       let ui_right_levelup = document.getElementById('ui_right_levelup');
       ui_right_levelup.style.display = 'none';
     });
