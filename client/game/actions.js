@@ -26,23 +26,24 @@ define(function () {
 
           let time = new Date().getTime();
           let timePassed = time - players[user].lastAttack;
-          let speedCheck = attackTimer / ((90 + ((130 - 90) * (players[user].speed / 100))));
+          let speedCheck = attackTimer / ((90 + ((130 - 90) * (players[user].speedValue / 100))));
           if(timePassed > speedCheck) {
               players[user].lastAttack = time;
               players[user].isAttacking = true;
           
               //draw damage
-              fadeOut(players[user].attack, enemy.origX + (enemySizePercentage / 4), enemyY, 50, 100, 0, 0,0, numEffects, 20, .05);
+              fadeOut(players[user].attackValue, enemy.origX + (enemySizePercentage / 4), enemyY, 50, 100, 0, 0,0, numEffects, 20, .05);
               
-              players[user].texts[numEffects] = {alpha: 1.0, red: 0, green: 0, blue: 0, text: players[user].attack, width: 50, height: 20, x: enemy.origX + (enemySizePercentage / 4), y: enemy.position.y};
+              players[user].texts[numEffects] = {alpha: 1.0, red: 0, green: 0, blue: 0, text: players[user].attackValue, width: 50, height: 20, x: enemy.origX + (enemySizePercentage / 4), y: enemy.position.y};
               numEffects++;
               
               //to prevent insanely high key values
               if(numEffects > 25) {
               numEffects = 0;
               }
-              
-              enemy.currentHealth -= players[user].attack;
+            
+            
+              enemy.currentHealth -= players[user].attackValue;
               if(enemy.currentHealth <= 0) {
               enemy.currentHealth = 0;
               enemy.dead = true;

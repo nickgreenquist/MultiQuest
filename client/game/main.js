@@ -55,7 +55,12 @@ define(function (require) {
       if(players[user].points > 0) {
         players[user].points--;
         players[user].maxHealth += 5;
+        players[user].maxHealthValue = Math.round(players[user].maxHealth * ((classes[players[user].type].health / 100) + 1));
         players[user].currentHealth += 5;
+        if(players[user].currentHealth > players[user].maxHealthValue) {
+          players[user].currentHealth = players[user].maxHealthValue;
+        }
+
         draw();
       }
     });
@@ -63,6 +68,7 @@ define(function (require) {
       if(players[user].points > 0) {
         players[user].points--;
         players[user].attack++;
+        players[user].attackValue = Math.round(players[user].attack * ((weapons[players[user].weaponType].attack / 100) + 1));
         draw();
       }
     });
@@ -70,6 +76,7 @@ define(function (require) {
       if(players[user].points > 0) {
         players[user].points--;
         players[user].speed++;
+        players[user].speedValue = Math.round(players[user].speed * (((weapons[players[user].weaponType].speed + classes[players[user].type].speed) / 100) + 1));
         draw();
       }
     });
@@ -77,6 +84,7 @@ define(function (require) {
       if(players[user].points > 0) {
         players[user].points--;
         players[user].spellPower++;
+        players[user].spellPowerValue = Math.round(players[user].spellPower * (((weapons[players[user].weaponType].intelligence + classes[players[user].type].intelligence) / 100) + 1));
         draw();
       }
     });
@@ -200,7 +208,7 @@ define(function (require) {
       if (players[user].isMoving) {
         //only move if enough time has occured, otherwise server is overloaded
         let timePassed = time - players[user].lastUpdate;
-        let speedCheck = moveTimer / ((90 + ((130 - 90) * (players[user].speed / 100))));
+        let speedCheck = moveTimer / ((90 + ((130 - 90) * (players[user].speedValue / 100))));
 
         //make sword go back up, always half the time before next move call is made 
         if(timePassed > speedCheck / 2) {
@@ -276,7 +284,7 @@ define(function (require) {
               });
 
               //check for miss
-              let missChance = (players[user].speed / enemy.attack) / 2;
+              let missChance = (players[user].speedValue / enemy.attack);
               let randomHit = Math.random();
               console.log("miss chance: " + missChance);
               console.log("randomHit: " + randomHit);
@@ -322,7 +330,7 @@ define(function (require) {
   };
 
   const spell = (time) => {
-    socket.emit('healSpell', {room: players[user].room, name: user, power: players[user].spellPower});
+    socket.emit('healSpell', {room: players[user].room, name: user, power: players[user].spellPowerValue});
 
     fadeOut(user + " used Heal!", 40, playerY - playerSizePercentage, 250, 20, 0, 255,0, numEffects, 40, .04);
           
@@ -333,9 +341,9 @@ define(function (require) {
                                 
     numEffects++;
     
-    players[user].currentHealth += players[user].spellPower;
-    if(players[user].currentHealth > players[user].maxHealth) {
-      players[user].currentHealth = players[user].maxHealth;
+    players[user].currentHealth += players[user].spellPowerValue;
+    if(players[user].currentHealth > players[user].maxHealthValue) {
+      players[user].currentHealth = players[user].maxHealthValue;
     }
     draw();
   };
@@ -347,10 +355,10 @@ define(function (require) {
     //host calls setupplayer twice so don't set another interval
     if(!isHost) {
       window.setInterval(function(){
-        if(players[user].currentHealth < players[user].maxHealth && !players[user].dead) {
+        if(players[user].currentHealth < players[user].maxHealthValue && !players[user].dead) {
           players[user].currentHealth += 1;
-          if(players[user].currentHealth > players[user].maxHealth) {
-            players[user].currentHealth = players[user].maxHealth;
+          if(players[user].currentHealth > players[user].maxHealthValue) {
+            players[user].currentHealth = players[user].maxHealthValue;
           }
           socket.emit('updatePlayerHealth', {room: players[user].room, name: user, health: players[user].currentHealth, spritePos: players[user].spritePos});
 

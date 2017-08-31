@@ -113,8 +113,8 @@ draw = () => {
   ctx.fillStyle="black";
   ctx.fillRect(barX + 1,barY + 1, barWidth - 2, playerHealthBarHeight - 2);
   ctx.fillStyle="green";
-  ctx.fillRect(barX + 1,barY + 1,(players[user].currentHealth / players[user].maxHealth) * (barWidth - 2) ,playerHealthBarHeight - 2);
-  drawStroked(players[user].currentHealth + '/' + players[user].maxHealth, barX, barY - 5, worldHeight / 10);
+  ctx.fillRect(barX + 1,barY + 1,(players[user].currentHealth / players[user].maxHealthValue) * (barWidth - 2) ,playerHealthBarHeight - 2);
+  drawStroked(players[user].currentHealth + '/' + players[user].maxHealthValue, barX, barY - 5, worldHeight / 10);
   
   //ENEMIES
   keys = Object.keys(enemies);

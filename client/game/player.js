@@ -98,6 +98,10 @@ define(function () {
       let size = worldWidth / 10;
       let y = size;
       let position = {x:x, y:y,width:size,height:size};
+      let attackValue = Math.round(attack * ((weapons[weaponType].attack / 100) + 1));
+      let speedValue = Math.round(speed * (((weapons[weaponType].speed + classes[type].speed) / 100) + 1));
+      let spellPowerValue = Math.round(spellPower * (((weapons[weaponType].intelligence + classes[type].intelligence) / 100) + 1));
+      let maxHealthValue = Math.round(maxHealth * ((classes[type].health / 100) + 1));
       let newPlayer = {
           room: room, 
           lastSpell: time, 
@@ -106,16 +110,20 @@ define(function () {
           isMoving: false, 
           position:position, 
           maxHealth:maxHealth, 
-          currentHealth:maxHealth,
+          maxHealthValue:maxHealthValue,
+          currentHealth:maxHealthValue,
           dead:false,
           speed:speed,
+          speedValue:speedValue,
           attack:attack,
+          attackValue:attackValue,
           level:level,
           exp:exp,
           points:points,
           maxDistance:maxDistance, 
           spritePos:1, 
           spellPower:spellPower, 
+          spellPowerValue:spellPowerValue,
           spellCooldown:5000, 
           isAttacking:false, 
           color: color, 
