@@ -80,7 +80,7 @@ $(document).ready(function() {
         return false;
     });
 
-    $(".activatePlayerType").on("click", (e) => {
+    $("#activatePlayerType").on("click", (e) => {
         e.preventDefault();
 
         var data = e.target.parentElement;
@@ -103,7 +103,7 @@ $(document).ready(function() {
         return false;
     });
 
-    $(".activateWeaponType").on("click", (e) => {
+    $("#activateWeaponType").on("click", (e) => {
         e.preventDefault();
 
         var data = e.target.parentElement;

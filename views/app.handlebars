@@ -29,12 +29,16 @@
             elem.style.display = 'none';
             elem = document.getElementById('armorRowNew');
             elem.style.display = 'none';
+            elem = document.getElementById('activatePlayerType');
+            elem.style.display = 'none';
             setArmorMultipliers({{info.playerType}});
 
             // Update weapon image change row
             elem = document.getElementById('weaponRowArrow');
             elem.style.display = 'none';
             elem = document.getElementById('weaponRowNew');
+            elem.style.display = 'none';
+            elem = document.getElementById('activateWeaponType');
             elem.style.display = 'none';
             setWeaponMultipliers({{info.weaponType}});
          };
@@ -43,6 +47,8 @@
             let elem = document.getElementById('weaponRowArrow');
             elem.style.display = 'block';
             elem = document.getElementById('weaponRowNew');
+            elem.style.display = 'block';
+            elem = document.getElementById('activateWeaponType');
             elem.style.display = 'block';
             
             document.getElementById("weaponRowNewImage").src = "/assets/img/weapons/" + value + ".png";
@@ -65,6 +71,8 @@
             let elem = document.getElementById('armorRowArrow');
             elem.style.display = 'block';
             elem = document.getElementById('armorRowNew');
+            elem.style.display = 'block';
+            elem = document.getElementById('activatePlayerType');
             elem.style.display = 'block';
             
             document.getElementById("armorRowNewImage").src = "/assets/img/players/" + value + ".png";
@@ -100,9 +108,9 @@
             elem.innerHTML = str.fontcolor(color);
          }
 
-      </script>
-  <link rel="shortcut icon" href="/assets/img/favicon.png"/>
-  <link rel="stylesheet" type="text/css" href="/assets/style.css"/>
+    </script>
+    <link rel="shortcut icon" href="/assets/img/favicon.png"/>
+    <link rel="stylesheet" type="text/css" href="/assets/style.css"/>
 </head>
 <body class="body">
   <nav>
@@ -125,14 +133,14 @@
                     <img id="armorRowNewImage" style="height: 10vh; width: 10vh;" alt="domo face"/>
                 </div>
             </div>
-            <form class="row" id="playerTypeForm" name="playerTypeForm" action="/maker" method="POST">
+            <form style="height: 5vh" class="row" id="playerTypeForm" name="playerTypeForm" action="/maker" method="POST">
                 <div id="skill_left">
                     <select name="type" id="playerType" onchange="onSelectArmor(this.value)">
                         <option selected disabled>ARMOR</option>
                     </select>
                 </div>
                 <div id="skill_right">
-                    <a type="submit" href="#" class="activatePlayerType">EQUIP</a>
+                    <a type="submit" href="#" id="activatePlayerType" style="display: none">EQUIP</a>
                     <input id="csrf" type="hidden" name="_csrf" value={{csrfToken}} />
                 </div>
             </form>
@@ -202,14 +210,14 @@
                     <img id="weaponRowNewImage" style="height: 10vh; width: 10vh;" alt="domo face"/>
                 </div>
             </div>
-            <form class="row" id="weaponTypeForm" name="weaponTypeForm" action="/maker" method="POST">
+            <form style="height: 5vh" class="row" id="weaponTypeForm" name="weaponTypeForm" action="/maker" method="POST">
                 <div id="skill_left">
                     <select name="type" id="weaponType" onchange="onSelectWeapon(this.value)">
                         <option selected disabled>WEAPON</option>
                     </select>
                 </div>
                 <div id="skill_right">
-                    <a type="submit" href="#" class="activateWeaponType">EQUIP</a>
+                    <a type="submit" href="#" id="activateWeaponType" style="display: none">EQUIP</a>
                     <input id="csrf" type="hidden" name="_csrf" value={{csrfToken}} />
                 </div>
             </form>

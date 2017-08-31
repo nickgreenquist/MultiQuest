@@ -89,6 +89,46 @@ define(function (require) {
     main();
   };
 
+
+  function setWeaponMultipliers(value){
+      let elem = document.getElementById('attackMultiplierWeapon');
+      setValueAndColor(elem, weapons[value].attack);
+
+      elem = document.getElementById('speedMultiplierWeapon');
+      setValueAndColor(elem, weapons[value].speed);
+
+      elem = document.getElementById('intMultiplierWeapon');
+      setValueAndColor(elem, weapons[value].intelligence);
+  }
+
+  function setArmorMultipliers(value){
+      let elem = document.getElementById('healthMultiplierArmor');
+      setValueAndColor(elem, classes[value].health);
+
+      elem = document.getElementById('speedMultiplierArmor');
+      setValueAndColor(elem, classes[value].speed);
+
+      elem = document.getElementById('intMultiplierArmor');
+      setValueAndColor(elem, classes[value].intelligence);
+  }
+
+  function setValueAndColor(elem, value) {
+    let str = value.toString();
+    let color = 'white';
+    if(value > 0) { 
+        color = 'green'; 
+        str = '+' + value + '%';
+    }
+    else if(value < 0) { 
+        color = 'red'; 
+        str = value + '%';
+    }
+    else {
+        str = '+' + value + '%';
+    }
+    elem.innerHTML = str.fontcolor(color);
+  }
+
   const updateUi = () => {
     let distance = ((stage-1) + (players[user].position.x / 100)).toFixed(1);
     let diffMs = (Date.now() - startTime);
@@ -109,6 +149,10 @@ define(function (require) {
     document.getElementById("exp_total").innerHTML = players[user].exp + ((players[user].level - 1) * 4);
     document.getElementById("exp_next").innerHTML = players[user].exp + '/' + (players[user].level * 4);
     document.getElementById("levelUpButton").innerHTML = players[user].points > 0 ? 'LVL UP' : 'STATS';
+
+    //update multipliers in UI
+    setWeaponMultipliers(players[user].weaponType);
+    setArmorMultipliers(players[user].type);
   }
 
   const handleTouchStart = (e) => {
@@ -178,7 +222,7 @@ define(function (require) {
       // CHECK FOR SPELL CAST
       let healButtonRow = document.getElementById('healButtonRow');
       if(time - players[user].lastSpell > players[user].spellCooldown && !players[user].dead) {
-        healButtonRow.style.display = 'block';
+        healButtonRow.style.display = 'flex';
       } else {
         healButtonRow.style.display = 'none';
       }
