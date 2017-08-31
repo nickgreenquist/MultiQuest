@@ -98,7 +98,7 @@ draw = () => {
       ctx.fillStyle="black";
       ctx.fillRect(playerX + 1,playerY - healthBarHeight , playerSize - 2, healthBarHeight);
       ctx.fillStyle="green";
-      ctx.fillRect(playerX + 1,playerY - healthBarHeight,(drawCall.currentHealth / drawCall.maxHealth) * (playerSize - 2) ,healthBarHeight);
+      ctx.fillRect(playerX + 1,playerY - healthBarHeight,(drawCall.currentHealth / drawCall.maxHealthValue) * (playerSize - 2) ,healthBarHeight);
     }
   }
 

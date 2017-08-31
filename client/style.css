@@ -99,7 +99,7 @@ html, body {
 #domoName, #weaponColor, #playerType, #weaponType {
     text-align: center;
     border-radius: 6px;
-    font-size: 4vmin;
+    font-size: 3vmin;
     width: 25vw;
 }
 

@@ -13,6 +13,10 @@
                 let opt = document.createElement('option');
                 opt.innerHTML = classes[i].name;
                 opt.value = i;
+                if({{info.level}} < (i*10)) {
+                    opt.disabled = true;
+                    opt.innerHTML += " - REQ LVL " + (i*10);
+                }
                 selClass.appendChild(opt);
             }
     
@@ -21,6 +25,10 @@
                 let opt = document.createElement('option');
                 opt.innerHTML = weapons[i].name;
                 opt.value = i;
+                if({{info.level}} < (i*10)) {
+                    opt.disabled = true;
+                    opt.innerHTML += " - REQ LVL " + (i*10);
+                }
                 selWeapon.appendChild(opt);
             }
 
