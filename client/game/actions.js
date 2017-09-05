@@ -1,6 +1,6 @@
 // @TODO: Clen up spacing in this function
 
-/*jshint esversion: 6 */
+/*  jshint esversion: 6 */
 
 define(function () {
   return {
@@ -18,7 +18,7 @@ define(function () {
       }
 
       //Combat
-      if(players[user].direction && !players[user].dead && !enemy.dead && (players[user].position.x + playerSizePercentage) > (enemy.origX - 1)) {
+      if (players[user].direction && !players[user].dead && !enemy.dead && (players[user].position.x + playerSizePercentage) > (enemy.origX - 1)) {
           isColliding = true;
 
           //don't update enemy stats if player has died...creates weird bugs if the world is reset same time as enemy is updated with damage
